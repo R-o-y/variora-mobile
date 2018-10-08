@@ -60,7 +60,9 @@ class DocumentViewer extends React.Component {
         page.render(renderContext)
       }
 
-      pdf.getPage(1).then((page) => renderPage(0, page))
+      {range(self.state.numPages).map((i) =>
+        pdf.getPage(i+1).then((page) => renderPage(i, page))
+      )}
     })
 
     window.addEventListener('scroll', this.handleScroll, { passive: true })
@@ -96,7 +98,3 @@ class DocumentViewer extends React.Component {
 }
 
 export { DocumentViewer }
-
-
-
-
