@@ -1,7 +1,7 @@
 import React from 'react'
 
-
-class Tabs extends React.Component {
+/*eslint no-undef: "off"*/
+class DocumentViewer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -9,9 +9,11 @@ class Tabs extends React.Component {
   }
 
   componentDidMount() {
-    PDFJS.getDocument(url).then(function(pdf) {
-      pdfDoc = pdf
-      numPages = pdfDoc.numPages
+    PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
+
+    PDFJS.getDocument('/media/pdf/Consent.pdf').then(function(pdf) {  // hard code a pdf ulr and test
+      var pdfDoc = pdf
+      var numPages = pdfDoc.numPages
       alert(numPages)
     })
   }
@@ -25,7 +27,7 @@ class Tabs extends React.Component {
   }
 }
 
-export { Tabs }
+export { DocumentViewer }
 
 
 
