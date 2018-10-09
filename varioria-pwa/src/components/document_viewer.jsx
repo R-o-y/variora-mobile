@@ -108,7 +108,7 @@ class DocumentViewer extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('/file_viewer/api/documents/' + this.props.documentPk).then(response => {
+    axios.get('/file_viewer/api/documents/' + this.props.match.params.pk).then(response => {
       this.document = response.data
       PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
 
@@ -164,8 +164,4 @@ class DocumentViewer extends React.Component {
   }
 }
 
-export { DocumentViewer }
-
-
-
-
+export default DocumentViewer;
