@@ -11,7 +11,6 @@ class DocumentViewer extends React.Component {
     super(props);
     this.state = {
       pdfDoc: undefined,
-      scale: 1,
       numPages: 0,
       currentScale: 1,
       scaleFactor: 1.08,
@@ -20,11 +19,31 @@ class DocumentViewer extends React.Component {
       rendering: false,
       sampleWidth: undefined,
       sampleHeight: undefined,
-      clearnessLevel: 1.8  // too small then not clear, not large then rendering consumes much resource
+      clearnessLevel: 1.28,  // too small then not clear, not large then rendering consumes much resource
+
+      pageDivWidth: 660,
+      // pageCanvasWidth: 660,
     }
 
     this.handleScroll = () => {
       console.log(window.pageYOffset)
+    }
+
+    this.renderPage = function(num, page, scale) {
+      var clearnessLevel = this.state.clearnessLevel
+      var canvas = document.getElementById('page-canvas-' + num)
+      var context = canvas.getContext('2d')
+      var viewport = page.getViewport(clearnessLevel * scale)
+      canvas.height = viewport.height
+      canvas.width = viewport.width
+      canvas.style.height = viewport.height / clearnessLevel + 'px'
+      canvas.style.width = viewport.width / clearnessLevel + 'px'
+
+      var renderContext = {
+        canvasContext: context,
+        viewport: viewport,
+      }
+      page.render(renderContext)
     }
   }
 
@@ -39,28 +58,17 @@ class DocumentViewer extends React.Component {
         numPages: pdf.numPages,
       })
 
-      var clearnessLevel = self.state.clearnessLevel
-      var scale = self.state.scale
-      const renderPage = function(num, page) {
-        var pageCanvasId = 'page-canvas-' + num
-        var canvas = document.getElementById(pageCanvasId)
-        var context = canvas.getContext('2d')
-        var viewport = page.getViewport(clearnessLevel * scale)
-        console.log('test')
-        canvas.height = viewport.height
-        canvas.width = viewport.width
-        canvas.style.height = viewport.height / clearnessLevel + 'px'
-        canvas.style.width = viewport.width / clearnessLevel + 'px'
+      pdf.getPage(pdf.numPages).then(function(lastPage) {
+        var currentScale = (window.innerWidth * 0.8) / lastPage.getViewport(1).width
 
-        var renderContext = {
-          canvasContext: context,
-          viewport: viewport,
-        }
+        self.setState({
+          currentScale: currentScale,
+          pageDivWidth: lastPage.getViewport(currentScale).width,
+          sampleHeight: lastPage.getViewport(currentScale).height
+        })
 
-        page.render(renderContext)
-      }
-
-      pdf.getPage(1).then((page) => renderPage(0, page))
+        self.state.pdfDoc.getPage(1).then((page) => self.renderPage(1, page, currentScale))
+      })
     })
 
     window.addEventListener('scroll', this.handleScroll, { passive: true })
@@ -75,11 +83,16 @@ class DocumentViewer extends React.Component {
       <div ref={(ele) => this.viewerWrappper = ele}>
         {range(this.state.numPages).map((i) =>
           (
-            <div className='page-div' key={i} id={'page-div-' + i}>
-              <canvas className='page-canvas' id={'page-canvas-' + i}></canvas>
+            <div className='page-div' key={i + 1} id={'page-div-' + (i + 1)}
+              style={{width: this.state.pageDivWidth}}
+            >
+              <canvas className='page-canvas' id={'page-canvas-' + (i + 1)}
+                // style={{width: this.state.pageCanvasWidth}}
+              ></canvas>
             </div>
           )
         )}
+        {/* <h1>test</h1>
         <h1>test</h1>
         <h1>test</h1>
         <h1>test</h1>
@@ -88,8 +101,7 @@ class DocumentViewer extends React.Component {
         <h1>test</h1>
         <h1>test</h1>
         <h1>test</h1>
-        <h1>test</h1>
-        <h1>test</h1>
+        <h1>test</h1> */}
       </div>
     );
   }
