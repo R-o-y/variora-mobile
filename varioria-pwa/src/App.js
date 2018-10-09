@@ -31,7 +31,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <DocumentViewer documentPk={1} />
+        <DocumentViewer documentPk={8} />
         {/* <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>

@@ -16,20 +16,53 @@ class DocumentViewer extends React.Component {
     this.taskList = []
     this.finishList = []
     this.rendering = false
-    this.clearnessLevel = 1.38  // too small then not clear, not large then rendering consumes much resource
+    this.clearnessLevel = 3.8  // too small then not clear, not large then rendering consumes much resource
+    this.currentPageIndex = 1
     this.state = {
       numPages: 0,
       currentScale: 1,
       scaleFactor: 1.08,
       sampleWidth: undefined,
       sampleHeight: undefined,
-      pageDivWidth: 0,
       annotations: [],
       // pageCanvasWidth: 660,
     }
 
     this.handleScroll = () => {
-      console.log(window.pageYOffset)
+      var pageIndex = Math.ceil((window.pageYOffset / this.viewerWrappper.scrollHeight * this.state.numPages))
+      if (pageIndex === this.currentPageIndex)
+        return
+
+      this.currentPageIndex = pageIndex
+
+      const left = 2
+      const right = 6
+      var renderOrNot = range(right + left + 1).map(i => true)
+
+      // clear pages which are out of view
+      var index = 0
+      for (var i = 0; i < this.finishList.length; i++) {
+        if (this.finishList[index] - pageIndex >= -left && this.finishList[index] - pageIndex <= right) {
+          renderOrNot[this.finishList[index] - (pageIndex - left)] = false
+          index += 1
+        } else {
+          var pre = document.getElementById('page-canvas-' + this.finishList[index])
+          pre.width = 0
+          pre.height = 0
+          this.finishList.splice(index, 1)
+        }
+      }
+      // keep the first renderTask since it is still in RENDERING status,
+      // delete the rest since they are in PENDING status
+      this.taskList.splice(1)
+      // add in the new task
+      for (var i = 0; i < renderOrNot.length; i++)
+        if (renderOrNot[i])
+          this.pushNewPageRenderingTask(pageIndex - left + i)
+      // console.log(this.taskList.map(t => t.pageIndex))
+      // console.log(this.rendering)
+      if (!this.rendering)
+        this.renderTaskList()
     }
 
     this.pushNewPageRenderingTask = (pageIndex) => {
@@ -75,7 +108,6 @@ class DocumentViewer extends React.Component {
   }
 
   componentDidMount() {
-
     axios.get('/file_viewer/api/documents/' + this.props.documentPk).then(response => {
       this.document = response.data
       PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
@@ -93,7 +125,7 @@ class DocumentViewer extends React.Component {
 
           self.setState({
             currentScale: currentScale,
-            pageDivWidth: lastPage.getViewport(currentScale).width,
+            sampleWidth: lastPage.getViewport(currentScale).width,
             sampleHeight: lastPage.getViewport(currentScale).height
           })
           self.pushNewPageRenderingTask(1)
@@ -121,7 +153,7 @@ class DocumentViewer extends React.Component {
         {range(this.state.numPages).map((i) =>
           (
             <div className='page-div' key={i + 1} id={'page-div-' + (i + 1)}
-              style={{width: this.state.pageDivWidth}}
+              style={{width: this.state.sampleWidth, height: this.state.sampleHeight}}
             >
               <canvas className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
             </div>
