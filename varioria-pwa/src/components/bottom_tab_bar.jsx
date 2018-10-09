@@ -12,7 +12,7 @@ class BottomTabBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedTab: 'Explore',
+      selectedTab: this.props.path.substr(1),
       hidden: false
     };
   }
@@ -47,12 +47,12 @@ class BottomTabBar extends React.Component {
           <TabBar.Item
             icon={<ExploreIcon />}
             selectedIcon={<ExploreIcon />}
-            title={this.state.selectedTab === 'Explore' ? 'Explore' : ''}
-            key="Explore"
-            selected={this.state.selectedTab === 'Explore'}
+            title={this.state.selectedTab === 'explore' ? 'explore' : ''}
+            key="explore"
+            selected={this.state.selectedTab === 'explore'}
             onPress={() => {
               this.setState({
-                selectedTab: 'Explore',
+                selectedTab: 'explore',
               });
               this.props.history.push('/explore');
             }}
@@ -62,12 +62,12 @@ class BottomTabBar extends React.Component {
           <TabBar.Item
             icon={<UploadIcon />}
             selectedIcon={<UploadIcon />}
-            title={this.state.selectedTab === 'Uploads' ? 'Uploads' : ''}
+            title={this.state.selectedTab === 'uploads' ? 'uploads' : ''}
             key="Uploads"
-            selected={this.state.selectedTab === 'Uploads'}
+            selected={this.state.selectedTab === 'uploads'}
             onPress={() => {
               this.setState({
-                selectedTab: 'Uploads',
+                selectedTab: 'uploads',
               });
               this.props.history.push('/uploads');
             }}
@@ -77,12 +77,12 @@ class BottomTabBar extends React.Component {
           <TabBar.Item
             icon={<ReadlistIcon />}
             selectedIcon={<ReadlistIcon />}
-            title={this.state.selectedTab === 'Readlists' ? 'Readlists' : ''}
+            title={this.state.selectedTab === 'readlists' ? 'readlists' : ''}
             key="Readlists"
-            selected={this.state.selectedTab === 'Readlists'}
+            selected={this.state.selectedTab === 'readlists'}
             onPress={() => {
               this.setState({
-                selectedTab: 'Readlists',
+                selectedTab: 'readlists',
               });
               this.props.history.push('/readlists');
             }}
@@ -92,12 +92,12 @@ class BottomTabBar extends React.Component {
           <TabBar.Item
             icon={<NotificationsIcon />}
             selectedIcon={<NotificationsActiveIcon />}
-            title={this.state.selectedTab === 'Notifications' ? 'Notifications' : ''}
+            title={this.state.selectedTab === 'notifications' ? 'notifications' : ''}
             key="Notifications"
-            selected={this.state.selectedTab === 'Notifications'}
+            selected={this.state.selectedTab === 'notifications'}
             onPress={() => {
               this.setState({
-                selectedTab: 'Notifications',
+                selectedTab: 'notifications',
               });
               this.props.history.push('/notifications');
             }}
@@ -107,12 +107,12 @@ class BottomTabBar extends React.Component {
           <TabBar.Item
             icon={<SettingsIcon />}
             selectedIcon={<SettingsIcon />}
-            title={this.state.selectedTab === 'Settings' ? 'Settings' : ''}
+            title={this.state.selectedTab === 'settings' ? 'settings' : ''}
             key="Settings"
-            selected={this.state.selectedTab === 'Settings'}
+            selected={this.state.selectedTab === 'settings'}
             onPress={() => {
               this.setState({
-                selectedTab: 'Settings',
+                selectedTab: 'settings',
               });
               this.props.history.push('/settings');
             }}

@@ -34,6 +34,7 @@ class App extends Component {
     return (
       <div className="App">
         <BottomTabBar
+          path={this.props.location.pathname}
           history={this.props.history}
           content={<Main />}
         />
