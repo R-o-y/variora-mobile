@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios'
 
 /*eslint no-undef: "off"*/
 
@@ -9,19 +10,21 @@ function range(end) {
 class DocumentViewer extends React.Component {
   constructor(props) {
     super(props)
+
+    this.document = undefined
+    this.pdfDoc = undefined
     this.taskList = []
     this.finishList = []
     this.rendering = false
     this.clearnessLevel = 1.38  // too small then not clear, not large then rendering consumes much resource
     this.state = {
-      pdfDoc: undefined,
       numPages: 0,
       currentScale: 1,
       scaleFactor: 1.08,
       sampleWidth: undefined,
       sampleHeight: undefined,
-
       pageDivWidth: 0,
+      annotations: [],
       // pageCanvasWidth: 660,
     }
 
@@ -47,7 +50,7 @@ class DocumentViewer extends React.Component {
 
       var currentPageIndex = this.taskList[0].pageIndex
       const self = this
-      this.state.pdfDoc.getPage(currentPageIndex).then(function(page) {
+      this.pdfDoc.getPage(currentPageIndex).then(function(page) {
         var canvas = document.getElementById('page-canvas-' + currentPageIndex)
         var context = canvas.getContext('2d')
         var viewport = page.getViewport(clearnessLevel * scale)
@@ -72,31 +75,40 @@ class DocumentViewer extends React.Component {
   }
 
   componentDidMount() {
-    PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
 
-    const self = this
+    axios.get('/file_viewer/api/documents/' + this.props.documentPk).then(response => {
+      this.document = response.data
+      PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
 
-    PDFJS.getDocument('/media/pdf/Consent.pdf').then(function(pdf) {  // hard code a pdf ulr and test
-      self.setState({
-        pdfDoc: pdf,
-        numPages: pdf.numPages,
-      })
+      const self = this
 
-      pdf.getPage(pdf.numPages).then(function(lastPage) {
-        var currentScale = (window.innerWidth * 100 / 100) / lastPage.getViewport(1).width
-
+      PDFJS.getDocument(this.document.url).then(function(pdf) {  // hard code a pdf ulr and test
+        self.pdfDoc = pdf
         self.setState({
-          currentScale: currentScale,
-          pageDivWidth: lastPage.getViewport(currentScale).width,
-          sampleHeight: lastPage.getViewport(currentScale).height
+          numPages: pdf.numPages,
         })
-        self.pushNewPageRenderingTask(1)
-        self.pushNewPageRenderingTask(2)
-        self.renderTaskList()
+
+        pdf.getPage(pdf.numPages).then(function(lastPage) {
+          var currentScale = (window.innerWidth * 100 / 100) / lastPage.getViewport(1).width
+
+          self.setState({
+            currentScale: currentScale,
+            pageDivWidth: lastPage.getViewport(currentScale).width,
+            sampleHeight: lastPage.getViewport(currentScale).height
+          })
+          self.pushNewPageRenderingTask(1)
+          self.pushNewPageRenderingTask(2)
+          self.renderTaskList()
+        })
       })
+
+      window.addEventListener('scroll', this.handleScroll, { passive: true })
     })
 
-    window.addEventListener('scroll', this.handleScroll, { passive: true })
+    axios.get('/file_viewer/api/documents/' + this.props.documentPk + '/annotations').then(response => {
+      console.log(response.data)
+      this.setState({annotations: response.data})
+    })
   }
 
   componentWillUnmount() {
@@ -111,9 +123,7 @@ class DocumentViewer extends React.Component {
             <div className='page-div' key={i + 1} id={'page-div-' + (i + 1)}
               style={{width: this.state.pageDivWidth}}
             >
-              <canvas className='page-canvas' id={'page-canvas-' + (i + 1)}
-                // style={{width: this.state.pageCanvasWidth}}
-              ></canvas>
+              <canvas className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
             </div>
           )
         )}
