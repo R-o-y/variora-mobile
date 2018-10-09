@@ -8,20 +8,20 @@ function range(end) {
 
 class DocumentViewer extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
+    this.taskList = []
+    this.finishList = []
+    this.rendering = false
+    this.clearnessLevel = 1.38  // too small then not clear, not large then rendering consumes much resource
     this.state = {
       pdfDoc: undefined,
       numPages: 0,
       currentScale: 1,
       scaleFactor: 1.08,
-      finishList: [],
-      taskList: [],
-      rendering: false,
       sampleWidth: undefined,
       sampleHeight: undefined,
-      clearnessLevel: 1.28,  // too small then not clear, not large then rendering consumes much resource
 
-      pageDivWidth: 660,
+      pageDivWidth: 0,
       // pageCanvasWidth: 660,
     }
 
@@ -29,21 +29,45 @@ class DocumentViewer extends React.Component {
       console.log(window.pageYOffset)
     }
 
-    this.renderPage = function(num, page, scale) {
-      var clearnessLevel = this.state.clearnessLevel
-      var canvas = document.getElementById('page-canvas-' + num)
-      var context = canvas.getContext('2d')
-      var viewport = page.getViewport(clearnessLevel * scale)
-      canvas.height = viewport.height
-      canvas.width = viewport.width
-      canvas.style.height = viewport.height / clearnessLevel + 'px'
-      canvas.style.width = viewport.width / clearnessLevel + 'px'
+    this.pushNewPageRenderingTask = (pageIndex) => {
+      if (pageIndex >= 1 && pageIndex <= this.state.numPages)
+        this.taskList.push({
+          pageIndex: pageIndex,
+          status: 'PENDING',
+          taskObj: null,
+        })
+    }
 
-      var renderContext = {
-        canvasContext: context,
-        viewport: viewport,
-      }
-      page.render(renderContext)
+    this.renderTaskList = () => {
+      if (this.taskList.length <= 0)
+        return
+      this.rendering = true
+      var scale = this.state.currentScale
+      var clearnessLevel = this.clearnessLevel
+
+      var currentPageIndex = this.taskList[0].pageIndex
+      const self = this
+      this.state.pdfDoc.getPage(currentPageIndex).then(function(page) {
+        var canvas = document.getElementById('page-canvas-' + currentPageIndex)
+        var context = canvas.getContext('2d')
+        var viewport = page.getViewport(clearnessLevel * scale)
+        canvas.height = viewport.height
+        canvas.width = viewport.width
+        canvas.style.height = viewport.height / clearnessLevel + 'px'
+        canvas.style.width = viewport.width / clearnessLevel + 'px'
+        var renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+        }
+        self.taskList[0].status = 'RENDERING'
+        self.taskList[0].taskObj = page.render(renderContext)
+        self.taskList[0].taskObj.promise.then(function() {
+          self.taskList.shift()
+          self.finishList.push(currentPageIndex)
+          self.rendering = false
+          self.renderTaskList()
+        })
+      })
     }
   }
 
@@ -59,15 +83,16 @@ class DocumentViewer extends React.Component {
       })
 
       pdf.getPage(pdf.numPages).then(function(lastPage) {
-        var currentScale = (window.innerWidth * 0.8) / lastPage.getViewport(1).width
+        var currentScale = (window.innerWidth * 100 / 100) / lastPage.getViewport(1).width
 
         self.setState({
           currentScale: currentScale,
           pageDivWidth: lastPage.getViewport(currentScale).width,
           sampleHeight: lastPage.getViewport(currentScale).height
         })
-
-        self.state.pdfDoc.getPage(1).then((page) => self.renderPage(1, page, currentScale))
+        self.pushNewPageRenderingTask(1)
+        self.pushNewPageRenderingTask(2)
+        self.renderTaskList()
       })
     })
 
@@ -92,16 +117,6 @@ class DocumentViewer extends React.Component {
             </div>
           )
         )}
-        {/* <h1>test</h1>
-        <h1>test</h1>
-        <h1>test</h1>
-        <h1>test</h1>
-        <h1>test</h1>
-        <h1>test</h1>
-        <h1>test</h1>
-        <h1>test</h1>
-        <h1>test</h1>
-        <h1>test</h1> */}
       </div>
     );
   }
