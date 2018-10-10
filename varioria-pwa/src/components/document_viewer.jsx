@@ -24,7 +24,7 @@ class DocumentViewer extends React.Component {
       scaleFactor: 1.08,
       sampleWidth: undefined,
       sampleHeight: undefined,
-      annotations: [],
+      annotations: {},
       // pageCanvasWidth: 660,
     }
 
@@ -105,6 +105,18 @@ class DocumentViewer extends React.Component {
         })
       })
     }
+
+    this.renderAnnotationAreas = (numPages) => {
+      axios.get('/file_viewer/api/documents/' + this.props.match.params.pk + '/annotations').then(response => {
+        var data = response.data
+        var annotations = {}
+        for (var i = 1; i <= numPages; i++)
+          annotations[i] = []
+        for (var annotation of data)
+          annotations[parseInt(annotation.page_index)].push(annotation)
+        this.setState({annotations: annotations})
+      })
+    }
   }
 
   componentDidMount() {
@@ -119,6 +131,8 @@ class DocumentViewer extends React.Component {
         self.setState({
           numPages: pdf.numPages,
         })
+
+        self.renderAnnotationAreas(pdf.numPages)
 
         pdf.getPage(pdf.numPages).then(function(lastPage) {
           var currentScale = (window.innerWidth * 100 / 100) / lastPage.getViewport(1).width
@@ -136,11 +150,6 @@ class DocumentViewer extends React.Component {
 
       window.addEventListener('scroll', this.handleScroll, { passive: true })
     })
-
-    axios.get('/file_viewer/api/documents/' + this.props.documentPk + '/annotations').then(response => {
-      console.log(response.data)
-      this.setState({annotations: response.data})
-    })
   }
 
   componentWillUnmount() {
@@ -150,15 +159,39 @@ class DocumentViewer extends React.Component {
   render() {
     return (
       <div ref={(ele) => this.viewerWrappper = ele}>
-        {range(this.state.numPages).map((i) =>
-          (
-            <div className='page-div' key={i + 1} id={'page-div-' + (i + 1)}
-              style={{width: this.state.sampleWidth, height: this.state.sampleHeight}}
-            >
-              <canvas className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
-            </div>
-          )
-        )}
+        {
+          range(this.state.numPages).map((i) => {
+            const pageIndex = i + 1
+            return (
+              <div className='page-div' key={pageIndex} id={'page-div-' + pageIndex}
+                style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
+              >
+                <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
+                {
+                  this.state.annotations[pageIndex] !== undefined ? this.state.annotations[pageIndex].map(annotation => {
+                    return (
+                      <div
+                        className='annotation-area'
+                        key={annotation.pk}
+                        style={{
+                          background: annotation.frame_color,
+                          position: 'absolute',
+                          width: this.state.sampleWidth * annotation.width_percent,
+                          height: this.state.sampleHeight * annotation.height_percent,
+                          left: this.state.sampleWidth * annotation.left_percent,
+                          top: this.state.sampleWidth * annotation.top_percent,
+                        }}
+                        annotation-id={annotation.pk}
+                        annotation-uuid={annotation.uuid}
+                      >
+                      </div>
+                    )
+                  }) : null
+                }
+              </div>
+            )
+          })
+        }
       </div>
     );
   }
