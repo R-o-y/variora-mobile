@@ -52,15 +52,15 @@ class DocumentViewer extends React.Component {
           this.finishList.splice(index, 1)
         }
       }
+
       // keep the first renderTask since it is still in RENDERING status,
       // delete the rest since they are in PENDING status
       this.taskList.splice(1)
+
       // add in the new task
       for (var i = 0; i < renderOrNot.length; i++)
         if (renderOrNot[i])
           this.pushNewPageRenderingTask(pageIndex - left + i)
-      // console.log(this.taskList.map(t => t.pageIndex))
-      // console.log(this.rendering)
       if (!this.rendering)
         this.renderTaskList()
     }
@@ -117,6 +117,22 @@ class DocumentViewer extends React.Component {
         this.setState({annotations: annotations})
       })
     }
+
+    this.configSizeAccordingToLastPageAndRenderTheFirstSeveralPages = (pdf) => {
+      const self = this
+      pdf.getPage(pdf.numPages).then(function(lastPage) {
+        var currentScale = (window.innerWidth * 1.0) / lastPage.getViewport(1).width
+
+        self.setState({
+          currentScale: currentScale,
+          sampleWidth: lastPage.getViewport(currentScale).width,
+          sampleHeight: lastPage.getViewport(currentScale).height
+        })
+        self.pushNewPageRenderingTask(1)
+        self.pushNewPageRenderingTask(2)
+        self.renderTaskList()
+      })
+    }
   }
 
   componentDidMount() {
@@ -125,27 +141,13 @@ class DocumentViewer extends React.Component {
       PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
 
       const self = this
-
       PDFJS.getDocument(this.document.url).then(function(pdf) {  // hard code a pdf ulr and test
         self.pdfDoc = pdf
         self.setState({
           numPages: pdf.numPages,
         })
-
         self.renderAnnotationAreas(pdf.numPages)
-
-        pdf.getPage(pdf.numPages).then(function(lastPage) {
-          var currentScale = (window.innerWidth * 100 / 100) / lastPage.getViewport(1).width
-
-          self.setState({
-            currentScale: currentScale,
-            sampleWidth: lastPage.getViewport(currentScale).width,
-            sampleHeight: lastPage.getViewport(currentScale).height
-          })
-          self.pushNewPageRenderingTask(1)
-          self.pushNewPageRenderingTask(2)
-          self.renderTaskList()
-        })
+        self.configSizeAccordingToLastPageAndRenderTheFirstSeveralPages(pdf)
       })
 
       window.addEventListener('scroll', this.handleScroll, { passive: true })
@@ -163,13 +165,15 @@ class DocumentViewer extends React.Component {
           range(this.state.numPages).map((i) => {
             const pageIndex = i + 1
             return (
-              <div className='page-div' key={pageIndex} id={'page-div-' + pageIndex}
+              <div
+                className='page-div' key={pageIndex}
+                id={'page-div-' + pageIndex}
                 style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
               >
                 <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
                 {
-                  this.state.annotations[pageIndex] !== undefined ? this.state.annotations[pageIndex].map(annotation => {
-                    return (
+                  this.state.annotations[pageIndex] !== undefined ?
+                    this.state.annotations[pageIndex].map(annotation =>
                       <div
                         className='annotation-area'
                         key={annotation.pk}
@@ -183,10 +187,8 @@ class DocumentViewer extends React.Component {
                         }}
                         annotation-id={annotation.pk}
                         annotation-uuid={annotation.uuid}
-                      >
-                      </div>
-                    )
-                  }) : null
+                      ></div>
+                    ) : null
                 }
               </div>
             )
