@@ -38,7 +38,7 @@ class Readlists extends Component {
       return (
         <List.Item
           arrow="horizontal"
-          thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
+          thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
           multipleLine
           onClick={() => {this.props.history.push(`/readlist/${element.id}`)}}
         >
