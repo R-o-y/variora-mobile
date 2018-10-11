@@ -28,7 +28,7 @@ class Explore extends Component {
     )
   }
 
-  renderExploreSubgrid(documents, title) {
+  renderDocumentsSubgrid(documents, title) {
     const data = documents.map((element) => ({
       icon: element.image,
       text: element.title,
@@ -36,19 +36,20 @@ class Explore extends Component {
     }));
     return (
       <div>
-        <div style={{color: '#888', fontSize: '14px', padding: '15px 0 9px 15px'}}>{title}</div>
+        <WhiteSpace />
+        <div style={{color: '#888', fontSize: '14px'}}>{title}</div>
+        <WhiteSpace />
         <Grid data={data} isCarousel onClick={(element) => {this.props.history.push(`${element.url}`)}} />
       </div>
     )
-
   }
 
   renderExploreDocuments(list) {
     return (
       <div>
-        {this.renderExploreSubgrid(list.mostViewsDocuments, "Most Views")}
-        {this.renderExploreSubgrid(list.mostStarsDocuments, "Most Stars")}
-        {this.renderExploreSubgrid(list.mostAnnotationsDocuments, "Most Annotations")}
+        {this.renderDocumentsSubgrid(list.mostViewsDocuments, "Most Views")}
+        {this.renderDocumentsSubgrid(list.mostStarsDocuments, "Most Stars")}
+        {this.renderDocumentsSubgrid(list.mostAnnotationsDocuments, "Most Annotations")}
       </div>
     )
   }
@@ -67,10 +68,10 @@ class Explore extends Component {
             initalPage={'t2'}
             renderTabBar={this.renderReactSticky}
           >
-            <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
+            <div style={{ justifyContent: 'center', height: '100%'}}>
               {this.renderExploreDocuments(this.props.explore.documents)}
             </div>
-            <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
+            <div style={{ justifyContent: 'center', height: '100%'}}>
               {this.renderExploreReadlists(this.props.explore.readlists)}
             </div>
           </Tabs>
