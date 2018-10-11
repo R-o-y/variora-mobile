@@ -34,3 +34,20 @@
 .annotation-area {
   border-radius: 1.8px;
 }
+
+.page-div {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2px;
+}
+
+.viewer-wrapper {
+  background-color: #dddddd
+}
+
+.document-title {
+  width: 66vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}

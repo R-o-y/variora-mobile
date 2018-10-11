@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+import { NavBar, Icon, ActivityIndicator } from 'antd-mobile';
 
 /*eslint no-undef: "off"*/
 
@@ -7,11 +8,11 @@ function range(end) {
   return Array(end - 0).fill().map((_, idx) => 0 + idx)
 }
 
+const RENDERING = 'RENDERING'
 class DocumentViewer extends React.Component {
   constructor(props) {
     super(props)
 
-    this.document = undefined
     this.pdfDoc = undefined
     this.taskList = []
     this.finishList = []
@@ -19,6 +20,10 @@ class DocumentViewer extends React.Component {
     this.clearnessLevel = 3.8  // too small then not clear, not large then rendering consumes much resource
     this.currentPageIndex = 1
     this.state = {
+      document: {
+        title: ''
+      },
+      loading: true,
       numPages: 0,
       currentScale: 1,
       scaleFactor: 1.08,
@@ -69,7 +74,7 @@ class DocumentViewer extends React.Component {
       if (pageIndex >= 1 && pageIndex <= this.state.numPages)
         this.taskList.push({
           pageIndex: pageIndex,
-          status: 'PENDING',
+          status: RENDERING,
           taskObj: null,
         })
     }
@@ -95,7 +100,7 @@ class DocumentViewer extends React.Component {
           canvasContext: context,
           viewport: viewport,
         }
-        self.taskList[0].status = 'RENDERING'
+        self.taskList[0].status = RENDERING
         self.taskList[0].taskObj = page.render(renderContext)
         self.taskList[0].taskObj.promise.then(function() {
           self.taskList.shift()
@@ -137,15 +142,18 @@ class DocumentViewer extends React.Component {
 
   componentDidMount() {
     axios.get('/file_viewer/api/documents/' + this.props.match.params.pk).then(response => {
-      this.document = response.data
+      this.setState({
+        document: response.data
+      })
       PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
 
       const self = this
-      PDFJS.getDocument(this.document.url).then(function(pdf) {  // hard code a pdf ulr and test
+      PDFJS.getDocument(response.data.url).then(function(pdf) {  // hard code a pdf ulr and test
         self.pdfDoc = pdf
         self.setState({
           numPages: pdf.numPages,
         })
+        self.setState({loading: false})
         self.renderAnnotationAreas(pdf.numPages)
         self.configSizeAccordingToLastPageAndRenderTheFirstSeveralPages(pdf)
       })
@@ -160,40 +168,61 @@ class DocumentViewer extends React.Component {
 
   render() {
     return (
-      <div ref={(ele) => this.viewerWrappper = ele}>
-        {
-          range(this.state.numPages).map((i) => {
-            const pageIndex = i + 1
-            return (
-              <div
-                className='page-div' key={pageIndex}
-                id={'page-div-' + pageIndex}
-                style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
-              >
-                <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
-                {
-                  this.state.annotations[pageIndex] !== undefined ?
-                    this.state.annotations[pageIndex].map(annotation =>
-                      <div
-                        className='annotation-area'
-                        key={annotation.pk}
-                        style={{
-                          background: annotation.frame_color,
-                          position: 'absolute',
-                          width: this.state.sampleWidth * annotation.width_percent,
-                          height: this.state.sampleHeight * annotation.height_percent,
-                          left: this.state.sampleWidth * annotation.left_percent,
-                          top: this.state.sampleWidth * annotation.top_percent,
-                        }}
-                        annotation-id={annotation.pk}
-                        annotation-uuid={annotation.uuid}
-                      ></div>
-                    ) : null
-                }
-              </div>
-            )
-          })
-        }
+      <div>
+        <NavBar
+          mode="light"
+          icon={<Icon type="left" onClick={() => this.props.history.goBack()}/>}
+          style={{
+            boxShadow: '0px 1px 3px rgba(26, 26, 26, .1)',
+            zIndex: 10000000,
+            position: 'relative',
+            // borderBottom: '1px solid #c8c8c8',
+            // height: 38
+          }}
+        >
+          <span className='document-title'>{this.state.document.title}</span>
+        </NavBar>
+
+        <ActivityIndicator
+          toast
+          animating={this.state.loading}
+        />
+
+        <div ref={(ele) => this.viewerWrappper = ele} className='viewer-wrapper'>
+          {
+            range(this.state.numPages).map((i) => {
+              const pageIndex = i + 1
+              return (
+                <div
+                  className='page-div' key={pageIndex}
+                  id={'page-div-' + pageIndex}
+                  style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
+                >
+                  <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
+                  {
+                    this.state.annotations[pageIndex] !== undefined ?
+                      this.state.annotations[pageIndex].map(annotation =>
+                        <div
+                          className='annotation-area'
+                          key={annotation.pk}
+                          style={{
+                            background: annotation.frame_color,
+                            position: 'absolute',
+                            width: this.state.sampleWidth * annotation.width_percent,
+                            height: this.state.sampleHeight * annotation.height_percent,
+                            left: this.state.sampleWidth * annotation.left_percent,
+                            top: this.state.sampleWidth * annotation.top_percent,
+                          }}
+                          annotation-id={annotation.pk}
+                          annotation-uuid={annotation.uuid}
+                        ></div>
+                      ) : null
+                  }
+                </div>
+              )
+            })
+          }
+        </div>
       </div>
     );
   }
