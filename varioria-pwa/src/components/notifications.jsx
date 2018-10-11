@@ -12,7 +12,7 @@ class Notifications extends Component {
   render() {
     return (
       <div>
-        <Navbar title="Uploads" />
+        <Navbar title="Notifications" />
       </div>
     );
   }

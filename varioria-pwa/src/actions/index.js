@@ -2,6 +2,7 @@ import axios from 'axios';
 import {
   USER_GET,
   DOCUMENT_GET_MY,
+  READLIST_GET_MY,
   DOCUMENT_GET_EXPLORE,
   READLIST_GET_EXPLORE,
 } from './types';
@@ -18,6 +19,13 @@ export function getMyDocuments() {
   const request = axios.get(url);
 
   return {type: DOCUMENT_GET_MY, payload: request};
+}
+
+export function getMyReadlists() {
+  const url = 'file_viewer/api/readlists';
+  const request = axios.get(url);
+
+  return {type: READLIST_GET_MY, payload: request};
 }
 
 export function getExploreDocuments() {
