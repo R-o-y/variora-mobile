@@ -5,8 +5,9 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import TimeAgo from 'react-timeago'
 
-import { Tabs, WhiteSpace, Grid } from 'antd-mobile';
+import { Tabs, WhiteSpace, Grid, List } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
 
 class Explore extends Component {
@@ -44,6 +45,30 @@ class Explore extends Component {
     )
   }
 
+  renderReadlistsSublist(readlists, title) {
+    const data = readlists.map(element => {
+      return (
+        <List.Item
+          extra={<TimeAgo date={element.create_time} />}
+          arrow="horizontal"
+          thumb={element.owner.portrait_url}
+          multipleLine
+          onClick={() => {this.props.history.push(`/readlists/${element.id}`)}}
+        >
+          {element.name}
+          <List.Item.Brief>{element.owner.nickname}</List.Item.Brief>
+        </List.Item>
+      )
+    })
+    return (
+      <div>
+        <List renderHeader={() => title}>
+          {data}
+        </List>
+      </div>
+    )
+  }
+
   renderExploreDocuments(list) {
     return (
       <div>
@@ -55,7 +80,12 @@ class Explore extends Component {
   }
 
   renderExploreReadlists(list) {
-
+    return (
+      <div>
+        {this.renderReadlistsSublist(list.newestReadlists, "Trending Lists")}
+        {this.renderReadlistsSublist(list.newestReadlists, "Recent Lists")}
+      </div>
+    )
   }
 
   renderStickyTab() {

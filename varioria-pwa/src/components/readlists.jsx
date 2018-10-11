@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import Navbar from './nav_bar';
 
 class Readlists extends Component {
 
@@ -10,7 +11,9 @@ class Readlists extends Component {
 
   render() {
     return (
-      <h1>Readlists</h1>
+      <div>
+        <Navbar title="Readlists" />
+      </div>
     );
   }
 }
