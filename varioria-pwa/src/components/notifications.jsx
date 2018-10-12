@@ -2,7 +2,6 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { Badge, List, WhiteSpace } from 'antd-mobile';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
@@ -19,6 +18,7 @@ class Notifications extends Component {
       let isAnnotationRelated = ( notification.verb ==='reply to annotation' || notification.verb === 'post annotation')
       return (
         <List.Item
+          key={notification.slug}
           arrow="horizontal"
           thumb={(isAnnotationRelated && notification.data) ? notification.data.image_url : ""}
           multipleLine
