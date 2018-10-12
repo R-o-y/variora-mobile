@@ -3,6 +3,7 @@ import {
   USER_GET,
   DOCUMENT_GET_MY,
   NOTIFICATION_GET_COMBINED,
+  NOTIFICATION_READ
 } from './types';
 
 export function getUser() {
@@ -24,4 +25,15 @@ export function getCombinedNotifications() {
   const request = axios.get(url);
 
   return {type: NOTIFICATION_GET_COMBINED, payload: request};
+}
+
+export function markNotificationAsRead(url, slug) {
+  const request = axios.get(url);
+
+  return {
+    type: NOTIFICATION_READ,
+    payload: {
+      slug
+    }
+  }
 }

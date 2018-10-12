@@ -16,15 +16,23 @@ class Notifications extends Component {
 
   renderNotificationsList(notifications) {
     const items = notifications.map((notification) => {
+      let isAnnotationRelated = ( notification.verb ==='reply to annotation' || notification.verb === 'post annotation')
       return (
         <List.Item
           arrow="horizontal"
-          thumb={notification.data.image_url}
+          thumb={(isAnnotationRelated && notification.data) ? notification.data.image_url : ""}
           multipleLine
-          onClick={() => {console.log("clicked")}}
+          onClick={() => {
+            this.props.markNotificationAsRead(notification.mark_read_url, notification.slug)
+            if (isAnnotationRelated && notification.data) {
+              this.props.history.push(`/document/${notification.data.document_pk}`)
+            }
+          }}
         >
-          {notification.actor + " " + notification.verb + " some more random"}
-
+          { notification.unread ?
+            <b>{notification.actor + " " + notification.verb + " some random stuff"}</b> :
+            notification.actor + " " + notification.verb + " some random stuff"
+          }
           <List.Item.Brief>
             { moment(notification.timestamp).fromNow() }
             { notification.unread &&
