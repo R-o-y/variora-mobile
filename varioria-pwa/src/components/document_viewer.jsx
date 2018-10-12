@@ -8,6 +8,14 @@ function range(end) {
   return Array(end - 0).fill().map((_, idx) => 0 + idx)
 }
 
+function constructGetAnnotationsQueryUrl(slug) {
+  return '/file_viewer/api/documents/byslug/' + slug + '/annotations'
+}
+
+function constructGetDocumentQueryUrl(slug) {
+  return '/file_viewer/api/documents/byslug/' + slug
+}
+
 const RENDERING = 'RENDERING'
 class DocumentViewer extends React.Component {
   constructor(props) {
@@ -112,7 +120,7 @@ class DocumentViewer extends React.Component {
     }
 
     this.renderAnnotationAreas = (numPages) => {
-      axios.get('/file_viewer/api/documents/' + this.props.match.params.pk + '/annotations').then(response => {
+      axios.get(constructGetAnnotationsQueryUrl(this.props.match.params.slug )).then(response => {
         var data = response.data
         var annotations = {}
         for (var i = 1; i <= numPages; i++)
@@ -141,7 +149,7 @@ class DocumentViewer extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('/file_viewer/api/documents/' + this.props.match.params.pk).then(response => {
+    axios.get(constructGetDocumentQueryUrl(this.props.match.params.slug)).then(response => {
       this.setState({
         document: response.data
       })

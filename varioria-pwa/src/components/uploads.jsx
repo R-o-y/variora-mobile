@@ -35,7 +35,7 @@ class Uploads extends Component {
         arrow="horizontal"
         thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
         multipleLine
-        onClick={() => {this.props.history.push(`/document/${item.pk}`)}}
+        onClick={() => {this.props.history.push(`/document/${item.slug}`)}}
       >
         {item.title}
         <List.Item.Brief>{moment(item.upload_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>
