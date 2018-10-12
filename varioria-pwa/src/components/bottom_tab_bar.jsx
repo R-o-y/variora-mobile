@@ -57,7 +57,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/explore');
             }}
           >
-            {this.props.content}
+            {this.state.selectedTab === 'explore' && this.props.content}
           </TabBar.Item>
           <TabBar.Item
             icon={<UploadIcon />}
@@ -72,7 +72,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/uploads');
             }}
           >
-            {this.props.content}
+            {this.state.selectedTab === 'uploads' && this.props.content}
           </TabBar.Item>
           <TabBar.Item
             icon={<ReadlistIcon />}
@@ -87,7 +87,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/readlists');
             }}
           >
-            {this.props.content}
+            {this.state.selectedTab === 'readlists' && this.props.content}
           </TabBar.Item>
           <TabBar.Item
             icon={<NotificationsIcon />}
@@ -102,7 +102,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/notifications');
             }}
           >
-            {this.props.content}
+            {this.state.selectedTab === 'notifications' && this.props.content}
           </TabBar.Item>
           <TabBar.Item
             icon={<SettingsIcon />}
@@ -117,7 +117,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/settings');
             }}
           >
-            {this.props.content}
+            {this.state.selectedTab === 'settings' && this.props.content}
           </TabBar.Item>
         </TabBar>
       </div>
