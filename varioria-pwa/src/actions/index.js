@@ -28,8 +28,8 @@ export function getCombinedNotifications() {
 }
 
 export function markNotificationAsRead(url, slug) {
-  const request = axios.get(url);
-
+  axios.get(url);
+  
   return {
     type: NOTIFICATION_READ,
     payload: {
