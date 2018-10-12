@@ -29,7 +29,6 @@ class Uploads extends Component {
   }
 
   renderListItem(item) {
-    console.log(item);
     return (
       <List.Item
         arrow="horizontal"
@@ -45,7 +44,6 @@ class Uploads extends Component {
 
   renderDocumentList(list) {
     const items = list.map((itemId) => {
-      console.log("ID", itemId);
       return this.renderListItem(this.props.documents[itemId])
     })
     return (
