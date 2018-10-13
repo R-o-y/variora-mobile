@@ -4,7 +4,8 @@ import {
   DOCUMENT_GET_MY,
   NOTIFICATION_GET_COMBINED,
   NOTIFICATION_READ,
-  COTERIES_GET_MY
+  COTERIE_GET_MY,
+  COTERIE_SWITCH
 } from './types';
 
 export function getUser() {
@@ -43,5 +44,14 @@ export function getMyCoteries() {
   const url = 'coterie/api/coteries';
   const request = axios.get(url);
 
-  return {type: COTERIES_GET_MY, payload: request};
+  return {type: COTERIE_GET_MY, payload: request};
+}
+
+export function switchCoterie(coteriePk) {
+  return {
+    type: COTERIE_SWITCH,
+    payload: {
+      coteriePk
+    }
+  }
 }

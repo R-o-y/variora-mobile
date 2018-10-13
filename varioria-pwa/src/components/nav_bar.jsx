@@ -35,7 +35,9 @@ class Navbar extends Component {
         key={coterie.pk}
         extra={coterie.members.length + " members"}
         align="top"
-        onClick={() => {console.log("clicked coterie pk " + coterie.pk)}}
+        onClick={() => {
+          this.props.switchCoterie(coterie.pk);
+        }}
       >
         {coterie.name}
         <List.Item.Brief>{coterie.description}</List.Item.Brief>

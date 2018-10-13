@@ -2,7 +2,8 @@ import _ from 'lodash';
 import {
   USER_GET,
   DOCUMENT_GET_MY,
-  COTERIES_GET_MY
+  COTERIE_GET_MY,
+  COTERIE_SWITCH
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -17,13 +18,15 @@ export default function (state = [], action) {
         { uploadedDocuments: _.map(uploadedDocuments, 'pk'),
           collectedDocuments: _.map(collectedDocuments, 'pk')
         });
-    case COTERIES_GET_MY:
+    case COTERIE_GET_MY:
       const joinedCoteries = action.payload.data.joinedCoteries;
       const administratedCoteries = action.payload.data.administratedCoteries;
       return _.extend({}, state,
         { joinedCoteries: _.map(joinedCoteries, 'pk'),
           administratedCoteries: _.map(administratedCoteries, 'pk')
         });
+    case COTERIE_SWITCH:
+      return _.extend({}, state, { currentCoterie: action.payload.coteriePk })
     default:
       return state;
   }
