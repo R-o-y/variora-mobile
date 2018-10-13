@@ -25,7 +25,7 @@ class Notifications extends Component {
           onClick={() => {
             this.props.markNotificationAsRead(notification.mark_read_url, notification.slug)
             if (isAnnotationRelated && notification.data) {
-              this.props.history.push(`/document/${notification.data.document_pk}`)
+              this.props.history.push(notification.data.redirect_url)
             }
           }}
         >
