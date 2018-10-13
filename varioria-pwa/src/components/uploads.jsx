@@ -2,7 +2,6 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
 import moment from 'moment';
@@ -29,13 +28,13 @@ class Uploads extends Component {
   }
 
   renderListItem(item) {
-    console.log(item);
     return (
       <List.Item
+        key={item.slug}
         arrow="horizontal"
         thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
         multipleLine
-        onClick={() => {this.props.history.push(`/document/${item.slug}`)}}
+        onClick={() => {this.props.history.push(`/documents/${item.slug}`)}}
       >
         {item.title}
         <List.Item.Brief>{moment(item.upload_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>
@@ -45,7 +44,6 @@ class Uploads extends Component {
 
   renderDocumentList(list) {
     const items = list.map((itemId) => {
-      console.log("ID", itemId);
       return this.renderListItem(this.props.documents[itemId])
     })
     return (

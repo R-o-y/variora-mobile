@@ -26,7 +26,7 @@ ReactDOM.render(
   <Provider store={store}>
       <BrowserRouter>
         <Switch>
-          <Route path="/document/:slug" component={DocumentViewer} />
+          <Route path="/documents/:slug" component={DocumentViewer} />
           <Route path="/" component={App} />
         </Switch>
       </BrowserRouter>
