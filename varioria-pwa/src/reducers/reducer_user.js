@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import {
   USER_GET,
-  DOCUMENT_GET_MY
+  DOCUMENT_GET_MY,
+  COTERIES_GET_MY
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -15,6 +16,13 @@ export default function (state = [], action) {
       return _.extend({}, state,
         { uploadedDocuments: _.map(uploadedDocuments, 'pk'),
           collectedDocuments: _.map(collectedDocuments, 'pk')
+        });
+    case COTERIES_GET_MY:
+      const joinedCoteries = action.payload.data.joinedCoteries;
+      const administratedCoteries = action.payload.data.administratedCoteries;
+      return _.extend({}, state,
+        { joinedCoteries: _.map(joinedCoteries, 'pk'),
+          administratedCoteries: _.map(administratedCoteries, 'pk')
         });
     default:
       return state;

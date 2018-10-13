@@ -3,7 +3,8 @@ import {
   USER_GET,
   DOCUMENT_GET_MY,
   NOTIFICATION_GET_COMBINED,
-  NOTIFICATION_READ
+  NOTIFICATION_READ,
+  COTERIES_GET_MY
 } from './types';
 
 export function getUser() {
@@ -29,11 +30,18 @@ export function getCombinedNotifications() {
 
 export function markNotificationAsRead(url, slug) {
   axios.get(url);
-  
+
   return {
     type: NOTIFICATION_READ,
     payload: {
       slug
     }
   }
+}
+
+export function getMyCoteries() {
+  const url = 'coterie/api/coteries';
+  const request = axios.get(url);
+
+  return {type: COTERIES_GET_MY, payload: request};
 }
