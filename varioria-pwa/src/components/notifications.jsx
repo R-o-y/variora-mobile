@@ -44,8 +44,7 @@ class Notifications extends Component {
                   borderRadius: 2,
                   color: '#1BA39C',
                   border: '1px solid #1BA39C',
-                }}
-              />
+                }}/>
             }
           </List.Item.Brief>
         </List.Item>
@@ -64,23 +63,19 @@ class Notifications extends Component {
   }
 
   render() {
+    let content
     if (_.isEmpty(this.props.notifications)) {
-      return (
-        <div>
-          <Navbar title='Notifications' />
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "40vh"}} size={100} thickness={5} />
-        </div>
-      );
+      content = <CircularProgress style={{color:"#1BA39C",  marginTop: "40vh"}} size={100} thickness={5} />
+    } else {
+      const notifications = _.orderBy(this.props.notifications, 'timestamp', 'desc');
+      content = this.renderNotificationsList(notifications)
     }
-
-    const notifications = _.orderBy(this.props.notifications, 'timestamp', 'desc');
-
     return (
       <div>
         <Navbar title='Notifications' />
-        {this.renderNotificationsList(notifications)}
+        {content}
       </div>
-    );
+    )
   }
 }
 
