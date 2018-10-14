@@ -18,7 +18,7 @@ class BottomTabBar extends React.Component {
 
   render() {
     return (
-      <div style={{ position: 'fixed', height: '100%', width: '100%', top: 0 }}>
+      <div style={{ position: 'fixed', height: 'auto', width: '100%', bottom: '0' }}>
         <TabBar
           unselectedTintColor="#949494"
           tintColor="#1BA39C"
@@ -38,7 +38,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/explore');
             }}
           >
-            {this.state.selectedTab === 'explore'}
+            {this.state.selectedTab === 'explore' /* && this.props.content */}
           </TabBar.Item>
           <TabBar.Item
             icon={<UploadIcon />}
@@ -50,7 +50,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'uploads',
               });
-              this.props.history.push('/uploads');
+              this.props.history.push('/uploads' /* && this.props.content */);
             }}
           >
             {this.state.selectedTab === 'uploads'}
@@ -68,7 +68,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/readlists');
             }}
           >
-            {this.state.selectedTab === 'readlists'}
+            {this.state.selectedTab === 'readlists' /* && this.props.content */}
           </TabBar.Item>
           <TabBar.Item
             icon={<NotificationsIcon />}
@@ -83,7 +83,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/notifications');
             }}
           >
-            {this.state.selectedTab === 'notifications'}
+            {this.state.selectedTab === 'notifications' /* && this.props.content */}
           </TabBar.Item>
           <TabBar.Item
             icon={<SettingsIcon />}
@@ -98,7 +98,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/settings');
             }}
           >
-            {this.state.selectedTab === 'settings'} // && this.props.content //REMOVED THIS
+          {this.state.selectedTab === 'settings' /* && this.props.content */}
           </TabBar.Item>
         </TabBar>
       </div>
