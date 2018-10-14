@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
+import Navbar from './nav_bar';
 
 class Settings extends Component {
 
@@ -9,8 +10,10 @@ class Settings extends Component {
 
   render() {
     return (
-      <h1>Settings</h1>
-    );
+      <div>
+        <Navbar title="Settings" />
+      </div>
+    )
   }
 }
 

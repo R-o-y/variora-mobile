@@ -67,7 +67,7 @@ class Notifications extends Component {
     if (_.isEmpty(this.props.notifications)) {
       return (
         <div>
-          <Navbar title="Notifications" />
+          <Navbar title='Notifications' />
           <CircularProgress style={{color:"#1BA39C",  marginTop: "40vh"}} size={100} thickness={5} />
         </div>
       );
@@ -77,7 +77,7 @@ class Notifications extends Component {
 
     return (
       <div>
-        <Navbar title="Notifications" />
+        <Navbar title='Notifications' />
         {this.renderNotificationsList(notifications)}
       </div>
     );
