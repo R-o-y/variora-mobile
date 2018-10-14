@@ -2,7 +2,6 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TimeAgo from 'react-timeago'
