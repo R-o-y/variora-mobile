@@ -14,6 +14,8 @@ import logo from './logo.svg'
 
 import { DocumentViewer } from './components/document_viewer.jsx'
 
+import { StickyContainer, Sticky } from 'react-sticky';
+
 class App extends Component {
   componentDidMount() {
     this.props.getUser();
@@ -33,11 +35,18 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <BottomTabBar
-          path={this.props.location.pathname}
-          history={this.props.history}
-          content={<Main />}
-        />
+        <StickyContainer>
+          <Main />
+          <Sticky>
+            {({ style }) =>
+              <BottomTabBar
+                path={this.props.location.pathname}
+                history={this.props.history}
+                style={style}
+              />
+            }
+          </Sticky>
+        </StickyContainer>
         {/*<DocumentViewer documentPk={8} />*/}
         {/* <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />

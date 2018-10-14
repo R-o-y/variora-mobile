@@ -16,92 +16,38 @@ class BottomTabBar extends React.Component {
     };
   }
 
+  tabitem(title, icon, selectedIcon) {
+    return (
+      <TabBar.Item
+        icon={icon}
+        selectedIcon={selectedIcon ? selectedIcon : icon}
+        title={this.state.selectedTab === title ? title : ''}
+        key={title}
+        selected={this.state.selectedTab === title}
+        onPress={() => {
+          this.setState({
+            selectedTab: title,
+          });
+          this.props.history.push('/'+title);
+        }} />
+    )
+  }
+
   render() {
     return (
-      <div style={{ position: 'fixed', height: '100%', width: '100%', top: '0' }}>
+      <div style={{ position: 'fixed', height: 'auto', width: '100%', bottom: '0' }}>
         <TabBar
           unselectedTintColor="#949494"
           tintColor="#1BA39C"
           barTintColor="white"
           hidden={this.state.hidden}
         >
-          <TabBar.Item
-            icon={<ExploreIcon />}
-            selectedIcon={<ExploreIcon />}
-            title={this.state.selectedTab === 'explore' ? 'explore' : ''}
-            key="explore"
-            selected={this.state.selectedTab === 'explore'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'explore',
-              });
-              this.props.history.push('/explore');
-            }}
-          >
-            {this.state.selectedTab === 'explore' && this.props.content}
-          </TabBar.Item>
-          <TabBar.Item
-            icon={<UploadIcon />}
-            selectedIcon={<UploadIcon />}
-            title={this.state.selectedTab === 'uploads' ? 'uploads' : ''}
-            key="Uploads"
-            selected={this.state.selectedTab === 'uploads'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'uploads',
-              });
-              this.props.history.push('/uploads');
-            }}
-          >
-            {this.state.selectedTab === 'uploads' && this.props.content}
-          </TabBar.Item>
-          <TabBar.Item
-            icon={<ReadlistIcon />}
-            selectedIcon={<ReadlistIcon />}
-            title={this.state.selectedTab === 'readlists' ? 'readlists' : ''}
-            key="Readlists"
-            selected={this.state.selectedTab === 'readlists'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'readlists',
-              });
-              this.props.history.push('/readlists');
-            }}
-          >
-            {this.state.selectedTab === 'readlists' && this.props.content}
-          </TabBar.Item>
-          <TabBar.Item
-            icon={<NotificationsIcon />}
-            selectedIcon={<NotificationsActiveIcon />}
-            title={this.state.selectedTab === 'notifications' ? 'notifications' : ''}
-            key="Notifications"
-            selected={this.state.selectedTab === 'notifications'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'notifications',
-              });
-              this.props.history.push('/notifications');
-            }}
-          >
-            {this.state.selectedTab === 'notifications' && this.props.content}
-          </TabBar.Item>
-          <TabBar.Item
-            icon={<SettingsIcon />}
-            selectedIcon={<SettingsIcon />}
-            title={this.state.selectedTab === 'settings' ? 'settings' : ''}
-            key="Settings"
-            selected={this.state.selectedTab === 'settings'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'settings',
-              });
-              this.props.history.push('/settings');
-            }}
-          >
-          {this.state.selectedTab === 'settings' && this.props.content}
-          </TabBar.Item>
+          {this.tabitem('explore', <ExploreIcon />)}
+          {this.tabitem('uploads', <UploadIcon />)}
+          {this.tabitem('readlists', <ReadlistIcon />)}
+          {this.tabitem('notifications', <NotificationsIcon />, <NotificationsActiveIcon />)}
+          {this.tabitem('settings', <SettingsIcon />)}
         </TabBar>
-        {this.props.content}
       </div>
     );
   }
