@@ -11,7 +11,6 @@ class Readlists extends Component {
   render() {
     return (
       <div>
-        <Navbar title='Readlists' />
       </div>
     )
   }

@@ -63,19 +63,15 @@ class Notifications extends Component {
   }
 
   render() {
-    let content
+    //check for notificiations
     if (_.isEmpty(this.props.notifications)) {
-      content = <CircularProgress style={{color:"#1BA39C",  marginTop: "40vh"}} size={100} thickness={5} />
+      //show loading if empty
+      return <CircularProgress style={{color:"#1BA39C",  marginTop: "40vh"}} size={100} thickness={5} />
     } else {
+      //display notifications if exist
       const notifications = _.orderBy(this.props.notifications, 'timestamp', 'desc');
-      content = this.renderNotificationsList(notifications)
+      return this.renderNotificationsList(notifications)
     }
-    return (
-      <div>
-        <Navbar title='Notifications' />
-        {content}
-      </div>
-    )
   }
 }
 

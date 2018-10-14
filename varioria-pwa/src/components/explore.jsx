@@ -11,9 +11,8 @@ class Explore extends Component {
   render() {
     return (
       <div>
-        <Navbar title='Explore' />
       </div>
-    );
+    )
   }
 }
 

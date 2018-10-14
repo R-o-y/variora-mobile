@@ -93,14 +93,14 @@ class Uploads extends Component {
 
   render() {
     return (
-      <div>
-        <Navbar title='Uploads' />
-        {_.isEmpty(this.props.documents) ? (
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "40vh"}} size={100} thickness={5} />
-        ) : (
-          this.renderStickyTab()
-        )}
-      </div>
+      //check for documents
+      _.isEmpty(this.props.documents) ? (
+        //show loading if empty
+        <CircularProgress style={{color:"#1BA39C",  marginTop: "40vh"}} size={100} thickness={5} />
+      ) : (
+        //render documents if exist
+        this.renderStickyTab()
+      )
     );
   }
 }

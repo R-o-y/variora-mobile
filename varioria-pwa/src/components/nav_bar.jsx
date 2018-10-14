@@ -17,7 +17,7 @@ class Navbar extends Component {
             onClick={() => {console.log("Avatar is clicked")}}
           />
         }
-      >{this.props.title}</NavBar>
+      ><span style={{textTransform: 'capitalize'}}>{this.props.title}</span></NavBar>
     );
   }
 }

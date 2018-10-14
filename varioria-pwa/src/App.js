@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import * as actions from './actions';
 import BottomTabBar from './components/bottom_tab_bar';
 import Main from './components/main';
+import NavBar from './components/nav_bar';
 
 import logo from './logo.svg'
 
@@ -33,14 +34,16 @@ class App extends Component {
   }
 
   render() {
+    let pathname = this.props.location.pathname
     return (
       <div className="App">
         <StickyContainer>
+          <NavBar title={pathname.substr(1)} />
           <Main />
           <Sticky>
             {({ style }) =>
               <BottomTabBar
-                path={this.props.location.pathname}
+                path={pathname}
                 history={this.props.history}
                 style={style}
               />
