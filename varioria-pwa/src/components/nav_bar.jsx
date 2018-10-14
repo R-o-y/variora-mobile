@@ -9,6 +9,7 @@ class Navbar extends Component {
     return (
       <NavBar
         mode="light"
+        leftContent={<img style={{ height: '100%' }}src='/favicon.ico'/>}
         rightContent={
           <Avatar alt="avatar"
             style={{width: 25,height: 25}}
