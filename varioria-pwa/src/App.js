@@ -36,8 +36,8 @@ class App extends Component {
         <BottomTabBar
           path={this.props.location.pathname}
           history={this.props.history}
-          content={<Main />}
         />
+        <Main />
         {/*<DocumentViewer documentPk={8} />*/}
         {/* <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
