@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
 import Navbar from './nav_bar';
+import Searchbar from './search_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TimeAgo from 'react-timeago'
 
@@ -91,6 +92,7 @@ class Explore extends Component {
     return (
       <div>
         <WhiteSpace />
+        <Searchbar />
         <StickyContainer>
           <Tabs
             tabs={[{ title: "Documents"}, { title: "Readlists"}]}
