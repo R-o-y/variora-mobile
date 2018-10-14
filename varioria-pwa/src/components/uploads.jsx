@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FileIcon from '@material-ui/icons/DescriptionOutlined';
+import FileNewIcon from '@material-ui/icons/ControlPoint';
 import Navbar from './nav_bar';
 import moment from 'moment';
 
@@ -32,7 +34,7 @@ class Uploads extends Component {
       <List.Item
         key={item.slug}
         arrow="horizontal"
-        thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
+        thumb={<FileIcon />}
         multipleLine
         onClick={() => {this.props.history.push(`/documents/${item.slug}`)}}
       >
@@ -42,12 +44,25 @@ class Uploads extends Component {
     )
   }
 
-  renderDocumentList(list) {
+  renderDocumentList(list, createPrompt = null) {
     const items = list.map((itemId) => {
       return this.renderListItem(this.props.documents[itemId])
     })
+    if (createPrompt) {
+      var create_item = <List.Item
+        key=""//What is this key?
+        arrow="empty"
+        thumb={<FileNewIcon />}
+        onClick={() => {this.props.history.push(`/explore`)}} //TODO: Need to toggle action to open upload/modal on click.
+      >
+        New
+        <List.Item.Brief>{createPrompt}</List.Item.Brief>
+      </List.Item>
+    }
+
     return (
       <List>
+        {create_item}
         {items}
       </List>
     )
@@ -64,10 +79,10 @@ class Uploads extends Component {
             renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-              {this.renderDocumentList(this.props.user.uploadedDocuments)}
+              {this.renderDocumentList(this.props.user.uploadedDocuments, 'Upload a new PDF', )}
             </div>
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-              {this.renderDocumentList(this.props.user.collectedDocuments)}
+              {this.renderDocumentList(this.props.user.collectedDocuments, 'Start a new Collection', )}
             </div>
           </Tabs>
         </StickyContainer>
