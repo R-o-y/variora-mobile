@@ -34,10 +34,16 @@ class Navbar extends Component {
         key={coterie.pk}
         extra={coterie.members.length + " members"}
         align="top"
-        onClick={() => {
-          this.props.switchCoterie(coterie.pk);
-          this.onClose('coterieModal');
-        }}
+        onClick={() =>
+          Modal.alert('Switch to group ' + coterie.name + '?', '', [
+            { text: 'Cancel' },
+            { text: 'OK', style:{color:'#1BA39C'},
+              onPress: () => {
+              this.props.switchCoterie(coterie.pk);
+              this.onClose('coterieModal');
+            }},
+          ])
+        }
       >
         {coterie.name}
         <List.Item.Brief>{coterie.description}</List.Item.Brief>
