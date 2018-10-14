@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import {
   COTERIE_GET_MY,
+  COTERIE_CREATE,
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -11,6 +12,9 @@ export default function (state = [], action) {
       return _.extend(
         _.extend({}, state, _.keyBy(joinedCoteries, 'pk')),
         _.keyBy(administratedCoteries, 'pk'));
+    case COTERIE_CREATE:
+      const new_coterie = action.payload.data;
+      return _.extend({}, state, {[new_coterie.pk]: new_coterie});
     default:
       return state;
   }

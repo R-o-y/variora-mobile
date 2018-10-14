@@ -5,7 +5,8 @@ import {
   NOTIFICATION_GET_COMBINED,
   NOTIFICATION_READ,
   COTERIE_GET_MY,
-  COTERIE_SWITCH
+  COTERIE_SWITCH,
+  COTERIE_CREATE,
 } from './types';
 
 export function getUser() {
@@ -54,4 +55,15 @@ export function switchCoterie(coteriePk) {
       coteriePk
     }
   }
+}
+
+export function createCoterie(data) {
+  const url = 'coterie/api/coteries/create';
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+
+  return {type: COTERIE_CREATE, payload: request};
 }

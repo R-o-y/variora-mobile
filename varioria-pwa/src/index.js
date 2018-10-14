@@ -8,6 +8,7 @@ import ReduxThunk from 'redux-thunk';
 import * as serviceWorker from './serviceWorker';
 import App from './App';
 import DocumentViewer from './components/document_viewer';
+import CreateCoterieForm from './components/create_coterie_form';
 import reducers from './reducers';
 import './index.css';
 import 'antd-mobile/dist/antd-mobile.css';
@@ -27,6 +28,7 @@ ReactDOM.render(
       <BrowserRouter>
         <Switch>
           <Route path="/documents/:slug" component={DocumentViewer} />
+          <Route path="/create-coterie-form" component={CreateCoterieForm} />
           <Route path="/" component={App} />
         </Switch>
       </BrowserRouter>

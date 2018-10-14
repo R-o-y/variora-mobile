@@ -7,3 +7,4 @@ export const NOTIFICATION_READ = 'notification_read';
 
 export const COTERIE_GET_MY = 'coterie_get_my';
 export const COTERIE_SWITCH = 'coterie_switch';
+export const COTERIE_CREATE = 'coterie_create';

@@ -80,7 +80,7 @@ class Uploads extends Component {
     if (_.isEmpty(this.props.documents)) {
       return (
         <div>
-          <Navbar title="Uploads" />
+          <Navbar title="Uploads" history={this.props.history} />
           <CircularProgress style={{color:"#1BA39C",  marginTop: "40vh"}} size={100} thickness={5} />
         </div>
       );
@@ -88,7 +88,7 @@ class Uploads extends Component {
 
     return (
       <div>
-        <Navbar title="Uploads" />
+        <Navbar title="Uploads" history={this.props.history} />
         {this.renderStickyTab()}
       </div>
     );

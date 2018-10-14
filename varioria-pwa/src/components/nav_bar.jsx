@@ -6,7 +6,6 @@ import { NavBar, Modal, List, Button } from 'antd-mobile';
 import Avatar from '@material-ui/core/Avatar';
 import GroupIcon from '@material-ui/icons/Group';
 
-
 class Navbar extends Component {
   constructor(props) {
     super(props);
@@ -37,6 +36,7 @@ class Navbar extends Component {
         align="top"
         onClick={() => {
           this.props.switchCoterie(coterie.pk);
+          this.onClose('coterieModal');
         }}
       >
         {coterie.name}
@@ -64,7 +64,7 @@ class Navbar extends Component {
           rightContent={
             <div>
               <GroupIcon
-                style={{color: "#1BA39C", height: 35, width: 35}}
+                style={{color: "#1BA39C", height: 25, width: 25}}
                 onClick={(e) => {
                   this.props.getMyCoteries();
                   this.showModal('coterieModal', e);
@@ -109,9 +109,13 @@ class Navbar extends Component {
                     </List>
                   }
                   <List.Item>
-                    <Button type="primary"
+                    <Button
+                      type="primary"
                       style={{backgroundColor: "#1BA39C"}}
-                      onClick={() => this.onClose('coterieModal')}
+                      onClick={() => {
+                        this.onClose('coterieModal');
+                        this.props.history.push("/create-coterie-form");
+                      }}
                     >Create a new group</Button>
                   </List.Item>
                 </List>
