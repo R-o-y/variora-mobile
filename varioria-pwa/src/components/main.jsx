@@ -6,6 +6,7 @@ import Readlists from './readlists';
 import Notifications from './notifications';
 import Settings from './settings';
 import NoMatch from './nomatch';
+import Login from './login'
 
 const Main = () => (
   <main>
@@ -15,6 +16,7 @@ const Main = () => (
       <Route path='/readlists' component={Readlists}/>
       <Route path='/notifications' component={Notifications}/>
       <Route path='/settings' component={Settings}/>
+      <Route path='/login' component={Login}/>
       <Route component={NoMatch}/>
     </Switch>
   </main>
