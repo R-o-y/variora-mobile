@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+import { NavBar, Icon, ActivityIndicator } from 'antd-mobile';
 
 /*eslint no-undef: "off"*/
 
@@ -7,11 +8,19 @@ function range(end) {
   return Array(end - 0).fill().map((_, idx) => 0 + idx)
 }
 
+function constructGetAnnotationsQueryUrl(slug) {
+  return '/file_viewer/api/documents/byslug/' + slug + '/annotations'
+}
+
+function constructGetDocumentQueryUrl(slug) {
+  return '/file_viewer/api/documents/byslug/' + slug
+}
+
+const RENDERING = 'RENDERING'
 class DocumentViewer extends React.Component {
   constructor(props) {
     super(props)
 
-    this.document = undefined
     this.pdfDoc = undefined
     this.taskList = []
     this.finishList = []
@@ -19,12 +28,16 @@ class DocumentViewer extends React.Component {
     this.clearnessLevel = 3.8  // too small then not clear, not large then rendering consumes much resource
     this.currentPageIndex = 1
     this.state = {
+      document: {
+        title: ''
+      },
+      loading: true,
       numPages: 0,
       currentScale: 1,
       scaleFactor: 1.08,
       sampleWidth: undefined,
       sampleHeight: undefined,
-      annotations: [],
+      annotations: {},
       // pageCanvasWidth: 660,
     }
 
@@ -52,15 +65,15 @@ class DocumentViewer extends React.Component {
           this.finishList.splice(index, 1)
         }
       }
+
       // keep the first renderTask since it is still in RENDERING status,
       // delete the rest since they are in PENDING status
       this.taskList.splice(1)
+
       // add in the new task
       for (var i = 0; i < renderOrNot.length; i++)
         if (renderOrNot[i])
           this.pushNewPageRenderingTask(pageIndex - left + i)
-      // console.log(this.taskList.map(t => t.pageIndex))
-      // console.log(this.rendering)
       if (!this.rendering)
         this.renderTaskList()
     }
@@ -69,7 +82,7 @@ class DocumentViewer extends React.Component {
       if (pageIndex >= 1 && pageIndex <= this.state.numPages)
         this.taskList.push({
           pageIndex: pageIndex,
-          status: 'PENDING',
+          status: RENDERING,
           taskObj: null,
         })
     }
@@ -95,7 +108,7 @@ class DocumentViewer extends React.Component {
           canvasContext: context,
           viewport: viewport,
         }
-        self.taskList[0].status = 'RENDERING'
+        self.taskList[0].status = RENDERING
         self.taskList[0].taskObj = page.render(renderContext)
         self.taskList[0].taskObj.promise.then(function() {
           self.taskList.shift()
@@ -105,41 +118,55 @@ class DocumentViewer extends React.Component {
         })
       })
     }
+
+    this.renderAnnotationAreas = (numPages) => {
+      axios.get(constructGetAnnotationsQueryUrl(this.props.match.params.slug )).then(response => {
+        var data = response.data
+        var annotations = {}
+        for (var i = 1; i <= numPages; i++)
+          annotations[i] = []
+        for (var annotation of data)
+          annotations[parseInt(annotation.page_index)].push(annotation)
+        this.setState({annotations: annotations})
+      })
+    }
+
+    this.configSizeAccordingToLastPageAndRenderTheFirstSeveralPages = (pdf) => {
+      const self = this
+      pdf.getPage(pdf.numPages).then(function(lastPage) {
+        var currentScale = (window.innerWidth * 1.0) / lastPage.getViewport(1).width
+
+        self.setState({
+          currentScale: currentScale,
+          sampleWidth: lastPage.getViewport(currentScale).width,
+          sampleHeight: lastPage.getViewport(currentScale).height
+        })
+        self.pushNewPageRenderingTask(1)
+        self.pushNewPageRenderingTask(2)
+        self.renderTaskList()
+      })
+    }
   }
 
   componentDidMount() {
-    axios.get('/file_viewer/api/documents/' + this.props.match.params.pk).then(response => {
-      this.document = response.data
+    axios.get(constructGetDocumentQueryUrl(this.props.match.params.slug)).then(response => {
+      this.setState({
+        document: response.data
+      })
       PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
 
       const self = this
-
-      PDFJS.getDocument(this.document.url).then(function(pdf) {  // hard code a pdf ulr and test
+      PDFJS.getDocument(response.data.url).then(function(pdf) {  // hard code a pdf ulr and test
         self.pdfDoc = pdf
         self.setState({
           numPages: pdf.numPages,
         })
-
-        pdf.getPage(pdf.numPages).then(function(lastPage) {
-          var currentScale = (window.innerWidth * 100 / 100) / lastPage.getViewport(1).width
-
-          self.setState({
-            currentScale: currentScale,
-            sampleWidth: lastPage.getViewport(currentScale).width,
-            sampleHeight: lastPage.getViewport(currentScale).height
-          })
-          self.pushNewPageRenderingTask(1)
-          self.pushNewPageRenderingTask(2)
-          self.renderTaskList()
-        })
+        self.setState({loading: false})
+        self.renderAnnotationAreas(pdf.numPages)
+        self.configSizeAccordingToLastPageAndRenderTheFirstSeveralPages(pdf)
       })
 
       window.addEventListener('scroll', this.handleScroll, { passive: true })
-    })
-
-    axios.get('/file_viewer/api/documents/' + this.props.documentPk + '/annotations').then(response => {
-      console.log(response.data)
-      this.setState({annotations: response.data})
     })
   }
 
@@ -149,16 +176,61 @@ class DocumentViewer extends React.Component {
 
   render() {
     return (
-      <div ref={(ele) => this.viewerWrappper = ele}>
-        {range(this.state.numPages).map((i) =>
-          (
-            <div className='page-div' key={i + 1} id={'page-div-' + (i + 1)}
-              style={{width: this.state.sampleWidth, height: this.state.sampleHeight}}
-            >
-              <canvas className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
-            </div>
-          )
-        )}
+      <div>
+        <NavBar
+          mode="light"
+          icon={<Icon type="left" onClick={() => this.props.history.goBack()}/>}
+          style={{
+            boxShadow: '0px 1px 3px rgba(26, 26, 26, .1)',
+            zIndex: 10000000,
+            position: 'relative',
+            // borderBottom: '1px solid #c8c8c8',
+            // height: 38
+          }}
+        >
+          <span className='document-title'>{this.state.document.title}</span>
+        </NavBar>
+
+        <ActivityIndicator
+          toast
+          animating={this.state.loading}
+        />
+
+        <div ref={(ele) => this.viewerWrappper = ele} className='viewer-wrapper'>
+          {
+            range(this.state.numPages).map((i) => {
+              const pageIndex = i + 1
+              return (
+                <div
+                  className='page-div' key={pageIndex}
+                  id={'page-div-' + pageIndex}
+                  style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
+                >
+                  <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
+                  {
+                    this.state.annotations[pageIndex] !== undefined ?
+                      this.state.annotations[pageIndex].map(annotation =>
+                        <div
+                          className='annotation-area'
+                          key={annotation.pk}
+                          style={{
+                            background: annotation.frame_color,
+                            position: 'absolute',
+                            width: this.state.sampleWidth * annotation.width_percent,
+                            height: this.state.sampleHeight * annotation.height_percent,
+                            left: this.state.sampleWidth * annotation.left_percent,
+                            top: this.state.sampleWidth * annotation.top_percent,
+                          }}
+                          annotation-id={annotation.pk}
+                          annotation-uuid={annotation.uuid}
+                        ></div>
+                      ) : null
+                  }
+                </div>
+              )
+            })
+          }
+        </div>
       </div>
     );
   }

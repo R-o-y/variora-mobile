@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import Navbar from './nav_bar';
 
 class Settings extends Component {

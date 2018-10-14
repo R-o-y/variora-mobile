@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Icon, TabBar } from 'antd-mobile';
+import { TabBar } from 'antd-mobile';
 import ExploreIcon from '@material-ui/icons/Explore';
 import UploadIcon from '@material-ui/icons/CloudUpload';
 import ReadlistIcon from '@material-ui/icons/ViewList';
@@ -15,24 +14,6 @@ class BottomTabBar extends React.Component {
       selectedTab: this.props.path.substr(1),
       hidden: false
     };
-  }
-
-  renderContent(pageText) {
-    return (
-      <div style={{ backgroundColor: 'white', height: '100%', textAlign: 'center' }}>
-        <div style={{ paddingTop: 60 }}>Clicked “{pageText}” tab， show “{pageText}” information</div>
-        <a style={{ display: 'block', marginTop: 40, marginBottom: 600, color: '#108ee9' }}
-          onClick={(e) => {
-            e.preventDefault();
-            this.setState({
-              hidden: !this.state.hidden,
-            });
-          }}
-        >
-          Click to show/hide tab-bar
-        </a>
-      </div>
-    );
   }
 
   render() {
@@ -57,7 +38,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/explore');
             }}
           >
-            {this.props.content}
+            {this.state.selectedTab === 'explore' && this.props.content}
           </TabBar.Item>
           <TabBar.Item
             icon={<UploadIcon />}
@@ -72,7 +53,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/uploads');
             }}
           >
-            {this.props.content}
+            {this.state.selectedTab === 'uploads' && this.props.content}
           </TabBar.Item>
           <TabBar.Item
             icon={<ReadlistIcon />}
@@ -87,7 +68,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/readlists');
             }}
           >
-            {this.props.content}
+            {this.state.selectedTab === 'readlists' && this.props.content}
           </TabBar.Item>
           <TabBar.Item
             icon={<NotificationsIcon />}
@@ -102,7 +83,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/notifications');
             }}
           >
-            {this.props.content}
+            {this.state.selectedTab === 'notifications' && this.props.content}
           </TabBar.Item>
           <TabBar.Item
             icon={<SettingsIcon />}
@@ -117,7 +98,7 @@ class BottomTabBar extends React.Component {
               this.props.history.push('/settings');
             }}
           >
-            {this.props.content}
+            {this.state.selectedTab === 'settings' && this.props.content}
           </TabBar.Item>
         </TabBar>
       </div>

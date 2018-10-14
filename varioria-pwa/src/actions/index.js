@@ -5,6 +5,8 @@ import {
   READLIST_GET_MY,
   DOCUMENT_GET_EXPLORE,
   READLIST_GET_EXPLORE,
+  NOTIFICATION_GET_COMBINED,
+  NOTIFICATION_READ
 } from './types';
 
 export function getUser() {
@@ -40,4 +42,22 @@ export function getExploreReadlists() {
   const request = axios.get(url);
 
   return {type: READLIST_GET_EXPLORE, payload: request};
+}
+
+export function getCombinedNotifications() {
+  const url = 'notifications/api/combined';
+  const request = axios.get(url);
+
+  return {type: NOTIFICATION_GET_COMBINED, payload: request};
+}
+
+export function markNotificationAsRead(url, slug) {
+  axios.get(url);
+  
+  return {
+    type: NOTIFICATION_READ,
+    payload: {
+      slug
+    }
+  }
 }
