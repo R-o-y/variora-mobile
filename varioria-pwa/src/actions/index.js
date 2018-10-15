@@ -7,6 +7,9 @@ import {
   READLIST_GET_EXPLORE,
   NOTIFICATION_GET_COMBINED,
   NOTIFICATION_READ,
+  COTERIE_GET_MY,
+  COTERIE_SWITCH,
+  COTERIE_CREATE,
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
   READLIST_GET
@@ -64,13 +67,40 @@ export function getCombinedNotifications() {
 
 export function markNotificationAsRead(url, slug) {
   axios.get(url);
-  
+
   return {
     type: NOTIFICATION_READ,
     payload: {
       slug
     }
   }
+}
+
+export function getMyCoteries() {
+  const url = 'coterie/api/coteries';
+  const request = axios.get(url);
+
+  return {type: COTERIE_GET_MY, payload: request};
+}
+
+export function switchCoterie(coteriePk) {
+  return {
+    type: COTERIE_SWITCH,
+    payload: {
+      coteriePk
+    }
+  }
+}
+
+export function createCoterie(data) {
+  const url = 'coterie/api/coteries/create';
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+
+  return {type: COTERIE_CREATE, payload: request};
 }
 
 export function updateSearchTerm(newTerm) {
