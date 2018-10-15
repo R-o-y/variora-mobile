@@ -60,7 +60,7 @@ class Navbar extends Component {
         <NavBar
           mode="light"
           style={{
-            boxShadow: '0px 1px 3px rgba(26, 26, 26, .1)',
+            boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
             zIndex: 10000000,
             position: 'relative',
           }}

@@ -128,6 +128,7 @@ class DocumentViewer extends React.Component {
         for (var annotation of data)
           annotations[parseInt(annotation.page_index)].push(annotation)
         this.setState({annotations: annotations})
+        console.log(annotations)
       })
     }
 
