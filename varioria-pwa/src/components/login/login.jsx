@@ -21,19 +21,17 @@ import React from 'react'
 import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios'
+import { getCookie } from '../../utilities/helper';
 import { library } from '@fortawesome/fontawesome-svg-core'
+
 // import { MySnackbarContentWrapper } from './components/alert_message.jsx'
 
 library.add(faFacebook, faGoogle, faUsers, faUserPlus)
 
 /*eslint no-undef: "off"*/
 class Login extends React.Component {
-
   constructor(props) {
-    super()
-    axios.defaults.xsrfCookieName = 'csrftoken'
-    axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-
+    super(props)
     this.state = {
       isAuthenticated: false,
       username: '',
@@ -42,20 +40,16 @@ class Login extends React.Component {
       errorMessage: false,
     }
 
+    const self = this
     this.clickLogin = function () {
-      const apiBaseUrl = "/api";
-      const payload = {
-        "emailAddress": this.state.username,
-        "password": this.state.password,
-      }
-
-      const self = this
-      axios.post(apiBaseUrl + '/login/', payload)
-        .then(function (response) {
+      var data = new FormData()
+      data.append('email_address', this.state.username)
+      data.append('password', this.state.password)
+      data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+      axios.post('/api/signin', data)
+        .then(function(response) {
           if (response.status === 200) {
-            // window.location.replace('/');
-            alert('login success')
-            // TODO: to navigate to dashboard
+            self.props.history.push('/uploads')
           }
         })
         .catch(function (error) {
@@ -67,7 +61,7 @@ class Login extends React.Component {
     this.facebookLogin = () => {
       FB.login(function (response) {
         const payload = response.authResponse
-        axios.post('/api/signin/fb/', payload).then((response) => {
+        axios.post('/api/signin/facebook', payload).then((response) => {
           window.location.href = '/'
         }).catch(e => {
           // TODO: notification
@@ -93,7 +87,7 @@ class Login extends React.Component {
       fjs.parentNode.insertBefore(js, fjs)
     }
     loadFBSdk(document, 'script', 'facebook-jssdk')
-    window.fbAsyncInit = function () {
+    window.fbAsyncInit = function() {
       FB.init({
         appId: '213151942857648',  // TODO:
         cookie: true,
@@ -109,7 +103,7 @@ class Login extends React.Component {
     function attachSignin(element) {
       auth2.attachClickHandler(element, {},
         function (googleUser) {
-          axios.post('/api/signin/google/', {
+          axios.post('/api/signin/google', {
             id_token: googleUser.getAuthResponse().id_token
           }).then((response) => {
             window.location.href = '/'
@@ -135,7 +129,6 @@ class Login extends React.Component {
     return (
       <div>
         <Card id="login-card">
-
           <div className="social" id="logo-div">
             <img id='logo' src={Logo} />
           </div>
