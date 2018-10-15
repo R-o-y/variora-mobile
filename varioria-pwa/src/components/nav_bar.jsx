@@ -1,10 +1,22 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
 import * as actions from '../actions';
-import { connect } from 'react-redux';
-import { NavBar, Modal, List, Button } from 'antd-mobile';
+
+import { Button, List, Modal, NavBar } from 'antd-mobile';
+import React, { Component } from 'react';
+import {
+  faUserFriends,
+  faUserPlus,
+  faUsers,
+} from '@fortawesome/free-solid-svg-icons'
+
 import Avatar from '@material-ui/core/Avatar';
-import GroupIcon from '@material-ui/icons/Group';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
+import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
+import _ from 'lodash';
+import { connect } from 'react-redux';
+import { library } from '@fortawesome/fontawesome-svg-core'
+library.add(faUsers, faUserPlus, faUserFriends)
+
 
 class Navbar extends Component {
   constructor(props) {
@@ -67,15 +79,15 @@ class Navbar extends Component {
           leftContent={
             <Avatar
               alt="avatar"
-              style={{width: 30, height: 30}}
+              style={{width: 28, height: 28}}
               src={this.props.user.portrait_url}
               onClick={(e) => {console.log("User avatar clicked")}}
             />
           }
           rightContent={
             <div>
-              <GroupIcon
-                style={{color: "#1BA39C", height: 25, width: 25}}
+              <PeopleOutlineIcon
+                style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
                 onClick={(e) => {
                   this.props.getMyCoteries();
                   this.showModal('coterieModal', e);
