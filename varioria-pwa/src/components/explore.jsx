@@ -213,7 +213,7 @@ class Explore extends Component {
       return (
         <div>
           <Navbar title="Explore" />
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "40vh"}} size={100} thickness={5} />
+          <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
     }
