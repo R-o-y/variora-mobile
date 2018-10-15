@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
+import { Login } from './components/login/login'
 import ReduxPromise from 'redux-promise';
 import ReduxThunk from 'redux-thunk';
 import * as serviceWorker from './serviceWorker';
 import App from './App';
-import DocumentViewer from './components/document_viewer';
+import DocumentViewer from './components/document_viewer/document_viewer';
 import CreateCoterieForm from './components/create_coterie_form';
 import reducers from './reducers';
 import './index.css';
@@ -29,6 +30,7 @@ ReactDOM.render(
         <Switch>
           <Route path="/documents/:slug" component={DocumentViewer} />
           <Route path="/create-coterie-form" component={CreateCoterieForm} />
+          <Route path="/login" component={Login} />
           <Route path="/" component={App} />
         </Switch>
       </BrowserRouter>

@@ -3,7 +3,6 @@ import './App.css';
 import { CSSTransition, TransitionGroup } from "react-transition-group"
 import { Link, Route, BrowserRouter as Router, Switch } from 'react-router-dom'
 import React, { Component } from 'react'
-import axios from 'axios'
 
 import { connect } from 'react-redux';
 import * as actions from './actions';
@@ -12,7 +11,6 @@ import Main from './components/main';
 
 import logo from './logo.svg'
 
-import { DocumentViewer } from './components/document_viewer.jsx'
 
 class App extends Component {
   componentDidMount() {
@@ -38,22 +36,6 @@ class App extends Component {
           history={this.props.history}
           content={<Main />}
         />
-        {/*<DocumentViewer documentPk={8} />*/}
-        {/* <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header> */}
-
       </div>
     )
   }
