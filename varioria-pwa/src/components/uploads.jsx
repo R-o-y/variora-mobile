@@ -56,11 +56,12 @@ class Uploads extends Component {
     return (
       <div key={item.slug}>
         <List.Item
-          thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
+          thumb={<img src='https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png' alt='pdf-icon' style={{height: 28, width: 28}} />}
           multipleLine
           onClick={() => {this.props.history.push(`/documents/${item.slug}`)}}
+          style={{width: '88%'}}
         >
-          {item.title}
+          <span>{item.title}</span>
           <List.Item.Brief>{moment(item.upload_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>
         </List.Item>
         <Icon type="ellipsis"
@@ -146,27 +147,27 @@ class Uploads extends Component {
       >
         <List
           renderHeader={() =>
-            <b style={{color: "#1BA39C"}}>{currDocument.title}</b>
+            <b style={{ color: "#1BA39C"}}>{currDocument.title}</b>
           }
           className="popup-list"
         >
           <List.Item
             onClick={() => {console.log('Share clicked' + currDocument.slug)}}
           >
-            <ShareIcon style={{height: 15, color:'#1BA39C',marginRight: 20}}/>
+            <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
             Share
           </List.Item>
           <List.Item
             onClick={() => {console.log('Rename clicked' + currDocument.slug)}}
           >
-            <CreateIcon style={{height: 15, color:'#1BA39C',marginRight: 20}}/>
+            <CreateIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
             Remane
           </List.Item>
           <List.Item
             onClick={() => {console.log('Delete clicked' + currDocument.slug)}}
           >
-            <DeleteIcon style={{height: 15, color:'#FF0000',marginRight: 20}}/>
-            <span style={{color:'#FF0000'}}>Delete</span>
+            <DeleteIcon style={{height: 18, color:'#e74c3c',marginRight: 20}}/>
+            <span style={{color:'#e74c3c'}}>Delete</span>
           </List.Item>
         </List>
       </Modal>
