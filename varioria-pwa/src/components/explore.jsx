@@ -31,27 +31,32 @@ class Explore extends Component {
 
   renderDocumentsSubgrid(documents, title) {
     // ==========    TEMP: GRID DOESN'T WORK WELL==============
-    return (
-      <div>
-        {this.renderExploreDocumentsSublist(documents, title)}
-      </div>
-    )
+    // return (
+    //   <div>
+    //     {this.renderExploreDocumentsSublist(documents, title)}
+    //   </div>
+    // )
     // ========================================================
 
 
-    // const data = documents.map((element) => ({
-    //   icon: element.image,
-    //   text: element.title,
-    //   url: element.open_url,
-    // }));
-    // return (
-    //   <div>
-    //     <WhiteSpace />
-    //     <div style={{color: '#888', fontSize: '14px'}}>{title}</div>
-    //     <WhiteSpace />
-    //     <Grid data={data} isCarousel onClick={(element) => {this.props.history.push(`${element.url}`)}} />
-    //   </div>
-    // )
+    const data = documents.map((element) => ({
+      icon: element.image,
+      text: element.title,
+      url: element.open_url,
+    }));
+    return (
+      <div>
+        <WhiteSpace />
+        <div style={{color: '#888', fontSize: '14px'}}>{title}</div>
+        <WhiteSpace />
+        <Grid 
+          data={data} 
+          square={false} 
+          isCarousel 
+          onClick={(element) => {this.props.history.push(`${element.url}`)}} 
+        />
+      </div>
+    )
   }
 
   renderExploreDocumentsSublist(documents, title) {
