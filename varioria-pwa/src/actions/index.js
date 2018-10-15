@@ -8,7 +8,8 @@ import {
   NOTIFICATION_GET_COMBINED,
   NOTIFICATION_READ,
   SEARCHTERM_UPDATE,
-  SEARCHRESULT_GET
+  SEARCHRESULT_GET,
+  READLIST_GET
 } from './types';
 
 export function getUser() {
@@ -30,6 +31,14 @@ export function getMyReadlists() {
   const request = axios.get(url);
 
   return {type: READLIST_GET_MY, payload: request};
+}
+
+export function getReadlist(slug) {
+  const url = '/file_viewer/api/readlists/' + slug;
+  const request = axios.get(url);
+  console.log("url is " + url)
+
+  return {type: READLIST_GET, payload: request};
 }
 
 export function getExploreDocuments() {

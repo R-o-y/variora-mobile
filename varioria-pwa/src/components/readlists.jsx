@@ -36,10 +36,11 @@ class Readlists extends Component {
     const data = list.map(element => {
       return (
         <List.Item
+          key={element.slug}
           arrow="horizontal"
           thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
           multipleLine
-          onClick={() => {this.props.history.push(`/readlist/${element.id}`)}}
+          onClick={() => {this.props.history.push(`/readlists/${element.slug}`)}}
         >
           {element.name}
           <List.Item.Brief>{moment(element.create_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>

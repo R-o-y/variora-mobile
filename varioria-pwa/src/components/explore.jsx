@@ -37,8 +37,6 @@ class Explore extends Component {
     //   </div>
     // )
     // ========================================================
-
-
     const data = documents.map((element) => ({
       icon: element.image,
       text: element.title,
@@ -52,7 +50,7 @@ class Explore extends Component {
         <Grid 
           data={data} 
           square={false} 
-          isCarousel 
+          isCarousel
           onClick={(element) => {this.props.history.push(`${element.url}`)}} 
         />
       </div>
@@ -63,6 +61,7 @@ class Explore extends Component {
     const data = documents.map(element => {
       return (
         <List.Item
+          key={element.slug}
           extra={<TimeAgo date={element.upload_time} />}
           arrow="horizontal"
           thumb={element.image}
@@ -87,6 +86,7 @@ class Explore extends Component {
     const data = documents.map(element => {
       return (
         <List.Item
+          key={element.slug}
           extra={<TimeAgo date={element.upload_time} />}
           arrow="horizontal"
           thumb={element.uploader_portrait_url}
@@ -111,11 +111,12 @@ class Explore extends Component {
     const data = readlists.map(element => {
       return (
         <List.Item
+          key={element.slug}
           extra={<TimeAgo date={element.create_time} />}
           arrow="horizontal"
           thumb={element.owner.portrait_url}
           multipleLine
-          onClick={() => {this.props.history.push(`/readlists/${element.id}`)}}
+          onClick={() => {this.props.history.push(`${element.url}`)}}
         >
           {element.name}
           <List.Item.Brief>{element.owner.nickname}</List.Item.Brief>
