@@ -1,61 +1,61 @@
 #logo-div {
     height: 160px;
     text-align: center;
-  }
+}
 
-  #logo {
-    margin-top: 38px;
-    height: 80px;
-  }
+#logo {
+margin-top: 38px;
+height: 80px;
+}
 
-  #login-card {
-      margin-left: 8vw;
-      margin-right: 8vw;
-    margin-top: 12vh;
-      padding-bottom: 8vh;
-  }
+#login-card {
+    margin-left: 8vw;
+    margin-right: 8vw;
+margin-top: 12vh;
+    padding-bottom: 8vh;
+}
 
-  .social {
-      display: flex;
-      justify-content: center
-  }
+.social {
+    display: flex;
+    justify-content: center
+}
 
-  .social-button {
-      width: 66%;
-      height: 48px;
-  }
+.social-button {
+    width: 66%;
+    height: 48px;
+}
 
-  #google-button {
-      background-color: #DD4B39;
-      border-color: #DD4B39
-  }
+#google-button {
+    background-color: #DD4B39;
+    border-color: #DD4B39
+}
 
-  #facebook-button {
-      background-color: #3b5998;
-      border-color: #3b5998
-  }
+#facebook-button {
+    background-color: #3b5998;
+    border-color: #3b5998
+}
 
-  .social-icon {
-      color: white;
-      height: 28px;
-      width: 28px !important;
-      margin-right: 28px;
-  }
+.social-icon {
+    color: white;
+    height: 28px;
+    width: 28px !important;
+    margin-right: 28px;
+}
 
-  #submit-icon {
-      color: white;
-      height: 28px;
-      width: 28 !important;
-      margin-right: 28px;
-  }
+#submit-icon {
+    color: white;
+    height: 28px;
+    width: 28 !important;
+    margin-right: 28px;
+}
 
-  .social-text {
-      color: white;
-      font-size: 13px;
-      font-weight: 400;
-      text-transform: none
-  }
+.social-text {
+    color: white;
+    font-size: 13px;
+    font-weight: 400;
+    text-transform: none
+}
 
-  .input-width {
-      width: 69%
-  }
+.input-width {
+    width: 69%
+}

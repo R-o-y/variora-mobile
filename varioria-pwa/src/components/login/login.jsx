@@ -52,8 +52,10 @@ class Login extends React.Component {
       const self = this
       axios.post(apiBaseUrl + '/login/', payload)
         .then(function (response) {
-          if (response.status == 200) {
-            window.location.replace('/');
+          if (response.status === 200) {
+            // window.location.replace('/');
+            alert('login success')
+            // TODO: to navigate to dashboard
           }
         })
         .catch(function (error) {
@@ -93,7 +95,7 @@ class Login extends React.Component {
     loadFBSdk(document, 'script', 'facebook-jssdk')
     window.fbAsyncInit = function () {
       FB.init({
-        appId: '749773275363427',  // TODO:
+        appId: '213151942857648',  // TODO:
         cookie: true,
         xfbml: true,
         version: 'v3.0'
@@ -121,8 +123,8 @@ class Login extends React.Component {
     }
     gapi.load('auth2', function () {
       auth2 = gapi.auth2.init({
-        client_id: '656759793501-95m29dhgik9us1k2hk9ucfqnm5b96rmh.apps.googleusercontent.com',
-        cookiepolicy: 'single_host_origin',
+        clientID: 'c9e686e3-bae8-4a0d-bcf1-26de09761807',
+        graphScopes: ['User.ReadBasic.All', 'User.Read', 'user.read', 'user.readbasic.all']
       })
       attachSignin(document.getElementById('google-button'))
     })
