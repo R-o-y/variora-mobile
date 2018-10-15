@@ -5,6 +5,10 @@ import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
 import moment from 'moment';
+import Avatar from '@material-ui/core/Avatar';
+import AddIcon from '@material-ui/icons/AddBoxOutlined';
+
+
 
 import { Tabs, WhiteSpace, List } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
@@ -42,12 +46,25 @@ class Uploads extends Component {
     )
   }
 
-  renderDocumentList(list) {
+  renderAddDocument() {
+    return (
+      <List.Item
+        thumb={<AddIcon style={{color:'grey'}} />}
+        onClick={() => {console.log('Upload document clicked')}}
+      >
+        <div style={{color:'grey'}}>New document</div>
+        <List.Item.Brief>Click to upload...</List.Item.Brief>
+      </List.Item>
+    )
+  }
+
+  renderDocumentList(list, withUpload) {
     const items = list.map((itemId) => {
       return this.renderListItem(this.props.documents[itemId])
     })
     return (
       <List>
+        {withUpload && this.renderAddDocument()}
         {items}
       </List>
     )
@@ -64,10 +81,10 @@ class Uploads extends Component {
             renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-              {this.renderDocumentList(this.props.user.uploadedDocuments)}
+              {this.renderDocumentList(this.props.user.uploadedDocuments, true)}
             </div>
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-              {this.renderDocumentList(this.props.user.collectedDocuments)}
+              {this.renderDocumentList(this.props.user.collectedDocuments, false)}
             </div>
           </Tabs>
         </StickyContainer>
