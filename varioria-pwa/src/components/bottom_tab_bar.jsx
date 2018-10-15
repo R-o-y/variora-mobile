@@ -11,7 +11,7 @@ class BottomTabBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedTab: this.props.path.substr(1),
+      selectedTab: this.props.path.split('/')[1],
       hidden: false
     };
   }
