@@ -30,17 +30,74 @@ class Explore extends Component {
   }
 
   renderDocumentsSubgrid(documents, title) {
-    const data = documents.map((element) => ({
-      icon: element.image,
-      text: element.title,
-      url: element.open_url,
-    }));
+    // ==========    TEMP: GRID DOESN'T WORK WELL==============
     return (
       <div>
-        <WhiteSpace />
-        <div style={{color: '#888', fontSize: '14px'}}>{title}</div>
-        <WhiteSpace />
-        <Grid data={data} isCarousel onClick={(element) => {this.props.history.push(`${element.url}`)}} />
+        {this.renderExploreDocumentsSublist(documents, title)}
+      </div>
+    )
+    // ========================================================
+
+
+    // const data = documents.map((element) => ({
+    //   icon: element.image,
+    //   text: element.title,
+    //   url: element.open_url,
+    // }));
+    // return (
+    //   <div>
+    //     <WhiteSpace />
+    //     <div style={{color: '#888', fontSize: '14px'}}>{title}</div>
+    //     <WhiteSpace />
+    //     <Grid data={data} isCarousel onClick={(element) => {this.props.history.push(`${element.url}`)}} />
+    //   </div>
+    // )
+  }
+
+  renderExploreDocumentsSublist(documents, title) {
+    const data = documents.map(element => {
+      return (
+        <List.Item
+          extra={<TimeAgo date={element.upload_time} />}
+          arrow="horizontal"
+          thumb={element.image}
+          multipleLine
+          onClick={() => {this.props.history.push(`${element.open_url}`)}}
+        >
+          {element.title}
+          <List.Item.Brief>{element.owner_name}</List.Item.Brief>
+        </List.Item>
+      )
+    })
+    return (
+      <div>
+        <List renderHeader={() => title}>
+          {data}
+        </List>
+      </div>
+    )
+  }
+
+  renderSearchDocumentsSublist(documents, title) {
+    const data = documents.map(element => {
+      return (
+        <List.Item
+          extra={<TimeAgo date={element.upload_time} />}
+          arrow="horizontal"
+          thumb={element.uploader_portrait_url}
+          multipleLine
+          onClick={() => {this.props.history.push(`/documents/${element.slug}`)}}
+        >
+          {element.title}
+          <List.Item.Brief>{element.uploader_name}</List.Item.Brief>
+        </List.Item>
+      )
+    })
+    return (
+      <div>
+        <List renderHeader={() => title}>
+          {data}
+        </List>
       </div>
     )
   }
@@ -69,21 +126,43 @@ class Explore extends Component {
     )
   }
 
-  renderExploreDocuments(list) {
+  renderExploreDocuments() {
+    const documents = this.props.explore.documents;
     return (
       <div>
-        {this.renderDocumentsSubgrid(list.mostViewsDocuments, "Most Views")}
-        {this.renderDocumentsSubgrid(list.mostStarsDocuments, "Most Stars")}
-        {this.renderDocumentsSubgrid(list.mostAnnotationsDocuments, "Most Annotations")}
+        {this.renderDocumentsSubgrid(documents.mostViewsDocuments, "Most Views")}
+        {this.renderDocumentsSubgrid(documents.mostStarsDocuments, "Most Stars")}
+        {this.renderDocumentsSubgrid(documents.mostAnnotationsDocuments, "Most Annotations")}
       </div>
     )
   }
 
-  renderExploreReadlists(list) {
+  renderSearchDocuments() {
+    const documents = this.props.search.documents;
+    const length = this.props.search.documents.length;
     return (
       <div>
-        {this.renderReadlistsSublist(list.newestReadlists, "Trending Lists")}
-        {this.renderReadlistsSublist(list.newestReadlists, "Recent Lists")}
+        {this.renderSearchDocumentsSublist(documents, length + " Search Result(s)")}
+      </div>
+    )
+  }
+
+  renderExploreReadlists() {
+    const readlists = this.props.explore.readlists;
+    return (
+      <div>
+        {this.renderReadlistsSublist(readlists.newestReadlists, "Trending Lists")}
+        {this.renderReadlistsSublist(readlists.newestReadlists, "Recent Lists")}
+      </div>
+    )
+  }
+
+  renderSearchReadlists() {
+    const readlists = this.props.search.readlists;
+    const length = this.props.search.readlists.length;
+    return (
+      <div>
+        {this.renderReadlistsSublist(readlists, length + " Search Result(s)")}
       </div>
     )
   }
@@ -100,10 +179,18 @@ class Explore extends Component {
             renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%'}}>
-              {this.renderExploreDocuments(this.props.explore.documents)}
+              {(this.props.search.term != '' && this.props.search.documents) ? (
+                <div> {this.renderSearchDocuments()} </div>
+                ) : (
+                <div> {this.renderExploreDocuments()} </div>
+              )}
             </div>
             <div style={{ justifyContent: 'center', height: '100%'}}>
-              {this.renderExploreReadlists(this.props.explore.readlists)}
+              {(this.props.search.term != '' && this.props.search.readlists) ? (
+                <div> {this.renderSearchReadlists()} </div>
+                ) : (
+                <div> {this.renderExploreReadlists()} </div>
+              )}
             </div>
           </Tabs>
         </StickyContainer>
@@ -134,7 +221,8 @@ class Explore extends Component {
 function mapStateToProps(state) {
   return {
     user: state.user,
-    explore: state.explore
+    explore: state.explore,
+    search: state.search
   };
 }
 

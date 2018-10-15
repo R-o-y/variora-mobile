@@ -6,7 +6,9 @@ import {
   DOCUMENT_GET_EXPLORE,
   READLIST_GET_EXPLORE,
   NOTIFICATION_GET_COMBINED,
-  NOTIFICATION_READ
+  NOTIFICATION_READ,
+  SEARCHTERM_UPDATE,
+  SEARCHRESULT_GET
 } from './types';
 
 export function getUser() {
@@ -60,4 +62,15 @@ export function markNotificationAsRead(url, slug) {
       slug
     }
   }
+}
+
+export function updateSearchTerm(newTerm) {
+  return {type: SEARCHTERM_UPDATE, payload: {newTerm}};
+}
+
+export function getSearchResults(term) {
+  const url = 'api/search?key=' + term;
+  const request = axios.get(url);
+
+  return {type: SEARCHRESULT_GET, payload: request};
 }
