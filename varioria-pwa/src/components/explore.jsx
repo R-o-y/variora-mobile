@@ -38,8 +38,8 @@ class Explore extends Component {
     // )
     // ========================================================
     const data = documents.map((element) => ({
-      icon: element.image,
-      text: element.title,
+      icon: <img src={element.image} style={{height: '16vh', width: '25vw'}} />,
+      text: (<span style={{ wordBreak: 'break-all', hyphens: 'auto'}}>{element.title}</span>),
       url: element.open_url,
     }));
     return (
@@ -49,8 +49,10 @@ class Explore extends Component {
         <WhiteSpace />
         <Grid
           data={data}
+          columnNum={2}
           square={false}
           isCarousel
+          hasLine={false}
           onClick={(element) => {this.props.history.push(`${element.url}`)}}
         />
       </div>
@@ -182,6 +184,7 @@ class Explore extends Component {
           <Tabs
             tabs={[{ title: "Documents"}, { title: "Readlists"}]}
             initalPage={'t2'}
+            swipeable={false}
             renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%'}}>

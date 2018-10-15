@@ -15,8 +15,8 @@ export default function (state = [], action) {
       const uploadedDocuments = action.payload.data.uploadedDocuments;
       const collectedDocuments = action.payload.data.collectedDocuments;
       return _.extend({}, state,
-        { uploadedDocuments: _.map(uploadedDocuments, 'pk'),
-          collectedDocuments: _.map(collectedDocuments, 'pk')
+        { uploadedDocuments: _.map(uploadedDocuments, 'slug'),
+          collectedDocuments: _.map(collectedDocuments, 'slug')
         });
     case COTERIE_GET_MY:
       const joinedCoteries = action.payload.data.joinedCoteries;

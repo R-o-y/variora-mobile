@@ -9,8 +9,8 @@ export default function (state = [], action) {
       const uploadedDocuments = action.payload.data.uploadedDocuments;
       const collectedDocuments = action.payload.data.collectedDocuments;
       return _.extend(
-        _.extend({}, state, _.keyBy(uploadedDocuments, 'pk')),
-        _.keyBy(collectedDocuments, 'pk'));
+        _.extend({}, state, _.keyBy(uploadedDocuments, 'slug')),
+        _.keyBy(collectedDocuments, 'slug'));
     default:
       return state;
   }

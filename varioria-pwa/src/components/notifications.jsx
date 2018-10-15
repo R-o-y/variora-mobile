@@ -6,6 +6,8 @@ import { Badge, List, WhiteSpace } from 'antd-mobile';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
 import moment from 'moment';
+import Avatar from '@material-ui/core/Avatar';
+import MailIcon from '@material-ui/icons/Mail';
 
 class Notifications extends Component {
 
@@ -20,7 +22,8 @@ class Notifications extends Component {
         <List.Item
           key={notification.slug}
           arrow="horizontal"
-          thumb={(isAnnotationRelated && notification.data) ? notification.data.image_url : ""}
+          thumb={(isAnnotationRelated && notification.data) ? notification.data.image_url :
+            <Avatar style={{height:25, width:25, backgroundColor:'#1BA39C'}}><MailIcon style={{height:15}}/></Avatar>}
           multipleLine
           onClick={() => {
             this.props.markNotificationAsRead(notification.mark_read_url, notification.slug)
@@ -30,8 +33,8 @@ class Notifications extends Component {
           }}
         >
           { notification.unread ?
-            <b>{notification.actor + " " + notification.verb + " some random stuff"}</b> :
-            notification.actor + " " + notification.verb + " some random stuff"
+            <b>{notification.actor + " " + notification.verb }</b> :
+            notification.actor + " " + notification.verb
           }
           <List.Item.Brief>
             { moment(notification.timestamp).fromNow() }
