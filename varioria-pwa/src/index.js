@@ -1,18 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter, Route, Switch} from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware, compose } from 'redux';
-import { Login } from './components/login/login'
-import ReduxPromise from 'redux-promise';
-import ReduxThunk from 'redux-thunk';
-import * as serviceWorker from './serviceWorker';
-import App from './App';
-import DocumentViewer from './components/document_viewer/document_viewer';
-import CreateCoterieForm from './components/create_coterie_form';
-import reducers from './reducers';
 import './index.css';
 import 'antd-mobile/dist/antd-mobile.css';
+import 'typeface-roboto'
+
+import * as serviceWorker from './serviceWorker';
+
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { applyMiddleware, compose, createStore } from 'redux';
+
+import App from './App';
+import CreateCoterieForm from './components/create_coterie_form';
+import DocumentViewer from './components/document_viewer/document_viewer';
+import { Login } from './components/login/login'
+import { Provider } from 'react-redux';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import ReduxPromise from 'redux-promise';
+import ReduxThunk from 'redux-thunk';
+import reducers from './reducers';
 
 const store = createStore(
   reducers,

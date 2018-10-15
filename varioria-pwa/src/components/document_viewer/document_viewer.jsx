@@ -180,8 +180,11 @@ class DocumentViewer extends React.Component {
         <NavBar
           mode="light"
           icon={<Icon type="left" onClick={() => this.props.history.goBack()}/>}
+          rightContent={[
+            <Icon key="1" type="ellipsis" />,
+          ]}
           style={{
-            boxShadow: '0px 1px 3px rgba(26, 26, 26, .1)',
+            boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
             zIndex: 10000000,
             position: 'relative',
             // borderBottom: '1px solid #c8c8c8',

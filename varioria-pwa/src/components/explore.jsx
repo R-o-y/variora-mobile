@@ -47,11 +47,11 @@ class Explore extends Component {
         <WhiteSpace />
         <div style={{color: '#888', fontSize: '14px'}}>{title}</div>
         <WhiteSpace />
-        <Grid 
-          data={data} 
-          square={false} 
+        <Grid
+          data={data}
+          square={false}
           isCarousel
-          onClick={(element) => {this.props.history.push(`${element.url}`)}} 
+          onClick={(element) => {this.props.history.push(`${element.url}`)}}
         />
       </div>
     )
@@ -210,7 +210,7 @@ class Explore extends Component {
       return (
         <div>
           <Navbar title="Explore" />
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "40vh"}} size={100} thickness={5} />
+          <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
     }
