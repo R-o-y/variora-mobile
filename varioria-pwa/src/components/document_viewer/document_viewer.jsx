@@ -219,7 +219,7 @@ class DocumentViewer extends React.Component {
                             width: this.state.sampleWidth * annotation.width_percent,
                             height: this.state.sampleHeight * annotation.height_percent,
                             left: this.state.sampleWidth * annotation.left_percent,
-                            top: this.state.sampleWidth * annotation.top_percent,
+                            top: this.state.sampleHeight * annotation.top_percent,
                           }}
                           annotation-id={annotation.pk}
                           annotation-uuid={annotation.uuid}

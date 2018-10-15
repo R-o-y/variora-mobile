@@ -67,7 +67,7 @@ class Login extends React.Component {
     this.facebookLogin = () => {
       FB.login(function (response) {
         const payload = response.authResponse
-        axios.post('/api/login/fb/', payload).then((response) => {
+        axios.post('/api/signin/fb/', payload).then((response) => {
           window.location.href = '/'
         }).catch(e => {
           // TODO: notification
@@ -109,7 +109,7 @@ class Login extends React.Component {
     function attachSignin(element) {
       auth2.attachClickHandler(element, {},
         function (googleUser) {
-          axios.post('/api/login/google/', {
+          axios.post('/api/signin/google/', {
             id_token: googleUser.getAuthResponse().id_token
           }).then((response) => {
             window.location.href = '/'
@@ -217,7 +217,7 @@ class Login extends React.Component {
               className='social-button'
             >
               {/*<FontAwesomeIcon icon='user-plus' id="submit-icon" style={{ color: '0060c0', marginRight: 8 }} />*/}
-              <span className="social-text" style={{ color: '#0060c0' }}>Create an Account (Coming soon)</span>
+              <span className="social-text" style={{ color: '#0060c0' }}>Create an Account <br />(Coming soon)</span>
             </MButton>
           </div>
         </Card>
