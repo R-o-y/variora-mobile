@@ -59,9 +59,10 @@ class Uploads extends Component {
           thumb={<img src='https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png' alt='pdf-icon' style={{height: 28, width: 28}} />}
           multipleLine
           onClick={() => {this.props.history.push(`/documents/${item.slug}`)}}
-          style={{width: '88%'}}
         >
-          <span>{item.title}</span>
+          <div style={{width: '88%', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+            {item.title}
+          </div>
           <List.Item.Brief>{moment(item.upload_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>
         </List.Item>
         <Icon type="ellipsis"

@@ -7,11 +7,11 @@ import {
 export default function (state = [], action) {
   switch (action.type) {
     case DOCUMENT_GET_EXPLORE:
-      const mostViewsDocuments = action.payload.data.filter(item => item.description == 'most_views');
-      const mostStarsDocuments = action.payload.data.filter(item => item.description == 'most_collectors');
-      const mostAnnotationsDocuments = action.payload.data.filter(item => item.description == 'most_annotations');
+      const mostViewsDocuments = action.payload.data.filter(item => item.description === 'most_views');
+      const mostStarsDocuments = action.payload.data.filter(item => item.description === 'most_collectors');
+      const mostAnnotationsDocuments = action.payload.data.filter(item => item.description === 'most_annotations');
       return _.extend({}, state, {
-        documents: 
+        documents:
         { mostViewsDocuments: mostViewsDocuments,
           mostStarsDocuments: mostStarsDocuments,
           mostAnnotationsDocuments: mostAnnotationsDocuments,

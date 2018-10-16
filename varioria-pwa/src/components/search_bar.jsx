@@ -7,7 +7,7 @@ class Searchbar extends Component {
   onChange = (value) => {
     console.log(value, "onChange")
     this.props.updateSearchTerm(value);
-    if (value != '') {
+    if (value !== '') {
       this.props.getSearchResults(value);
     }
   };

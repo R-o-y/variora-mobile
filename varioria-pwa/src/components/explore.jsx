@@ -188,14 +188,14 @@ class Explore extends Component {
             renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%'}}>
-              {(this.props.search.term != '' && this.props.search.documents) ? (
+              {(this.props.search.term !== '' && this.props.search.documents) ? (
                 <div> {this.renderSearchDocuments()} </div>
                 ) : (
                 <div> {this.renderExploreDocuments()} </div>
               )}
             </div>
             <div style={{ justifyContent: 'center', height: '100%'}}>
-              {(this.props.search.term != '' && this.props.search.readlists) ? (
+              {(this.props.search.term !== '' && this.props.search.readlists) ? (
                 <div> {this.renderSearchReadlists()} </div>
                 ) : (
                 <div> {this.renderExploreReadlists()} </div>
