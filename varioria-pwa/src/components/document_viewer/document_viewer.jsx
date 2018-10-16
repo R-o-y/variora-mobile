@@ -2,6 +2,8 @@ import React from 'react'
 import axios from 'axios'
 import { NavBar, Icon, ActivityIndicator } from 'antd-mobile';
 import Drawer from '@material-ui/core/Drawer';
+var HtmlToReactParser = require('html-to-react').Parser;
+var htmlToReactParser = new HtmlToReactParser();
 // import Drawer from 'rc-drawer';
 
 /*eslint no-undef: "off"*/
@@ -41,7 +43,7 @@ class DocumentViewer extends React.Component {
       sampleHeight: undefined,
       annotations: {},
       annotationsByPage: {},
-      annotationOpen: true,
+      annotationOpen: false,
       selectedAnnotation: undefined,
       // pageCanvasWidth: 660,
     }
@@ -162,11 +164,16 @@ class DocumentViewer extends React.Component {
       })
     }
 
+    this.styleDrawer = () => {
+      if (this.annotationWrapper === undefined) return
+      this.annotationWrapper.parentElement.style.borderTop = '0'
+      this.annotationWrapper.parentElement.style.boxShadow = 'rgba(28, 28, 28, 0.1) 0px -4px 2px'
+    }
+
     this.selectAnnotation = (uuid) => {
       this.setState({selectedAnnotation: this.state.annotations[uuid]})
       if (!this.state.annotationOpen) {
-        this.annotationWrapper.parentElement.style.borderTop = '0'
-        this.annotationWrapper.parentElement.style.boxShadow = 'rgba(28, 28, 28, 0.1) 0px -4px 2px'
+        this.styleDrawer()
         this.setState({ annotationOpen: true });
       }
     }
@@ -293,7 +300,8 @@ class DocumentViewer extends React.Component {
               selectedAnnotation !== undefined ? (
                 <div>
                   <img height={38} width={38} src={selectedAnnotation.annotator.portrait_url} alt="annotator-avatar"/>
-                  {selectedAnnotation.content}
+                  <br />
+                  <div dangerouslySetInnerHTML={{__html: selectedAnnotation.content}}></div>
                 </div>
               ) : null
             }
