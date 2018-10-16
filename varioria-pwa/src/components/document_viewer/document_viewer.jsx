@@ -164,8 +164,11 @@ class DocumentViewer extends React.Component {
 
     this.selectAnnotation = (uuid) => {
       this.setState({selectedAnnotation: this.state.annotations[uuid]})
-      if (!this.state.annotationOpen)
+      if (!this.state.annotationOpen) {
+        this.annotationWrapper.parentElement.style.borderTop = '0'
+        this.annotationWrapper.parentElement.style.boxShadow = 'rgba(28, 28, 28, 0.1) 0px -4px 2px'
         this.setState({ annotationOpen: true });
+      }
     }
 
     this.deselectAnnotation = () => {
@@ -201,6 +204,7 @@ class DocumentViewer extends React.Component {
   }
 
   render() {
+    var selectedAnnotation = this.state.selectedAnnotation
     return (
       <div>
         <NavBar
@@ -229,9 +233,9 @@ class DocumentViewer extends React.Component {
           ref={(ele) => this.viewerWrappper = ele}
           className='viewer-wrapper'
           onTouchEnd={(e) => {
-            console.log(e.targetTouches)
-            console.log(e.target)
-            console.log(e.touches)
+            // console.log(e.targetTouches)
+            // console.log(e.target)
+            // console.log(e.touches)
             const target = e.target
             if (target.classList.contains('page-canvas')) {
               this.deselectAnnotation()
@@ -282,10 +286,17 @@ class DocumentViewer extends React.Component {
           variant='persistent'
         >
           <div
-            style={{boxShadow: '0px -1px 3px rgba(28, 28, 28, .1)', heigth: '38vh'}}
+            ref={ele => this.annotationWrapper = ele}
           >
             <h1>test</h1>
-            {this.state.selectedAnnotation !== undefined ? this.state.selectedAnnotation.content : null}
+            {
+              selectedAnnotation !== undefined ? (
+                <div>
+                  <img height={38} width={38} src={selectedAnnotation.annotator.portrait_url} alt="annotator-avatar"/>
+                  {selectedAnnotation.content}
+                </div>
+              ) : null
+            }
           </div>
         </Drawer>
       </div>
