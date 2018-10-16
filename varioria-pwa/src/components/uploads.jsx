@@ -12,7 +12,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
 import { Button, Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
-import { getCookie, copyToClipboard } from '../utilities/helper';
+import { getCookie, copyToClipboard, validateDocumentSize } from '../utilities/helper';
 
 class Uploads extends Component {
   constructor(props) {
@@ -25,7 +25,28 @@ class Uploads extends Component {
     this.handleFiles = () => {
       const file = this.finput.files[0]
       console.log(file)
-      // TODO: upload this file using API here
+
+      const user = this.props.user;
+      if ((user == undefined || !user.is_superuser) && !validateDocumentSize(file))
+        return false
+
+      var data = new FormData()
+      // REPLACE WITH USER INPUT NAME
+      data.append('title', file.name)
+      data.append('file_upload', file)
+      data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+      this.setState({ uploading: true })
+      // NOT SURE HOW TO HANDLE UPLOADING
+      Toast.loading('Loading...')
+        this.props.uploadDocument(data).then(() => {
+          console.log('ha');
+          Toast.success('Upload success!', 1);
+          this.setState({ uploading: false })
+        }).catch(() => {
+          Toast.fail('Upload failed!', 1);
+          this.setState({ uploading: false })
+        })
+
       this.finput.value = ''
     }
   }

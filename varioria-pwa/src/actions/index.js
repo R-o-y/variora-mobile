@@ -13,6 +13,7 @@ import {
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
   READLIST_GET,
+  DOCUMENT_UPLOAD,
   DOCUMENT_RENAME,
   DOCUMENT_DELETE_SUCCESS
 } from './types';
@@ -29,6 +30,19 @@ export function getMyDocuments() {
   const request = axios.get(url);
 
   return {type: DOCUMENT_GET_MY, payload: request};
+}
+
+export function uploadDocument(data) {
+
+  const url = '/user_dashboard/handle_file_upload';
+  const request = axios({
+    method: 'post',
+    headers: {'Content-Type': 'multipart/form-data'},
+    url,
+    data
+  });
+
+  return {type: DOCUMENT_UPLOAD, payload: request};
 }
 
 export function renameDocument(url, data) {
