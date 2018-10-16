@@ -12,7 +12,10 @@ import {
   COTERIE_CREATE,
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
-  READLIST_GET
+  READLIST_GET,
+  DOCUMENT_UPLOAD,
+  DOCUMENT_RENAME,
+  DOCUMENT_DELETE_SUCCESS
 } from './types';
 
 export function getUser() {
@@ -28,6 +31,50 @@ export function getMyDocuments() {
 
   return {type: DOCUMENT_GET_MY, payload: request};
 }
+
+export function uploadDocument(data) {
+
+  const url = '/user_dashboard/handle_file_upload';
+  const request = axios({
+    method: 'post',
+    headers: {'Content-Type': 'multipart/form-data'},
+    url,
+    data
+  });
+
+  return {type: DOCUMENT_UPLOAD, payload: request};
+}
+
+export function renameDocument(url, data) {
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+
+  return {type: DOCUMENT_RENAME, payload: request};
+}
+
+export function deleteDocument(url, data, slug) {
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(deleteDocumentSuccess(slug));
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
+export function deleteDocumentSuccess(slug) {
+  return {type: DOCUMENT_DELETE_SUCCESS, payload: slug}
+}
+
 
 export function getMyReadlists() {
   const url = 'file_viewer/api/readlists';

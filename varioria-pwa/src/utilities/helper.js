@@ -1,3 +1,5 @@
+import { Toast } from 'antd-mobile';
+
 export function getCookie(name) {
   var cookieValue = null
   if (document.cookie && document.cookie !== '') {
@@ -12,4 +14,24 @@ export function getCookie(name) {
     }
   }
   return cookieValue
+}
+
+export function copyToClipboard(content) {
+  const temp = document.createElement('input')
+  temp.style.hidden = true
+  document.body.appendChild(temp)
+  temp.value = content
+  temp.select()
+  document.execCommand('copy')
+  document.body.removeChild(temp)
+}
+
+const MAX_DOCUMENT_UPLOAD_SIZE = 5 * 1024 * 1024;
+
+export function validateDocumentSize(file) {
+  if (file.size > MAX_DOCUMENT_UPLOAD_SIZE) {
+    Toast.info('Document size should be less than 5 MB', 1);
+    return false
+  }
+  return true
 }

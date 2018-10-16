@@ -10,8 +10,9 @@ import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import CreateIcon from '@material-ui/icons/Create';
 import ShareIcon from '@material-ui/icons/Share';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
-import { Button, Icon, List, Modal, Tabs, WhiteSpace } from 'antd-mobile';
+import { Button, Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
+import { getCookie, copyToClipboard, validateDocumentSize } from '../utilities/helper';
 
 class Uploads extends Component {
   constructor(props) {
@@ -24,7 +25,28 @@ class Uploads extends Component {
     this.handleFiles = () => {
       const file = this.finput.files[0]
       console.log(file)
-      // TODO: upload this file using API here
+
+      const user = this.props.user;
+      if ((user == undefined || !user.is_superuser) && !validateDocumentSize(file))
+        return false
+
+      var data = new FormData()
+      // REPLACE WITH USER INPUT NAME
+      data.append('title', file.name)
+      data.append('file_upload', file)
+      data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+      this.setState({ uploading: true })
+      // NOT SURE HOW TO HANDLE UPLOADING
+      Toast.loading('Loading...')
+        this.props.uploadDocument(data).then(() => {
+          console.log('ha');
+          Toast.success('Upload success!', 1);
+          this.setState({ uploading: false })
+        }).catch(() => {
+          Toast.fail('Upload failed!', 1);
+          this.setState({ uploading: false })
+        })
+
       this.finput.value = ''
     }
   }
@@ -74,7 +96,6 @@ class Uploads extends Component {
         <Icon type="ellipsis"
           style={{position: 'absolute', width:'10%', marginTop: -50, right: 5, color:'#a8a8a8', zIndex: 1}}
           onClick={(e) => {
-            console.log('clicked ellipsis ' + item.slug);
             this.setState({selectedDocument: item.slug})
             this.showModal('actionModal', e);
           }}/>
@@ -141,8 +162,21 @@ class Uploads extends Component {
     )
   }
 
+  renderRenameModal(currDocument) {
+    return (
+      Modal.prompt('Rename', 'Enter the new name', [
+      { text: 'Cancel' },
+      { text: 'Confirm', onPress: value => {
+        let data = new FormData();
+        data.append('new_title', value);
+        data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+        this.props.renameDocument(currDocument.renameUrl, data);
+      }},
+    ], 'default', currDocument.title)
+    )
+  }
+
   renderActionModal() {
-    console.log(this.props);
     let currDocument = this.props.documents[this.state.selectedDocument];
 
     return (
@@ -159,19 +193,34 @@ class Uploads extends Component {
           className="popup-list"
         >
           <List.Item
-            onClick={() => {console.log('Share clicked' + currDocument.slug)}}
+            onClick={() => {
+              const location = window.location;
+              const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
+              copyToClipboard(url);
+              Toast.success('Copied to clipboard!', 1);}}
           >
             <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
             Share
           </List.Item>
           <List.Item
-            onClick={() => {console.log('Rename clicked' + currDocument.slug)}}
+            onClick={() => {this.renderRenameModal(currDocument)}}
           >
             <CreateIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
             Remane
           </List.Item>
           <List.Item
-            onClick={() => {console.log('Delete clicked' + currDocument.slug)}}
+            onClick={() => {
+              Modal.alert('Delete ' + currDocument.title + '?', '', [
+                { text: 'Cancel' },
+                { text: 'Delete', style:{color:'#FF0000'},
+                  onPress: () => {
+                    this.onClose('actionModal');
+                    let data = new FormData();
+                    data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                    this.props.deleteDocument(currDocument.delete_url, data, currDocument.slug);
+                }},
+              ])
+            }}
           >
             <DeleteIcon style={{height: 18, color:'#e74c3c',marginRight: 20}}/>
             <span style={{color:'#e74c3c'}}>Delete</span>

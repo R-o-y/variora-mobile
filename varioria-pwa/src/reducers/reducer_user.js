@@ -2,6 +2,8 @@ import _ from 'lodash';
 import {
   USER_GET,
   DOCUMENT_GET_MY,
+  DOCUMENT_UPLOAD,
+  DOCUMENT_DELETE_SUCCESS,
   COTERIE_GET_MY,
   COTERIE_SWITCH
 } from '../actions/types';
@@ -17,6 +19,18 @@ export default function (state = [], action) {
       return _.extend({}, state,
         { uploadedDocuments: _.map(uploadedDocuments, 'slug'),
           collectedDocuments: _.map(collectedDocuments, 'slug')
+        });
+    case DOCUMENT_UPLOAD:
+      return state;
+      // USE BELOW AFTER FIXING THE API RESPONSE
+      // const addedUploadedDocuments = _.concat(state.uploadedDocuments, action.payload.data.slug);
+      // return _.extend({}, state,{ uploadedDocuments: addedUploadedDocuments });
+    case DOCUMENT_DELETE_SUCCESS:
+      const newUploadedDocuments = _.filter(state.uploadedDocuments, (slug) => {return slug !== action.payload});
+      const newCollectedDocuments = _.filter(state.collectedDocuments, (slug) => {return slug !== action.payload});
+      return _.extend({}, state,
+        { uploadedDocuments: newUploadedDocuments,
+          collectedDocuments: newCollectedDocuments
         });
     case COTERIE_GET_MY:
       const joinedCoteries = action.payload.data.joinedCoteries;
