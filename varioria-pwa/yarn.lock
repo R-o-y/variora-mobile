@@ -7350,6 +7350,10 @@ react-sticky@^6.0.3:
     prop-types "^15.5.8"
     raf "^3.3.0"
 
+react-tappable@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-tappable/-/react-tappable-1.0.4.tgz#282b7b3dc25e6170b55d1ea33d986b7624a19fb9"
+
 react-timeago@^4.1.9:
   version "4.1.9"
   resolved "https://registry.yarnpkg.com/react-timeago/-/react-timeago-4.1.9.tgz#a5dee4ac072299a9a5ca5a61f56177a80f83c1fb"

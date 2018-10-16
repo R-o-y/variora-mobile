@@ -38,7 +38,7 @@ ReactDOM.render(
         <Switch>
           <Route path="/documents/:slug" component={DocumentViewer} />
           <Route path="/create-coterie-form" component={CreateCoterieForm} />
-          <Route path="/login" component={Login} />
+          <Route path="/sign-in" component={Login} />
           <Route path="/" component={App} />
         </Switch>
       </BrowserRouter>

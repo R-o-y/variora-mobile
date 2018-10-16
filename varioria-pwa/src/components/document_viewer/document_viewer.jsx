@@ -39,9 +39,10 @@ class DocumentViewer extends React.Component {
       scaleFactor: 1.08,
       sampleWidth: undefined,
       sampleHeight: undefined,
-      annotations: [],
+      annotations: {},
       annotationsByPage: {},
       annotationOpen: true,
+      selectedAnnotation: undefined,
       // pageCanvasWidth: 660,
     }
 
@@ -126,16 +127,21 @@ class DocumentViewer extends React.Component {
     this.renderAnnotationAreas = (numPages) => {
       axios.get(constructGetAnnotationsQueryUrl(this.props.match.params.slug )).then(response => {
         var data = response.data
+
         var annotationsByPage = {}
+        var annotations = {}
         for (var i = 1; i <= numPages; i++)
           annotationsByPage[i] = []
-        for (var annotation of data)
+        for (var annotation of data) {
           annotationsByPage[parseInt(annotation.page_index)].push(annotation)
+          annotations[annotation.uuid] = annotation
+        }
+
         this.setState({
-          annotations: response.data,
+          annotations: annotations,
           annotationsByPage: annotationsByPage
         })
-        console.log(response.data)
+        console.log(annotations)
         console.log(annotationsByPage)
       })
     }
@@ -156,11 +162,14 @@ class DocumentViewer extends React.Component {
       })
     }
 
-    this.toggleDrawer = (open) => () => {
-      this.setState({
-        annotationOpen: open,
-      });
-    };
+    this.toggleDrawer = (whetherOpen) => () => {
+      this.setState({ annotationOpen: whetherOpen });
+    }
+
+    this.deselectAnnotation = () => {
+      this.toggleDrawer(false)
+      this.setState({ selectedAnnotation: undefined })
+    }
   }
 
   componentDidMount() {
@@ -241,7 +250,14 @@ class DocumentViewer extends React.Component {
                           }}
                           annotation-id={annotation.pk}
                           annotation-uuid={annotation.uuid}
-                        ></div>
+                          onTouchEnd={
+                            () => {
+                              console.log(this.state.annotations[annotation.uuid])
+                              this.setState({selectedAnnotation: this.state.annotations[annotation.uuid]})
+                            }
+                          }
+                        >
+                        </div>
                       ) : null
                   }
                 </div>
@@ -252,14 +268,15 @@ class DocumentViewer extends React.Component {
         <Drawer
           anchor="bottom"
           open={this.state.annotationOpen}
-          onClose={this.toggleDrawer(false)}
-          // variant='persistent'
-          ModalProps={{BackdropProps: {invisible: true}}}
+          onClose={() => this.deselectAnnotation()}
+          // ModalProps={{BackdropProps: {invisible: true}}}
+          variant='persistent'
         >
           <div
             style={{boxShadow: '0px -1px 3px rgba(28, 28, 28, .1)', heigth: '38vh'}}
           >
-            {this.state.annotations[0] !== undefined ? this.state.annotations[0].content : null}
+            <h1>test</h1>
+            {this.state.selectedAnnotation !== undefined ? this.state.selectedAnnotation.content : null}
           </div>
         </Drawer>
       </div>
