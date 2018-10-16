@@ -12,7 +12,8 @@ import {
   COTERIE_CREATE,
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
-  READLIST_GET
+  READLIST_GET,
+  DOCUMENT_RENAME
 } from './types';
 
 export function getUser() {
@@ -27,6 +28,16 @@ export function getMyDocuments() {
   const request = axios.get(url);
 
   return {type: DOCUMENT_GET_MY, payload: request};
+}
+
+export function renameDocument(url, data) {
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+
+  return {type: DOCUMENT_RENAME, payload: request};
 }
 
 export function getMyReadlists() {

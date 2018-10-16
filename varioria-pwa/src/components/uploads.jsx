@@ -10,8 +10,9 @@ import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import CreateIcon from '@material-ui/icons/Create';
 import ShareIcon from '@material-ui/icons/Share';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
-import { Button, Icon, List, Modal, Tabs, WhiteSpace } from 'antd-mobile';
+import { Button, Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
+import { getCookie } from '../utilities/helper';
 
 class Uploads extends Component {
   constructor(props) {
@@ -141,6 +142,30 @@ class Uploads extends Component {
     )
   }
 
+  updateClipboard(shareLink) {
+    navigator.clipboard.writeText(shareLink).then(function() {
+      /* clipboard successfully set */
+      Toast.success('Copied to clipboard!', 2);
+    }, function() {
+      /* clipboard write failed */
+      Toast.fail('Copy to clipboard failed!', 2);
+    });
+  }
+
+  renderRenameModal(currDocument) {
+    return (
+      Modal.prompt('Rename', 'Enter the new name', [
+      { text: 'Cancel' },
+      { text: 'Confirm', onPress: value => {
+        var data = new FormData()
+        data.append('new_title', value)
+        data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+        this.props.renameDocument(currDocument.renameUrl, data);
+      }},
+    ], 'default', currDocument.title)
+    )
+  }
+
   renderActionModal() {
     console.log(this.props);
     let currDocument = this.props.documents[this.state.selectedDocument];
@@ -159,13 +184,13 @@ class Uploads extends Component {
           className="popup-list"
         >
           <List.Item
-            onClick={() => {console.log('Share clicked' + currDocument.slug)}}
+            onClick={() => {this.updateClipboard(window.location.origin + '/documents/' + currDocument.slug)}}
           >
             <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
             Share
           </List.Item>
           <List.Item
-            onClick={() => {console.log('Rename clicked' + currDocument.slug)}}
+            onClick={() => {console.log('Rename clicked' + currDocument.slug); this.renderRenameModal(currDocument)}}
           >
             <CreateIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
             Remane

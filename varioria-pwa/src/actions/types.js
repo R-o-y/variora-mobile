@@ -1,10 +1,11 @@
 export const USER_GET = 'user_get';
 
-export const DOCUMENT_GET_MY = 'Document_get_my';
-export const DOCUMENT_GET_EXPLORE = 'Document_get_explore';
+export const DOCUMENT_GET_MY = 'document_get_my';
+export const DOCUMENT_GET_EXPLORE = 'document_get_explore';
+export const DOCUMENT_RENAME = 'document_rename';
 
-export const READLIST_GET_MY = 'Readlist_get_my';
-export const READLIST_GET_EXPLORE = 'Readlist_get_explore';
+export const READLIST_GET_MY = 'readlist_get_my';
+export const READLIST_GET_EXPLORE = 'readlist_get_explore';
 export const READLIST_GET = 'readlist_get';
 
 export const NOTIFICATION_GET_COMBINED = 'notification_get_combined';
