@@ -13,3 +13,13 @@ export function getCookie(name) {
   }
   return cookieValue
 }
+
+export function copyToClipboard(content) {
+  const temp = document.createElement('input')
+  temp.style.hidden = true
+  document.body.appendChild(temp)
+  temp.value = content
+  temp.select()
+  document.execCommand('copy')
+  document.body.removeChild(temp)
+}

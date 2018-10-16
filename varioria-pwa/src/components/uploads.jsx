@@ -12,7 +12,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
 import { Button, Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
-import { getCookie } from '../utilities/helper';
+import { getCookie, copyToClipboard } from '../utilities/helper';
 
 class Uploads extends Component {
   constructor(props) {
@@ -142,16 +142,6 @@ class Uploads extends Component {
     )
   }
 
-  updateClipboard(shareLink) {
-    navigator.clipboard.writeText(shareLink).then(function() {
-      /* clipboard successfully set */
-      Toast.success('Copied to clipboard!', 2);
-    }, function() {
-      /* clipboard write failed */
-      Toast.fail('Copy to clipboard failed!', 2);
-    });
-  }
-
   renderRenameModal(currDocument) {
     return (
       Modal.prompt('Rename', 'Enter the new name', [
@@ -184,7 +174,11 @@ class Uploads extends Component {
           className="popup-list"
         >
           <List.Item
-            onClick={() => {this.updateClipboard(window.location.origin + '/documents/' + currDocument.slug)}}
+            onClick={() => {
+              const location = window.location;
+              const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
+              copyToClipboard(url);
+              Toast.success('Copied to clipboard!', 1);}}
           >
             <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
             Share
