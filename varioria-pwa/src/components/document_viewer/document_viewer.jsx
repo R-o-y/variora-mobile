@@ -1,7 +1,11 @@
+import './document_viewer.css'
+
+import { ActivityIndicator, Icon, NavBar } from 'antd-mobile';
+
+import Drawer from '@material-ui/core/Drawer';
 import React from 'react'
 import axios from 'axios'
-import { NavBar, Icon, ActivityIndicator } from 'antd-mobile';
-import Drawer from '@material-ui/core/Drawer';
+import { AnnotationThread } from './annotation_thread'
 var HtmlToReactParser = require('html-to-react').Parser;
 var htmlToReactParser = new HtmlToReactParser();
 // import Drawer from 'rc-drawer';
@@ -31,6 +35,7 @@ class DocumentViewer extends React.Component {
     this.rendering = false
     this.clearnessLevel = 3.8  // too small then not clear, not large then rendering consumes much resource
     this.currentPageIndex = 1
+    this.annotationAreas = {}
     this.state = {
       document: {
         title: ''
@@ -166,12 +171,16 @@ class DocumentViewer extends React.Component {
 
     this.styleDrawer = () => {
       if (this.annotationWrapper === undefined) return
-      this.annotationWrapper.parentElement.style.borderTop = '0'
-      this.annotationWrapper.parentElement.style.boxShadow = 'rgba(28, 28, 28, 0.1) 0px -4px 2px'
+      if (this.annotationWrapper.parentElement.classList.contains('annotation-drawer')) return
+      this.annotationWrapper.parentElement.classList.add('annotation-drawer')
     }
 
     this.selectAnnotation = (uuid) => {
+      if (this.state.selectedAnnotation !== undefined)
+        this.annotationAreas[this.state.selectedAnnotation.uuid].classList.remove('highlighted-annotation-area')
       this.setState({selectedAnnotation: this.state.annotations[uuid]})
+      this.annotationAreas[uuid].classList.add('highlighted-annotation-area')
+
       if (!this.state.annotationOpen) {
         this.styleDrawer()
         this.setState({ annotationOpen: true });
@@ -179,6 +188,7 @@ class DocumentViewer extends React.Component {
     }
 
     this.deselectAnnotation = () => {
+      this.annotationAreas[this.state.selectedAnnotation.uuid].classList.remove('highlighted-annotation-area')
       this.setState({ annotationOpen: false });
       this.setState({ selectedAnnotation: undefined })
     }
@@ -273,6 +283,7 @@ class DocumentViewer extends React.Component {
                             left: this.state.sampleWidth * annotation.left_percent,
                             top: this.state.sampleHeight * annotation.top_percent,
                           }}
+                          ref={ele => this.annotationAreas[annotation.uuid] = ele}
                           annotation-id={annotation.pk}
                           annotation-uuid={annotation.uuid}
                           onTouchEnd={() => this.selectAnnotation(annotation.uuid)}
@@ -292,17 +303,10 @@ class DocumentViewer extends React.Component {
           // ModalProps={{BackdropProps: {invisible: true}}}
           variant='persistent'
         >
-          <div
-            ref={ele => this.annotationWrapper = ele}
-          >
-            <h1>test</h1>
+          <div ref={ele => this.annotationWrapper = ele}>
             {
               selectedAnnotation !== undefined ? (
-                <div>
-                  <img height={38} width={38} src={selectedAnnotation.annotator.portrait_url} alt="annotator-avatar"/>
-                  <br />
-                  <div dangerouslySetInnerHTML={{__html: selectedAnnotation.content}}></div>
-                </div>
+                <AnnotationThread selectedAnnotation={selectedAnnotation} />
               ) : null
             }
           </div>
