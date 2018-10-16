@@ -14,13 +14,19 @@ import { Button, Icon, List, Modal, Tabs, WhiteSpace } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
 
 class Uploads extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
       actionModal: false,
       selectedDocument: null,
     };
+
+    this.handleFiles = () => {
+      const file = this.finput.files[0]
+      console.log(file)
+      // TODO: upload this file using API here
+      this.finput.value = ''
+    }
   }
 
   componentDidMount() {
@@ -80,7 +86,7 @@ class Uploads extends Component {
     return (
       <List.Item
         thumb={<AddIcon style={{color:'grey'}} />}
-        onClick={() => {console.log('Upload document clicked')}}
+        onClick={() => this.finput.click()}
       >
         <div style={{color:'grey'}}>New document</div>
         <List.Item.Brief>Click to upload...</List.Item.Brief>
@@ -190,6 +196,13 @@ class Uploads extends Component {
         <Navbar title="Uploads" history={this.props.history} />
         {this.renderStickyTab()}
         {this.renderActionModal()}
+        <input
+          ref={item => this.finput = item}
+          style={{ visibility: 'hidden' }}
+          type={'file'}
+          accept="application/pdf"
+          onChange={async () => this.handleFiles()}>
+        </input>
       </div>
     );
   }

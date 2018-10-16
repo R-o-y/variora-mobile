@@ -188,7 +188,8 @@ class DocumentViewer extends React.Component {
     }
 
     this.deselectAnnotation = () => {
-      this.annotationAreas[this.state.selectedAnnotation.uuid].classList.remove('highlighted-annotation-area')
+      if (this.state.selectedAnnotation !== undefined)
+        this.annotationAreas[this.state.selectedAnnotation.uuid].classList.remove('highlighted-annotation-area')
       this.setState({ annotationOpen: false });
       this.setState({ selectedAnnotation: undefined })
     }
