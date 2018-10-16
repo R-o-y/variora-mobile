@@ -75,7 +75,6 @@ class Uploads extends Component {
         <Icon type="ellipsis"
           style={{position: 'absolute', width:'10%', marginTop: -50, right: 5, color:'#a8a8a8', zIndex: 1}}
           onClick={(e) => {
-            console.log('clicked ellipsis ' + item.slug);
             this.setState({selectedDocument: item.slug})
             this.showModal('actionModal', e);
           }}/>
@@ -147,9 +146,9 @@ class Uploads extends Component {
       Modal.prompt('Rename', 'Enter the new name', [
       { text: 'Cancel' },
       { text: 'Confirm', onPress: value => {
-        var data = new FormData()
-        data.append('new_title', value)
-        data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+        let data = new FormData();
+        data.append('new_title', value);
+        data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
         this.props.renameDocument(currDocument.renameUrl, data);
       }},
     ], 'default', currDocument.title)
@@ -157,7 +156,6 @@ class Uploads extends Component {
   }
 
   renderActionModal() {
-    console.log(this.props);
     let currDocument = this.props.documents[this.state.selectedDocument];
 
     return (
@@ -184,13 +182,24 @@ class Uploads extends Component {
             Share
           </List.Item>
           <List.Item
-            onClick={() => {console.log('Rename clicked' + currDocument.slug); this.renderRenameModal(currDocument)}}
+            onClick={() => {this.renderRenameModal(currDocument)}}
           >
             <CreateIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
             Remane
           </List.Item>
           <List.Item
-            onClick={() => {console.log('Delete clicked' + currDocument.slug)}}
+            onClick={() => {
+              Modal.alert('Delete ' + currDocument.title + '?', '', [
+                { text: 'Cancel' },
+                { text: 'Delete', style:{color:'#FF0000'},
+                  onPress: () => {
+                    this.onClose('actionModal');
+                    let data = new FormData();
+                    data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                    this.props.deleteDocument(currDocument.delete_url, data, currDocument.slug);
+                }},
+              ])
+            }}
           >
             <DeleteIcon style={{height: 18, color:'#e74c3c',marginRight: 20}}/>
             <span style={{color:'#e74c3c'}}>Delete</span>

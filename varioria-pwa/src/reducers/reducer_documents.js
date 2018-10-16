@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import {
   DOCUMENT_GET_MY,
-  DOCUMENT_RENAME
+  DOCUMENT_RENAME,
+  DOCUMENT_DELETE_SUCCESS
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -16,6 +17,8 @@ export default function (state = [], action) {
     case DOCUMENT_RENAME:
       const renamedDocument = action.payload.data;
       return _.extend({}, state, {[renamedDocument.slug]: renamedDocument});
+    case DOCUMENT_DELETE_SUCCESS:
+      return _.omit(state, action.payload);
     default:
       return state;
   }

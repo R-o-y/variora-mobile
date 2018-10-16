@@ -13,7 +13,8 @@ import {
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
   READLIST_GET,
-  DOCUMENT_RENAME
+  DOCUMENT_RENAME,
+  DOCUMENT_DELETE_SUCCESS
 } from './types';
 
 export function getUser() {
@@ -39,6 +40,27 @@ export function renameDocument(url, data) {
 
   return {type: DOCUMENT_RENAME, payload: request};
 }
+
+export function deleteDocument(url, data, slug) {
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(deleteDocumentSuccess(slug));
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
+export function deleteDocumentSuccess(slug) {
+  return {type: DOCUMENT_DELETE_SUCCESS, payload: slug}
+}
+
 
 export function getMyReadlists() {
   const url = 'file_viewer/api/readlists';
