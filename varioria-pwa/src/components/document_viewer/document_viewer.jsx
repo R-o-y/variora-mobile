@@ -162,12 +162,14 @@ class DocumentViewer extends React.Component {
       })
     }
 
-    this.toggleDrawer = (whetherOpen) => () => {
-      this.setState({ annotationOpen: whetherOpen });
+    this.selectAnnotation = (uuid) => {
+      this.setState({selectedAnnotation: this.state.annotations[uuid]})
+      if (!this.state.annotationOpen)
+        this.setState({ annotationOpen: true });
     }
 
     this.deselectAnnotation = () => {
-      this.toggleDrawer(false)
+      this.setState({ annotationOpen: false });
       this.setState({ selectedAnnotation: undefined })
     }
   }
@@ -223,7 +225,19 @@ class DocumentViewer extends React.Component {
           animating={this.state.loading}
         />
 
-        <div ref={(ele) => this.viewerWrappper = ele} className='viewer-wrapper'>
+        <div
+          ref={(ele) => this.viewerWrappper = ele}
+          className='viewer-wrapper'
+          onTouchEnd={(e) => {
+            console.log(e.targetTouches)
+            console.log(e.target)
+            console.log(e.touches)
+            const target = e.target
+            if (target.classList.contains('page-canvas')) {
+              this.deselectAnnotation()
+            }
+          }}
+        >
           {
             range(this.state.numPages).map((i) => {
               const pageIndex = i + 1
@@ -250,12 +264,7 @@ class DocumentViewer extends React.Component {
                           }}
                           annotation-id={annotation.pk}
                           annotation-uuid={annotation.uuid}
-                          onTouchEnd={
-                            () => {
-                              console.log(this.state.annotations[annotation.uuid])
-                              this.setState({selectedAnnotation: this.state.annotations[annotation.uuid]})
-                            }
-                          }
+                          onTouchEnd={() => this.selectAnnotation(annotation.uuid)}
                         >
                         </div>
                       ) : null
