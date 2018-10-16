@@ -1,6 +1,8 @@
 import React from 'react'
 import axios from 'axios'
 import { NavBar, Icon, ActivityIndicator } from 'antd-mobile';
+import Drawer from '@material-ui/core/Drawer';
+// import Drawer from 'rc-drawer';
 
 /*eslint no-undef: "off"*/
 
@@ -37,7 +39,9 @@ class DocumentViewer extends React.Component {
       scaleFactor: 1.08,
       sampleWidth: undefined,
       sampleHeight: undefined,
-      annotations: {},
+      annotations: [],
+      annotationsByPage: {},
+      annotationOpen: true,
       // pageCanvasWidth: 660,
     }
 
@@ -122,13 +126,17 @@ class DocumentViewer extends React.Component {
     this.renderAnnotationAreas = (numPages) => {
       axios.get(constructGetAnnotationsQueryUrl(this.props.match.params.slug )).then(response => {
         var data = response.data
-        var annotations = {}
+        var annotationsByPage = {}
         for (var i = 1; i <= numPages; i++)
-          annotations[i] = []
+          annotationsByPage[i] = []
         for (var annotation of data)
-          annotations[parseInt(annotation.page_index)].push(annotation)
-        this.setState({annotations: annotations})
-        console.log(annotations)
+          annotationsByPage[parseInt(annotation.page_index)].push(annotation)
+        this.setState({
+          annotations: response.data,
+          annotationsByPage: annotationsByPage
+        })
+        console.log(response.data)
+        console.log(annotationsByPage)
       })
     }
 
@@ -147,6 +155,12 @@ class DocumentViewer extends React.Component {
         self.renderTaskList()
       })
     }
+
+    this.toggleDrawer = (open) => () => {
+      this.setState({
+        annotationOpen: open,
+      });
+    };
   }
 
   componentDidMount() {
@@ -212,8 +226,8 @@ class DocumentViewer extends React.Component {
                 >
                   <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
                   {
-                    this.state.annotations[pageIndex] !== undefined ?
-                      this.state.annotations[pageIndex].map(annotation =>
+                    this.state.annotationsByPage[pageIndex] !== undefined ?
+                      this.state.annotationsByPage[pageIndex].map(annotation =>
                         <div
                           className='annotation-area'
                           key={annotation.pk}
@@ -235,6 +249,19 @@ class DocumentViewer extends React.Component {
             })
           }
         </div>
+        <Drawer
+          anchor="bottom"
+          open={this.state.annotationOpen}
+          onClose={this.toggleDrawer(false)}
+          // variant='persistent'
+          ModalProps={{BackdropProps: {invisible: true}}}
+        >
+          <div
+            style={{boxShadow: '0px -1px 3px rgba(28, 28, 28, .1)', heigth: '38vh'}}
+          >
+            {this.state.annotations[0] !== undefined ? this.state.annotations[0].content : null}
+          </div>
+        </Drawer>
       </div>
     );
   }
