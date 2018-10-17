@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
 import Navbar from './nav_bar';
-import Searchbar from './search_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TimeAgo from 'react-timeago'
 
@@ -84,31 +83,6 @@ class Explore extends Component {
     )
   }
 
-  renderSearchDocumentsSublist(documents, title) {
-    const data = documents.map(element => {
-      return (
-        <List.Item
-          key={element.slug}
-          extra={<TimeAgo date={element.upload_time} />}
-          arrow="horizontal"
-          thumb={element.uploader_portrait_url}
-          multipleLine
-          onClick={() => {this.props.history.push(`/documents/${element.slug}`)}}
-        >
-          {element.title}
-          <List.Item.Brief>{element.uploader_name}</List.Item.Brief>
-        </List.Item>
-      )
-    })
-    return (
-      <div>
-        <List renderHeader={() => title}>
-          {data}
-        </List>
-      </div>
-    )
-  }
-
   renderReadlistsSublist(readlists, title) {
     const data = readlists.map(element => {
       return (
@@ -145,16 +119,6 @@ class Explore extends Component {
     )
   }
 
-  renderSearchDocuments() {
-    const documents = this.props.search.documents;
-    const length = this.props.search.documents.length;
-    return (
-      <div>
-        {this.renderSearchDocumentsSublist(documents, length + " Search Result(s)")}
-      </div>
-    )
-  }
-
   renderExploreReadlists() {
     const readlists = this.props.explore.readlists;
     return (
@@ -165,21 +129,10 @@ class Explore extends Component {
     )
   }
 
-  renderSearchReadlists() {
-    const readlists = this.props.search.readlists;
-    const length = this.props.search.readlists.length;
-    return (
-      <div>
-        {this.renderReadlistsSublist(readlists, length + " Search Result(s)")}
-      </div>
-    )
-  }
-
   renderStickyTab() {
     return (
       <div>
         <WhiteSpace />
-        <Searchbar />
         <StickyContainer>
           <Tabs
             tabs={[{ title: "Documents"}, { title: "Readlists"}]}
@@ -188,18 +141,10 @@ class Explore extends Component {
             renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%'}}>
-              {(this.props.search.term !== '' && this.props.search.documents) ? (
-                <div> {this.renderSearchDocuments()} </div>
-                ) : (
-                <div> {this.renderExploreDocuments()} </div>
-              )}
+              {this.renderExploreDocuments()}
             </div>
             <div style={{ justifyContent: 'center', height: '100%'}}>
-              {(this.props.search.term !== '' && this.props.search.readlists) ? (
-                <div> {this.renderSearchReadlists()} </div>
-                ) : (
-                <div> {this.renderExploreReadlists()} </div>
-              )}
+              {this.renderExploreReadlists()}
             </div>
           </Tabs>
         </StickyContainer>
@@ -212,7 +157,7 @@ class Explore extends Component {
     if (_.isEmpty(this.props.explore) || _.isEmpty(this.props.explore.documents) || _.isEmpty(this.props.explore.readlists)) {
       return (
         <div>
-          <Navbar title="Explore" />
+          <Navbar title="Explore" history={this.props.history}/>
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
@@ -220,7 +165,7 @@ class Explore extends Component {
 
     return (
       <div>
-        <Navbar title="Explore" />
+        <Navbar title="Explore" history={this.props.history}/>
         {this.renderStickyTab()}
       </div>
     );
@@ -230,8 +175,7 @@ class Explore extends Component {
 function mapStateToProps(state) {
   return {
     user: state.user,
-    explore: state.explore,
-    search: state.search
+    explore: state.explore
   };
 }
 

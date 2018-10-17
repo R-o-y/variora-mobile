@@ -42,7 +42,7 @@ class Readlist extends Component {
     if (!this.props.readlists.readlist) {
       return (
         <div>
-          <Navbar title="Readlists" />
+          <Navbar title="Readlists" history={this.props.history}/>
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       )
@@ -50,7 +50,7 @@ class Readlist extends Component {
     const title = "Readlist (" + this.props.readlists.readlist.name + ")"
     return (
       <div>
-        <Navbar title={title} />
+        <Navbar title={title} history={this.props.history}/>
         {this.renderDocumentList()}
       </div>
     );
