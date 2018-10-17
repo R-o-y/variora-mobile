@@ -48,7 +48,7 @@ class Settings extends Component {
     const currentCoterie = this.props.coteries[this.props.user.currentCoterie];
     return (
       <div>
-        <Navbar title="Settings" />
+        <Navbar title="Settings" history={this.props.history}/>
         <WingBlank size="lg">
           <WhiteSpace size="lg" />
           <Card>
