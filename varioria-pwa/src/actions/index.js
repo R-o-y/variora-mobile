@@ -150,13 +150,9 @@ export function createCoterie(data) {
   return {type: COTERIE_CREATE, payload: request};
 }
 
-export function updateSearchTerm(newTerm) {
-  return {type: SEARCHTERM_UPDATE, payload: {newTerm}};
-}
-
 export function getSearchResults(term) {
   const url = 'api/search?key=' + term;
   const request = axios.get(url);
-
+  console.log(request);
   return {type: SEARCHRESULT_GET, payload: request};
 }
