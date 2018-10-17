@@ -5,8 +5,12 @@ import { connect } from 'react-redux';
 import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TimeAgo from 'react-timeago'
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import Card from '@material-ui/core/Card';
 
-import { Tabs, WhiteSpace, Grid, List } from 'antd-mobile';
+import { Tabs, WhiteSpace, List } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
 
 class Explore extends Component {
@@ -29,56 +33,39 @@ class Explore extends Component {
   }
 
   renderDocumentsSubgrid(documents, title) {
-    // ==========    TEMP: GRID DOESN'T WORK WELL==============
-    // return (
-    //   <div>
-    //     {this.renderExploreDocumentsSublist(documents, title)}
-    //   </div>
-    // )
-    // ========================================================
-    const data = documents.map((element) => ({
-      icon: <img src={element.image} style={{height: '16vh', width: '25vw'}} />,
-      text: (<span style={{ wordBreak: 'break-all', hyphens: 'auto', fontSize: '12px'}}>{element.title}</span>),
-      url: element.open_url,
-    }));
+    console.log(documents)
+    const data = documents.map((element) => {
+      return (
+        <div>
+          <GridListTile key={element.image} onClick={(element) => {console.log(element.slug)}}>
+            <div>
+              <img src={element.image} alt={element.title} style={{height: '22vh', width: '33vw'}}/>
+              <GridListTileBar
+                style={{height: '25%'}}
+                title={element.title}
+                subtitle={<span>{<TimeAgo date={element.upload_time} />}</span>}
+              />
+            </div>
+          </GridListTile>
+        </div>
+      )
+    });
+
     return (
       <div>
         <WhiteSpace />
         <div style={{color: '#888', fontSize: '14px'}}>{title}</div>
         <WhiteSpace />
-        <Grid
-          data={data}
-          columnNum={2}
-          square={false}
-          isCarousel
-          hasLine={false}
-          onClick={(element) => {this.props.history.push(`${element.url}`)}}
-        />
-      </div>
-    )
-  }
-
-  renderExploreDocumentsSublist(documents, title) {
-    const data = documents.map(element => {
-      return (
-        <List.Item
-          key={element.slug}
-          extra={<TimeAgo date={element.upload_time} />}
-          arrow="horizontal"
-          thumb={element.image}
-          multipleLine
-          onClick={() => {this.props.history.push(`${element.open_url}`)}}
-        >
-          {element.title}
-          <List.Item.Brief>{element.owner_name}</List.Item.Brief>
-        </List.Item>
-      )
-    })
-    return (
-      <div>
-        <List renderHeader={() => title}>
-          {data}
-        </List>
+        <div styles={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-around',
+          overflow: 'hidden'      
+        }}>
+          <GridList cols={2} style={{flexWrap: 'nowrap'}}>
+            {data}
+          </GridList>
+        </div>
       </div>
     )
   }
@@ -89,7 +76,6 @@ class Explore extends Component {
         <List.Item
           key={element.slug}
           extra={<TimeAgo date={element.create_time} />}
-          arrow="horizontal"
           thumb={element.owner.portrait_url}
           multipleLine
           onClick={() => {this.props.history.push(`${element.url}`)}}
