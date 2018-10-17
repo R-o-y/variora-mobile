@@ -39,7 +39,7 @@ class Explore extends Component {
         <div>
           <GridListTile key={element.image} onClick={(element) => {console.log(element.slug)}}>
             <div>
-              <img src={element.image} alt={element.title} style={{height: '22vh', width: '33vw'}}/>
+              <img src={element.image} alt={element.title} style={{maxHeight: '44vw', width: '38vw'}}/>
               <GridListTileBar
                 style={{height: '25%'}}
                 title={element.title}
