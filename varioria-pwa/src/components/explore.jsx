@@ -38,7 +38,7 @@ class Explore extends Component {
     // ========================================================
     const data = documents.map((element) => ({
       icon: <img src={element.image} style={{height: '16vh', width: '25vw'}} />,
-      text: (<span style={{ wordBreak: 'break-all', hyphens: 'auto'}}>{element.title}</span>),
+      text: (<span style={{ wordBreak: 'break-all', hyphens: 'auto', fontSize: '12px'}}>{element.title}</span>),
       url: element.open_url,
     }));
     return (

@@ -17,10 +17,6 @@ class Search extends React.Component {
     }
   }
 
-  componentDidMount() {
-
-  }
-
   onChange = (e) => {
     e.preventDefault();
     const searchTerm = e.target.value;

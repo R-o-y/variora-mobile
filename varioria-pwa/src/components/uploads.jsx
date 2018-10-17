@@ -162,7 +162,7 @@ class Uploads extends Component {
             onClick={() => {console.log('Rename clicked' + currDocument.slug)}}
           >
             <CreateIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
-            Remane
+            Rename
           </List.Item>
           <List.Item
             onClick={() => {console.log('Delete clicked' + currDocument.slug)}}

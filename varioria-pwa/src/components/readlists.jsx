@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
 import moment from 'moment';
+import AddIcon from '@material-ui/icons/AddBoxOutlined';
 
 import { Tabs, WhiteSpace, List } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
@@ -24,6 +25,18 @@ class Readlists extends Component {
           </div>
         }
       </Sticky>
+    )
+  }
+
+  renderAddReadlist() {
+    return (
+      <List.Item
+        thumb={<AddIcon style={{color:'grey'}} />}
+        onClick={() => {console.log('Create readlist clicked')}}
+      >
+        <div style={{color:'grey'}}>New readlist</div>
+        <List.Item.Brief>Click to create...</List.Item.Brief>
+      </List.Item>
     )
   }
 
@@ -56,6 +69,23 @@ class Readlists extends Component {
     )
   }
 
+  renderCreatedReadlists() {
+    return (
+      <div>
+        {this.renderAddReadlist()}
+        {this.renderReadlist(this.props.readlists.createdReadlists)}
+      </div>
+    )
+  }
+
+  renderCollectedReadlists() {
+    return (
+      <div>
+        {this.renderReadlist(this.props.readlists.collectedReadlists)}
+      </div>
+    )
+  }
+
   renderStickyTab() {
     return (
       <div>
@@ -67,10 +97,10 @@ class Readlists extends Component {
             renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-              {this.renderReadlist(this.props.readlists.createdReadlists)}
+              {this.renderCreatedReadlists()}
             </div>
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-              {this.renderReadlist(this.props.readlists.collectedReadlists)}
+              {this.renderCollectedReadlists()}
             </div>
           </Tabs>
         </StickyContainer>
