@@ -43,7 +43,7 @@ class Readlists extends Component {
   renderReadlist(list) {
     if (_.isEmpty(list)) {
       return (
-        "No Lists Items found!"
+        <div></div>
       )
     }
     const data = list.map(element => {

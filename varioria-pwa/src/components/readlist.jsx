@@ -5,6 +5,18 @@ import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { WhiteSpace, List } from 'antd-mobile';
 import moment from 'moment';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import CardActions from '@material-ui/core/CardActions';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import ShareIcon from '@material-ui/icons/Share';
+import Avatar from '@material-ui/core/Avatar';
+import CardHeader from '@material-ui/core/CardHeader';
+import EditIcon from '@material-ui/icons/Edit';
+import TimeAgo from 'react-timeago'
 
 class Readlist extends Component {
 
@@ -38,6 +50,38 @@ class Readlist extends Component {
     )
   }
 
+  renderReadlistCard() {
+    const readlist = this.props.readlists.readlist;
+    return (
+      <Card style={{margin: '15px 15px 5px 15px'}}>
+        <CardContent>
+          <CardHeader
+            style={{paddingTop: '0', paddingRight: '0'}}
+            action={
+              <IconButton>
+                <EditIcon />
+              </IconButton>
+            }
+          />
+          <Typography variant="h5" component="h5">
+            {readlist.name}
+          </Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            {readlist.owner.nickname} created {<TimeAgo date={readlist.create_time} />}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <IconButton aria-label="Add to favorites">
+            <FavoriteIcon />
+          </IconButton>
+          <IconButton aria-label="Share">
+            <ShareIcon />
+          </IconButton>
+        </CardActions>
+      </Card>
+    )
+  }
+
   render() {
     if (!this.props.readlists.readlist) {
       return (
@@ -47,10 +91,10 @@ class Readlist extends Component {
         </div>
       )
     }
-    const title = "Readlist (" + this.props.readlists.readlist.name + ")"
     return (
       <div>
-        <Navbar title={title} history={this.props.history}/>
+        <Navbar title="Readlists" history={this.props.history}/>
+        {this.renderReadlistCard()}
         {this.renderDocumentList()}
       </div>
     );
