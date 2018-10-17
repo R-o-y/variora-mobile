@@ -12,9 +12,11 @@ function commentBlock(nickname, portrait_url, prefix, timeago, content) {
           <tr><Tag small>{nickname}</Tag></tr>
         </table>
         <Flex.Item>
-        <Badge text=<span>{prefix} <Moment fromNow>{timeago}</Moment></span>
-          style={{padding: '0',backgroundColor: 'inherit',color: '#999',}}/>
-        <div dangerouslySetInnerHTML={{__html: content}}></div>
+          <Badge
+            text={(<span>{prefix} <Moment fromNow>{timeago}</Moment></span>)}
+            style={{padding: '0',backgroundColor: 'inherit',color: '#999',}}
+          />
+          <div dangerouslySetInnerHTML={{__html: content}}></div>
         </Flex.Item>
       </Flex>
     </div>
@@ -25,10 +27,8 @@ var AnnotationThread = (props) => {
   var selectedAnnotation = props.selectedAnnotation
   var nickname = selectedAnnotation.annotator.nickname ? selectedAnnotation.annotator.nickname : 'Anonymous'
   var portrait_url = selectedAnnotation.annotator.portrait_url ? (
-                     selectedAnnotation.annotator.portrait_url
-                     ) : (
-                     '/media/portrait/anonymous_portrait.png'
-                     )
+      selectedAnnotation.annotator.portrait_url
+      ) : ('/media/portrait/anonymous_portrait.png')
   var prefix, timeago
   if (selectedAnnotation.edit_time === null) {
     prefix = 'posted'
