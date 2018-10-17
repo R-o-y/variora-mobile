@@ -206,7 +206,7 @@ class Uploads extends Component {
             onClick={() => {this.renderRenameModal(currDocument)}}
           >
             <CreateIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
-            Remane
+            Rename
           </List.Item>
           <List.Item
             onClick={() => {

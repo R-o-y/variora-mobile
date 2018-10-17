@@ -1,6 +1,6 @@
 import * as actions from '../actions';
 
-import { Button, List, Modal, NavBar } from 'antd-mobile';
+import { Button, List, Modal, NavBar, Icon } from 'antd-mobile';
 import React, { Component } from 'react';
 import {
   faUserFriends,
@@ -23,6 +23,7 @@ class Navbar extends Component {
     super(props);
     this.state = {
       coterieModal: false,
+      searchMode: false
     };
   }
 
@@ -66,7 +67,7 @@ class Navbar extends Component {
   render() {
     const hasAdministratedCoteries = !_.isEmpty(this.props.user.administratedCoteries);
     const hasJoinedCoteries = !_.isEmpty(this.props.user.joinedCoteries);
-
+    console.log(this.props)
     return (
       <div>
         <NavBar
@@ -84,66 +85,72 @@ class Navbar extends Component {
               onClick={(e) => {console.log("User avatar clicked")}}
             />
           }
-          rightContent={
-            <div>
-              <PeopleOutlineIcon
-                style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
-                onClick={(e) => {
-                  this.props.getMyCoteries();
-                  this.showModal('coterieModal', e);
-                }}
-              />
-              <Modal
-                popup
-                visible={this.state.coterieModal}
-                onClose={() => this.onClose('coterieModal')}
-                animationType="slide-up"
-                style={{overflow: 'auto', maxHeight: '80vh'}}
+          rightContent={[
+            <Icon 
+              key="0" 
+              type="search" 
+              style={{ marginRight: '16px' }} 
+              onClick={(e) => {this.props.history.push('/search')}} />,
+            <div key = "1">
+            <PeopleOutlineIcon
+              style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
+              onClick={(e) => {
+                this.props.getMyCoteries();
+                this.showModal('coterieModal', e);
+              }}
+            />
+            <Modal
+              popup
+              visible={this.state.coterieModal}
+              onClose={() => this.onClose('coterieModal')}
+              animationType="slide-up"
+              style={{overflow: 'auto', maxHeight: '80vh'}}
+            >
+              <List
+                renderHeader={() =>
+                  <b style={{color: "#1BA39C"}}>SWITCH GROUP</b>
+                }
+                className="popup-list"
               >
-                <List
-                  renderHeader={() =>
-                    <b style={{color: "#1BA39C"}}>SWITCH GROUP</b>
-                  }
-                  className="popup-list"
-                >
-                  { !hasJoinedCoteries && !hasAdministratedCoteries &&
-                    <div>You have not joined any groups.</div>
-                  }
-                  { hasAdministratedCoteries &&
-                    <List
-                      renderHeader={() =>
-                        <b>Administrated</b>
-                      }
-                    >
-                      {this.props.user.administratedCoteries.map((coteriePk) => {
-                        return this.renderCoterieItem(coteriePk);
-                      })}
-                    </List>
-                  }
-                  { hasJoinedCoteries &&
-                    <List
-                      renderHeader={() =>
-                        <b>Joined</b>
-                      }
-                    >
-                      {this.props.user.joinedCoteries.map((coteriePk) => {
-                        return this.renderCoterieItem(coteriePk);
-                      })}
-                    </List>
-                  }
-                  <List.Item>
-                    <Button
-                      type="primary"
-                      style={{backgroundColor: "#1BA39C"}}
-                      onClick={() => {
-                        this.onClose('coterieModal');
-                        this.props.history.push("/create-coterie-form");
-                      }}
-                    >Create a new group</Button>
-                  </List.Item>
-                </List>
-              </Modal>
-            </div>
+                { !hasJoinedCoteries && !hasAdministratedCoteries &&
+                  <div>You have not joined any groups.</div>
+                }
+                { hasAdministratedCoteries &&
+                  <List
+                    renderHeader={() =>
+                      <b>Administrated</b>
+                    }
+                  >
+                    {this.props.user.administratedCoteries.map((coteriePk) => {
+                      return this.renderCoterieItem(coteriePk);
+                    })}
+                  </List>
+                }
+                { hasJoinedCoteries &&
+                  <List
+                    renderHeader={() =>
+                      <b>Joined</b>
+                    }
+                  >
+                    {this.props.user.joinedCoteries.map((coteriePk) => {
+                      return this.renderCoterieItem(coteriePk);
+                    })}
+                  </List>
+                }
+                <List.Item>
+                  <Button
+                    type="primary"
+                    style={{backgroundColor: "#1BA39C"}}
+                    onClick={() => {
+                      this.onClose('coterieModal');
+                      this.props.history.push("/create-coterie-form");
+                    }}
+                  >Create a new group</Button>
+                </List.Item>
+              </List>
+            </Modal>
+          </div>
+          ]
           }
         >
           {this.props.title}

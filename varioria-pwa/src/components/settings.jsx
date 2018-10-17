@@ -11,7 +11,7 @@ class Settings extends Component {
   render() {
     return (
       <div>
-        <Navbar title="Settings" />
+        <Navbar title="Settings" history={this.props.history}/>
       </div>
     );
   }
