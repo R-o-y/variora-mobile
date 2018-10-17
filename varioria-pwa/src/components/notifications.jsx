@@ -15,16 +15,41 @@ class Notifications extends Component {
     this.props.getCombinedNotifications();
   }
 
+  getActionDescription(action) {
+    if (action === 'reply to annotation') {
+      return 'replied'
+    }
+    else if (action === 'post annotation') {
+      return 'posted'
+    }
+    return action;
+  }
+
+  formatNotificationTime(timestamp) {
+    if (moment(timestamp).isSame(moment(), 'day')) {
+      return moment(timestamp).format('H:mm');
+    }
+    else if (moment(timestamp).isSame(moment(), 'year')) {
+      return moment(timestamp).format('M-d')
+    }
+    else {
+      return moment(timestamp).format('YYYY-M-d')
+    }
+  }
+
   renderNotificationsList(notifications) {
     const items = notifications.map((notification) => {
       let isAnnotationRelated = ( notification.verb ==='reply to annotation' || notification.verb === 'post annotation')
       return (
         <List.Item
           key={notification.slug}
-          arrow="horizontal"
-          thumb={(isAnnotationRelated && notification.data) ? notification.data.image_url :
-            <Avatar style={{height:25, width:25, backgroundColor:'#1BA39C'}}><MailIcon style={{height:15}}/></Avatar>}
+          thumb={(isAnnotationRelated && notification.data) ?
+            <img src={notification.data.image_url} style={{height:50, width:50}} /> :
+            <Avatar style={{height:50, width:50, backgroundColor:'#1BA39C'}}><MailIcon style={{height:40}}/></Avatar>}
+          extra={this.formatNotificationTime(notification.timestamp)}
+          align="top"
           multipleLine
+          style={{backgroundColor: notification.unread ? '#edf9f6' : ''}}
           onClick={() => {
             this.props.markNotificationAsRead(notification.mark_read_url, notification.slug)
             if (isAnnotationRelated && notification.data) {
@@ -33,23 +58,11 @@ class Notifications extends Component {
           }}
         >
           { notification.unread ?
-            <b>{notification.actor + " " + notification.verb }</b> :
-            notification.actor + " " + notification.verb
+            <b>{notification.actor + " " + this.getActionDescription(notification.verb) }</b> :
+            notification.actor + " " + this.getActionDescription(notification.verb)
           }
           <List.Item.Brief>
-            { moment(notification.timestamp).fromNow() }
-            { notification.unread &&
-              <Badge text="NEW"
-                style={{
-                  marginLeft: 12,
-                  padding: '0 3px',
-                  backgroundColor: '#fff',
-                  borderRadius: 2,
-                  color: '#1BA39C',
-                  border: '1px solid #1BA39C',
-                }}
-              />
-            }
+            { notification.description }
           </List.Item.Brief>
         </List.Item>
       )
