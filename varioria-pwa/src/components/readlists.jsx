@@ -7,7 +7,7 @@ import Navbar from './nav_bar';
 import moment from 'moment';
 import AddIcon from '@material-ui/icons/AddBoxOutlined';
 
-import { Tabs, WhiteSpace, List } from 'antd-mobile';
+import { Tabs, WhiteSpace, List, Icon } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
 
 class Readlists extends Component {
@@ -26,6 +26,19 @@ class Readlists extends Component {
         }
       </Sticky>
     )
+  }
+
+  showModal(key, e) {
+    e.preventDefault();
+    this.setState({
+      [key]: true,
+    });
+  }
+
+  onClose(key) {
+    this.setState({
+      [key]: false,
+    });
   }
 
   renderAddReadlist() {
@@ -48,16 +61,24 @@ class Readlists extends Component {
     }
     const data = list.map(element => {
       return (
-        <List.Item
-          key={element.slug}
-          arrow="horizontal"
-          thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
-          multipleLine
-          onClick={() => {this.props.history.push(`/readlists/${element.slug}`)}}
-        >
-          {element.name}
-          <List.Item.Brief>{moment(element.create_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>
-        </List.Item>
+        <div>
+          <List.Item
+            key={element.slug}
+            thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
+            multipleLine
+            onClick={() => {this.props.history.push(`/readlists/${element.slug}`)}}
+          >
+            {element.name}
+            <List.Item.Brief>{moment(element.create_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>
+          </List.Item>
+          <Icon type="ellipsis"
+            style={{position: 'absolute', width:'10%', marginTop: -50, right: 5, color:'#a8a8a8', zIndex: 1}}
+            onClick={(e) => {
+              console.log('clicked ellipsis ' + element.slug);
+              this.setState({selectedDocument: element.slug})
+              this.showModal('actionModal', e);
+          }}/>
+        </div>
       )
     })
     return (
