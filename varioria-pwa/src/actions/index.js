@@ -18,6 +18,9 @@ import {
   DOCUMENT_DELETE_SUCCESS
 } from './types';
 
+
+const FILE_UPLOAD_API_URL = '/file_viewer/api/documents/upload'
+
 export function getUser() {
   const url = '/api/user';
   const request = axios.get(url);
@@ -33,12 +36,10 @@ export function getMyDocuments() {
 }
 
 export function uploadDocument(data) {
-
-  const url = '/user_dashboard/handle_file_upload';
   const request = axios({
     method: 'post',
     headers: {'Content-Type': 'multipart/form-data'},
-    url,
+    url: FILE_UPLOAD_API_URL,
     data
   });
 

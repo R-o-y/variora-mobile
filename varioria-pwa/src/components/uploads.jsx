@@ -24,10 +24,10 @@ class Uploads extends Component {
 
     this.handleFiles = () => {
       const file = this.finput.files[0]
-      console.log(file)
+      // console.log(file)
 
       const user = this.props.user;
-      if ((user == undefined || !user.is_superuser) && !validateDocumentSize(file))
+      if ((user === undefined || !user.is_superuser) && !validateDocumentSize(file))
         return false
 
       var data = new FormData()
@@ -39,13 +39,13 @@ class Uploads extends Component {
       // NOT SURE HOW TO HANDLE UPLOADING
       Toast.loading('Loading...')
         this.props.uploadDocument(data).then(() => {
-          console.log('ha');
           Toast.success('Upload success!', 1);
           this.setState({ uploading: false })
-        }).catch(() => {
-          Toast.fail('Upload failed!', 1);
-          this.setState({ uploading: false })
         })
+        // .catch(() => {
+        //   Toast.fail('Upload failed!', 1);
+        //   this.setState({ uploading: false })
+        // })
 
       this.finput.value = ''
     }
