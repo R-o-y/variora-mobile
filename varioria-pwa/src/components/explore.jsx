@@ -4,11 +4,11 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import TimeAgo from 'react-timeago'
+import TimeAgo from 'react-timeago';
+import Grid from '@material-ui/core/Grid';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
-import Card from '@material-ui/core/Card';
 
 import { Tabs, WhiteSpace, List } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
@@ -37,15 +37,15 @@ class Explore extends Component {
     const data = documents.map((element) => {
       return (
         <div>
-          <GridListTile key={element.image} onClick={(element) => {console.log(element.slug)}}>
-            <div>
-              <img src={element.image} alt={element.title} style={{maxHeight: '44vw', width: '38vw'}}/>
+          <GridListTile style={{height: '20vh', width: '14.14vh'}} key={element.image} onClick={(element) => {console.log(element.slug)}}>
+              <Grid container alignItems="center" style={{height: '100%'}}>
+                <img src={element.image} alt={element.title} style={{width:'100%'}}/>
+              </Grid>
               <GridListTileBar
                 style={{height: '25%'}}
                 title={element.title}
                 subtitle={<span>{<TimeAgo date={element.upload_time} />}</span>}
               />
-            </div>
           </GridListTile>
         </div>
       )
@@ -56,16 +56,11 @@ class Explore extends Component {
         <WhiteSpace />
         <div style={{color: '#888', fontSize: '14px'}}>{title}</div>
         <WhiteSpace />
-        <div styles={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'space-around',
-          overflow: 'hidden'      
-        }}>
-          <GridList cols={2} style={{flexWrap: 'nowrap'}}>
-            {data}
-          </GridList>
-        </div>
+
+        <GridList cellSpacing={0} cols={1} cellHeight={'auto'} style={{flexWrap: 'nowrap', margin: 0}}>
+          {data}
+        </GridList>
+
       </div>
     )
   }
