@@ -2,10 +2,12 @@ import './document_viewer.css'
 
 import { ActivityIndicator, Icon, NavBar } from 'antd-mobile';
 
+import { AnnotationThread } from './annotation_thread'
 import Drawer from '@material-ui/core/Drawer';
 import React from 'react'
+import Rnd from 'react-rnd'
 import axios from 'axios'
-import { AnnotationThread } from './annotation_thread'
+
 var HtmlToReactParser = require('html-to-react').Parser;
 var htmlToReactParser = new HtmlToReactParser();
 // import Drawer from 'rc-drawer';
@@ -242,10 +244,7 @@ class DocumentViewer extends React.Component {
           <span className='document-title'>{this.state.document.title}</span>
         </NavBar>
 
-        <ActivityIndicator
-          toast
-          animating={this.state.loading}
-        />
+        <ActivityIndicator toast animating={this.state.loading} />
 
         <div
           ref={(ele) => this.viewerWrappper = ele}
