@@ -2,7 +2,7 @@ import './document_viewer.css'
 
 import { ActivityIndicator, Icon, NavBar } from 'antd-mobile';
 
-import { AnnotationThread } from './annotation_thread'
+import AnnotationThread from './annotation_thread'
 import Drawer from '@material-ui/core/Drawer';
 import React from 'react'
 import Rnd from 'react-rnd'
