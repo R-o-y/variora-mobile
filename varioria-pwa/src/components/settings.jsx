@@ -4,7 +4,7 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { List, WingBlank, WhiteSpace, Card } from 'antd-mobile';
+import { List, WingBlank, WhiteSpace, Card, Modal } from 'antd-mobile';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import PeopleIcon from '@material-ui/icons/People';
@@ -16,14 +16,39 @@ class Settings extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isFetching: true
+      isFetching: true,
+      memberModal: false
     }
+  }
+
+  showModal(key, e) {
+    e.preventDefault();
+    this.setState({
+      [key]: true,
+    });
+  }
+
+  onClose(key) {
+    this.setState({
+      [key]: false,
+    });
   }
 
   componentDidMount() {
     this.props.getMyCoteries().then(() => {
       this.setState({isFetching: false})
     })
+  }
+
+  renderMember(member) {
+    return (
+      <List.Item
+        key={member.pk}
+        thumb={member.portrait_url}
+      >
+        {member.nickname}
+      </List.Item>
+    )
   }
 
   render() {
@@ -69,7 +94,7 @@ class Settings extends Component {
            thumb={<PeopleIcon style={{color: '42A5F5'}} />}
            extra={currentCoterie.members.length}
            arrow="horizontal"
-           onClick={() => {}}
+           onClick={(e) => {this.showModal('memberModal', e)}}
           >
             Members
           </List.Item>
@@ -91,6 +116,24 @@ class Settings extends Component {
           </List.Item>
         </List>
 
+        <Modal
+          popup
+          visible={this.state.memberModal}
+          onClose={() => this.onClose('memberModal')}
+          animationType="slide-up"
+          style={{overflow: 'auto', maxHeight: '80vh'}}
+        >
+          <List
+            renderHeader={() =>
+              <b style={{color: "#1BA39C"}}>Members</b>
+            }
+            className="popup-list"
+          >
+            {currentCoterie.members.map((member) => {
+              return this.renderMember(member);
+            })}
+          </List>
+        </Modal>
       </div>
     );
   }
