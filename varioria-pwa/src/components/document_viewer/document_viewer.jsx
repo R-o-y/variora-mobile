@@ -1,6 +1,11 @@
 import './document_viewer.css'
 
 import { ActivityIndicator, Icon, NavBar } from 'antd-mobile';
+import {
+  constructGetAnnotationsQueryUrl,
+  constructGetDocumentQueryUrl,
+  range,
+} from './document_viewer_helper'
 
 import { AnnotationThread } from './annotation_thread'
 import Drawer from '@material-ui/core/Drawer';
@@ -17,18 +22,6 @@ var htmlToReactParser = new HtmlToReactParser();
 // const TAP_TIME_THRESHOLD = 180  // in milisecond
 
 /*eslint no-undef: "off"*/
-
-function range(end) {
-  return Array(end - 0).fill().map((_, idx) => 0 + idx)
-}
-
-function constructGetAnnotationsQueryUrl(slug) {
-  return '/file_viewer/api/documents/byslug/' + slug + '/annotations'
-}
-
-function constructGetDocumentQueryUrl(slug) {
-  return '/file_viewer/api/documents/byslug/' + slug
-}
 
 const RENDERING = 'RENDERING'
 class DocumentViewer extends React.Component {
@@ -275,9 +268,8 @@ class DocumentViewer extends React.Component {
             // console.log(this.touchLength)
             // if (this.touchLength < TAP_TIME_THRESHOLD) {
             const target = e.target
-            if (target.classList.contains('page-canvas')) {
+            if (target.classList.contains('page-canvas'))
               this.deselectAnnotation()
-            }
             this.setState({showFloatButton: !this.state.showFloatButton})
             // }
             // this.touchLength = 0
