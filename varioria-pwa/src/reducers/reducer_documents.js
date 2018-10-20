@@ -17,10 +17,7 @@ export default function (state = [], action) {
 
     case DOCUMENT_UPLOAD:
       const uploadedDocument = action.payload.data;
-      console.log(uploadedDocument)
-      return state;
-      // USE THIS AFTER FIXING THE API RESPONSE
-      // return _.extend({}, state, {[uploadedDocument.slug]: uploadedDocument});
+      return _.extend({}, state, {[uploadedDocument.slug]: uploadedDocument});
 
     case DOCUMENT_RENAME:
       const renamedDocument = action.payload.data;

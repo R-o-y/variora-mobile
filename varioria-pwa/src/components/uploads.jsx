@@ -151,10 +151,10 @@ class Uploads extends Component {
             renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-              {this.renderUploadedList(this.props.user.uploadedDocuments)}
+              {this.renderUploadedList(_.orderBy(this.props.user.uploadedDocuments, (docSlug) => {return this.props.documents[docSlug].upload_time}, 'desc'))}
             </div>
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-              {this.renderCollectedList(this.props.user.collectedDocuments)}
+              {this.renderCollectedList(_.orderBy(this.props.user.collectedDocuments, (docSlug) => {return this.props.documents[docSlug].upload_time}, 'desc'))}
             </div>
           </Tabs>
         </StickyContainer>
@@ -179,7 +179,6 @@ class Uploads extends Component {
 
   renderCollectedActionModal() {
     let currDocument = this.props.documents[this.state.selectedDocument];
-    console.log(currDocument);
 
     return (
       <Modal

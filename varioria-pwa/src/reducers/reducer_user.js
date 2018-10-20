@@ -22,10 +22,8 @@ export default function (state = [], action) {
           collectedDocuments: _.map(collectedDocuments, 'slug')
         });
     case DOCUMENT_UPLOAD:
-      return state;
-      // USE BELOW AFTER FIXING THE API RESPONSE
-      // const addedUploadedDocuments = _.concat(state.uploadedDocuments, action.payload.data.slug);
-      // return _.extend({}, state,{ uploadedDocuments: addedUploadedDocuments });
+      const addedUploadedDocuments = _.concat(state.uploadedDocuments, action.payload.data.slug);
+      return _.extend({}, state,{ uploadedDocuments: addedUploadedDocuments });
     case DOCUMENT_DELETE_SUCCESS:
       const newUploadedDocuments = _.filter(state.uploadedDocuments, (slug) => {return slug !== action.payload});
       const newCollectedDocuments = _.filter(state.collectedDocuments, (slug) => {return slug !== action.payload});
