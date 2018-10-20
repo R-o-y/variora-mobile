@@ -1,30 +1,27 @@
 import './document_viewer.css'
 
 import { ActivityIndicator, Icon, NavBar } from 'antd-mobile';
+import {
+  constructGetAnnotationsQueryUrl,
+  constructGetDocumentQueryUrl,
+  range,
+} from './document_viewer_helper'
 
 import AnnotationThread from './annotation_thread'
 import Drawer from '@material-ui/core/Drawer';
+import FloatButton from './float_button'
 import React from 'react'
 import Rnd from 'react-rnd'
+import Tappable from 'react-tappable';
 import axios from 'axios'
 
 var HtmlToReactParser = require('html-to-react').Parser;
 var htmlToReactParser = new HtmlToReactParser();
 // import Drawer from 'rc-drawer';
 
+// const TAP_TIME_THRESHOLD = 180  // in milisecond
+
 /*eslint no-undef: "off"*/
-
-function range(end) {
-  return Array(end - 0).fill().map((_, idx) => 0 + idx)
-}
-
-function constructGetAnnotationsQueryUrl(slug) {
-  return '/file_viewer/api/documents/byslug/' + slug + '/annotations'
-}
-
-function constructGetDocumentQueryUrl(slug) {
-  return '/file_viewer/api/documents/byslug/' + slug
-}
 
 const RENDERING = 'RENDERING'
 class DocumentViewer extends React.Component {
@@ -38,6 +35,8 @@ class DocumentViewer extends React.Component {
     this.clearnessLevel = 3.8  // too small then not clear, not large then rendering consumes much resource
     this.currentPageIndex = 1
     this.annotationAreas = {}
+    this.prevScroll = window.pageYOffset
+    // this.touchLength = 0
     this.state = {
       document: {
         title: ''
@@ -52,10 +51,12 @@ class DocumentViewer extends React.Component {
       annotationsByPage: {},
       annotationOpen: false,
       selectedAnnotation: undefined,
+      mode: 'view',  // view or comment
+      showFloatButton: true,
       // pageCanvasWidth: 660,
     }
 
-    this.handleScroll = () => {
+    this.dynamicRenderOnScroll = () => {
       var pageIndex = Math.ceil((window.pageYOffset / this.viewerWrappper.scrollHeight * this.state.numPages))
       if (pageIndex === this.currentPageIndex)
         return
@@ -92,6 +93,16 @@ class DocumentViewer extends React.Component {
         this.renderTaskList()
     }
 
+    this.handleScroll = () => {
+      this.dynamicRenderOnScroll()
+      const thisScroll = window.pageYOffset
+      if (thisScroll - this.prevScroll > 8)  // scroll down
+        this.setState({showFloatButton: false})
+      else if (this.prevScroll - thisScroll > 8)
+        this.setState({showFloatButton: true})
+      this.prevScroll = thisScroll
+    }
+
     this.pushNewPageRenderingTask = (pageIndex) => {
       if (pageIndex >= 1 && pageIndex <= this.state.numPages)
         this.taskList.push({
@@ -112,6 +123,7 @@ class DocumentViewer extends React.Component {
       const self = this
       this.pdfDoc.getPage(currentPageIndex).then(function(page) {
         var canvas = document.getElementById('page-canvas-' + currentPageIndex)
+        if (canvas === null) return
         var context = canvas.getContext('2d')
         var viewport = page.getViewport(clearnessLevel * scale)
         canvas.height = viewport.height
@@ -246,56 +258,67 @@ class DocumentViewer extends React.Component {
 
         <ActivityIndicator toast animating={this.state.loading} />
 
-        <div
-          ref={(ele) => this.viewerWrappper = ele}
-          className='viewer-wrapper'
-          onTouchEnd={(e) => {
+        <Tappable
+          // onTouchStart={e => this.touchTimer = setInterval((() => this.touchLength += 10), 10)}
+          moveThreshold={10}
+          onTap={(e) => {
             // console.log(e.targetTouches)
             // console.log(e.target)
             // console.log(e.touches)
+            // console.log(this.touchLength)
+            // if (this.touchLength < TAP_TIME_THRESHOLD) {
             const target = e.target
-            if (target.classList.contains('page-canvas')) {
+            if (target.classList.contains('page-canvas'))
               this.deselectAnnotation()
-            }
+            this.setState({showFloatButton: !this.state.showFloatButton})
+            // }
+            // this.touchLength = 0
+            // clearInterval(this.touchTimer)
           }}
         >
-          {
-            range(this.state.numPages).map((i) => {
-              const pageIndex = i + 1
-              return (
-                <div
-                  className='page-div' key={pageIndex}
-                  id={'page-div-' + pageIndex}
-                  style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
-                >
-                  <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
-                  {
-                    this.state.annotationsByPage[pageIndex] !== undefined ?
-                      this.state.annotationsByPage[pageIndex].map(annotation =>
-                        <div
-                          className='annotation-area'
-                          key={annotation.pk}
-                          style={{
-                            background: annotation.frame_color,
-                            position: 'absolute',
-                            width: this.state.sampleWidth * annotation.width_percent,
-                            height: this.state.sampleHeight * annotation.height_percent,
-                            left: this.state.sampleWidth * annotation.left_percent,
-                            top: this.state.sampleHeight * annotation.top_percent,
-                          }}
-                          ref={ele => this.annotationAreas[annotation.uuid] = ele}
-                          annotation-id={annotation.pk}
-                          annotation-uuid={annotation.uuid}
-                          onTouchEnd={() => this.selectAnnotation(annotation.uuid)}
-                        >
-                        </div>
-                      ) : null
-                  }
-                </div>
-              )
-            })
-          }
-        </div>
+          <div
+            ref={(ele) => this.viewerWrappper = ele}
+            className='viewer-wrapper'
+          >
+            {
+              range(this.state.numPages).map((i) => {
+                const pageIndex = i + 1
+                return (
+                  <div
+                    className='page-div' key={pageIndex}
+                    id={'page-div-' + pageIndex}
+                    style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
+                  >
+                    <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
+                    {
+                      this.state.annotationsByPage[pageIndex] !== undefined ?
+                        this.state.annotationsByPage[pageIndex].map(annotation =>
+                          <div
+                            className='annotation-area'
+                            key={annotation.pk}
+                            style={{
+                              background: annotation.frame_color,
+                              position: 'absolute',
+                              width: this.state.sampleWidth * annotation.width_percent,
+                              height: this.state.sampleHeight * annotation.height_percent,
+                              left: this.state.sampleWidth * annotation.left_percent,
+                              top: this.state.sampleHeight * annotation.top_percent,
+                            }}
+                            ref={ele => this.annotationAreas[annotation.uuid] = ele}
+                            annotation-id={annotation.pk}
+                            annotation-uuid={annotation.uuid}
+                            onTouchEnd={() => this.selectAnnotation(annotation.uuid)}
+                          >
+                          </div>
+                        ) : null
+                    }
+                  </div>
+                )
+              })
+            }
+          </div>
+        </Tappable>
+
         <Drawer
           anchor="bottom"
           open={this.state.annotationOpen}
@@ -311,6 +334,7 @@ class DocumentViewer extends React.Component {
             }
           </div>
         </Drawer>
+        <FloatButton show={this.state.showFloatButton}/>
       </div>
     );
   }
