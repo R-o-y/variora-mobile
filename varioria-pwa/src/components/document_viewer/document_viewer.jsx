@@ -8,12 +8,12 @@ import {
 } from './document_viewer_helper'
 
 import AddComment from '@material-ui/icons/AddComment';
-import { AnnotationThread } from './annotation_thread'
+import AnnotationThread from './annotation_thread'
 import DoneAll from '@material-ui/icons/DoneAll';
 import Drawer from '@material-ui/core/Drawer';
 import FloatButton from './float_button'
 import React from 'react'
-import Rnd from 'react-rnd'
+import { Rnd } from 'react-rnd'
 import Tappable from 'react-tappable';
 import axios from 'axios'
 
@@ -53,6 +53,7 @@ class DocumentViewer extends React.Component {
       selectedAnnotation: undefined,
       mode: 'view',  // view or comment
       showFloatButton: true,
+      creatingAnnotationAtPageIndex: undefined,
       // pageCanvasWidth: 660,
     }
 
@@ -215,12 +216,12 @@ class DocumentViewer extends React.Component {
 
     this.changeToCommentMode = () => {
       this.setState({mode: 'comment'})
-      document.addEventListener('touchmove', this.lockScroll, { passive: false })
+      document.getElementsByTagName("BODY")[0].addEventListener('touchmove', this.lockScroll, { passive: false })
     }
 
     this.changeToViewMode = () => {
-      this.setState({mode: 'view'})
-      document.removeEventListener('touchmove', this.lockScroll)
+      this.setState({mode: 'view', creatingAnnotationAtPageIndex: undefined})
+      document.getElementsByTagName("BODY")[0].removeEventListener('touchmove', this.lockScroll)
     }
   }
 
@@ -252,6 +253,16 @@ class DocumentViewer extends React.Component {
 
   render() {
     var selectedAnnotation = this.state.selectedAnnotation
+
+    function getPositionRelativeToPageTopLeft(e, pageIndex) {
+      var touch_absolute_x = e.touches.item(0).pageX  // relative to the left top corner of the body
+      var touch_absolute_y = e.touches.item(0).pageY
+      const page = document.getElementById('page-div-' + pageIndex)
+      const page_top_left_x = page.offsetLeft
+      const page_top_left_y = page.offsetTop
+      return [touch_absolute_x - page_top_left_x, touch_absolute_y - page_top_left_y]
+    }
+
     var viewWrapper = (
       <div
         ref={(ele) => this.viewerWrappper = ele}
@@ -265,8 +276,48 @@ class DocumentViewer extends React.Component {
                 className='page-div' key={pageIndex}
                 id={'page-div-' + pageIndex}
                 style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
+                onTouchStart={(e) => {
+                  if (this.state.mode === 'view') return
+                  const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
+                  this.setState({
+                    creatingAnnotationAtPageIndex: pageIndex,
+                    newAnnotationX: bottom_right_relative_x,
+                    newAnnotationY: bottom_right_relative_y,
+                    newAnnotationWidth: 60,
+                    newAnnotationHeight: 60,
+                  })
+                }}
+                onTouchMove={(e) => {
+                  if (this.state.mode === 'view') return
+                  const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
+                  const annotationBeingCreated = document.getElementById('annotation-being-created')
+                  if (annotationBeingCreated !== e.touches.item(0).target && !annotationBeingCreated.contains(e.touches.item(0).target))
+                    console.log(bottom_right_relative_x)
+                }}
+                onTouchEnd={(e) => {
+                  if (this.state.mode === 'view') return
+                }}
               >
                 <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
+                {
+                  this.state.creatingAnnotationAtPageIndex === pageIndex ?
+                  <Rnd
+                    id='annotation-being-created'
+                    className='annotation-area'
+                    size={{ width: this.state.newAnnotationWidth,  height: this.state.newAnnotationHeight }}
+                    position={{ x: this.state.newAnnotationX, y: this.state.newAnnotationY }}
+                    onDragStop={(e, d) => { this.setState({ newAnnotationX: d.x, newAnnotationY: d.y }) }}
+                    onResize={(e, direction, ref, delta, position) => {
+                      this.setState({
+                        newAnnotationWidth: ref.style.width,
+                        newAnnotationHeight: ref.style.height,
+                        ...position,
+                      });
+                    }}
+                    style={{backgroundColor: 'rgba(0, 170, 0, 0.18)'}}
+                  >
+                  </Rnd> : null
+                }
                 {
                   this.state.annotationsByPage[pageIndex] !== undefined ?
                     this.state.annotationsByPage[pageIndex].map(annotation =>
@@ -284,7 +335,10 @@ class DocumentViewer extends React.Component {
                         ref={ele => this.annotationAreas[annotation.uuid] = ele}
                         annotation-id={annotation.pk}
                         annotation-uuid={annotation.uuid}
-                        onTouchEnd={() => this.selectAnnotation(annotation.uuid)}
+                        onTouchEnd={() => {
+                          if (this.state.mode === 'comment') return
+                          this.selectAnnotation(annotation.uuid)
+                        }}
                       >
                       </div>
                     ) : null
@@ -326,6 +380,7 @@ class DocumentViewer extends React.Component {
             // console.log(e.touches)
             // console.log(this.touchLength)
             // if (this.touchLength < TAP_TIME_THRESHOLD) {
+            if (this.state.mode === 'comment') return
             const target = e.target
             if (target.classList.contains('page-canvas'))
               this.deselectAnnotation()
