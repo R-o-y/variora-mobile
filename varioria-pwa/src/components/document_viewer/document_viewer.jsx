@@ -278,6 +278,10 @@ class DocumentViewer extends React.Component {
                 style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
                 onTouchStart={(e) => {
                   if (this.state.mode === 'view') return
+                  const annotationBeingCreated = document.getElementById('annotation-being-created')
+                  if (annotationBeingCreated !== null)
+                    if (annotationBeingCreated === e.touches.item(0).target || annotationBeingCreated.contains(e.touches.item(0).target))
+                      return
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
                     creatingAnnotationAtPageIndex: pageIndex,
