@@ -1,7 +1,6 @@
 import Button from '@material-ui/core/Button';
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles';
-import AddComment from '@material-ui/icons/AddComment';
 import Grow from '@material-ui/core/Grow';
 
 
@@ -26,13 +25,9 @@ class FlaoatingButton extends React.Component {
       content: undefined,
     };
 
-    this.handleChange = (event, value) => {
-      this.setState({ value });
-    };
-
-    this.handleChangeIndex = index => {
-      this.setState({ value: index });
-    };
+    this.onClick = () => {
+      this.props.clickCallback()
+    }
   }
 
 
@@ -49,10 +44,10 @@ class FlaoatingButton extends React.Component {
           <Button
             variant="fab"
             className={classes.fab + ' scan-receipt-btn'}
-            style={{position: 'fixed', bottom: 60, zIndex: 1000, backgroundColor: 'rgb(27, 163, 156)',}}
+            style={{position: 'fixed', bottom: 60, zIndex: 1000, backgroundColor: this.props.color,}}
             onClick={this.onClick}
           >
-            <AddComment style={{ color: 'white' }} />
+            {this.props.icon}
           </Button>
         </Grow>
       // </div>

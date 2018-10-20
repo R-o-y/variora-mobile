@@ -7,7 +7,9 @@ import {
   range,
 } from './document_viewer_helper'
 
-import AnnotationThread from './annotation_thread'
+import AddComment from '@material-ui/icons/AddComment';
+import { AnnotationThread } from './annotation_thread'
+import DoneAll from '@material-ui/icons/DoneAll';
 import Drawer from '@material-ui/core/Drawer';
 import FloatButton from './float_button'
 import React from 'react'
@@ -15,8 +17,6 @@ import Rnd from 'react-rnd'
 import Tappable from 'react-tappable';
 import axios from 'axios'
 
-var HtmlToReactParser = require('html-to-react').Parser;
-var htmlToReactParser = new HtmlToReactParser();
 // import Drawer from 'rc-drawer';
 
 // const TAP_TIME_THRESHOLD = 180  // in milisecond
@@ -207,6 +207,21 @@ class DocumentViewer extends React.Component {
       this.setState({ annotationOpen: false });
       this.setState({ selectedAnnotation: undefined })
     }
+
+    this.lockScroll = (e) => {
+      if (e.targetTouches.length === 1)
+        e.preventDefault()
+    }
+
+    this.changeToCommentMode = () => {
+      this.setState({mode: 'comment'})
+      document.addEventListener('touchmove', this.lockScroll, { passive: false })
+    }
+
+    this.changeToViewMode = () => {
+      this.setState({mode: 'view'})
+      document.removeEventListener('touchmove', this.lockScroll)
+    }
   }
 
   componentDidMount() {
@@ -237,6 +252,50 @@ class DocumentViewer extends React.Component {
 
   render() {
     var selectedAnnotation = this.state.selectedAnnotation
+    var viewWrapper = (
+      <div
+        ref={(ele) => this.viewerWrappper = ele}
+        className='viewer-wrapper'
+      >
+        {
+          range(this.state.numPages).map((i) => {
+            const pageIndex = i + 1
+            return (
+              <div
+                className='page-div' key={pageIndex}
+                id={'page-div-' + pageIndex}
+                style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
+              >
+                <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
+                {
+                  this.state.annotationsByPage[pageIndex] !== undefined ?
+                    this.state.annotationsByPage[pageIndex].map(annotation =>
+                      <div
+                        className='annotation-area'
+                        key={annotation.pk}
+                        style={{
+                          background: annotation.frame_color,
+                          position: 'absolute',
+                          width: this.state.sampleWidth * annotation.width_percent,
+                          height: this.state.sampleHeight * annotation.height_percent,
+                          left: this.state.sampleWidth * annotation.left_percent,
+                          top: this.state.sampleHeight * annotation.top_percent,
+                        }}
+                        ref={ele => this.annotationAreas[annotation.uuid] = ele}
+                        annotation-id={annotation.pk}
+                        annotation-uuid={annotation.uuid}
+                        onTouchEnd={() => this.selectAnnotation(annotation.uuid)}
+                      >
+                      </div>
+                    ) : null
+                }
+              </div>
+            )
+          })
+        }
+      </div>
+    )
+
     return (
       <div>
         <NavBar
@@ -276,47 +335,7 @@ class DocumentViewer extends React.Component {
             // clearInterval(this.touchTimer)
           }}
         >
-          <div
-            ref={(ele) => this.viewerWrappper = ele}
-            className='viewer-wrapper'
-          >
-            {
-              range(this.state.numPages).map((i) => {
-                const pageIndex = i + 1
-                return (
-                  <div
-                    className='page-div' key={pageIndex}
-                    id={'page-div-' + pageIndex}
-                    style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
-                  >
-                    <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
-                    {
-                      this.state.annotationsByPage[pageIndex] !== undefined ?
-                        this.state.annotationsByPage[pageIndex].map(annotation =>
-                          <div
-                            className='annotation-area'
-                            key={annotation.pk}
-                            style={{
-                              background: annotation.frame_color,
-                              position: 'absolute',
-                              width: this.state.sampleWidth * annotation.width_percent,
-                              height: this.state.sampleHeight * annotation.height_percent,
-                              left: this.state.sampleWidth * annotation.left_percent,
-                              top: this.state.sampleHeight * annotation.top_percent,
-                            }}
-                            ref={ele => this.annotationAreas[annotation.uuid] = ele}
-                            annotation-id={annotation.pk}
-                            annotation-uuid={annotation.uuid}
-                            onTouchEnd={() => this.selectAnnotation(annotation.uuid)}
-                          >
-                          </div>
-                        ) : null
-                    }
-                  </div>
-                )
-              })
-            }
-          </div>
+          {viewWrapper}
         </Tappable>
 
         <Drawer
@@ -334,7 +353,9 @@ class DocumentViewer extends React.Component {
             }
           </div>
         </Drawer>
-        <FloatButton show={this.state.showFloatButton}/>
+        { this.state.mode === 'view'
+          ? <FloatButton color='rgb(27, 163, 156)' icon={<AddComment style={{ color: 'white' }} />} show={this.state.showFloatButton} clickCallback={this.changeToCommentMode} />
+          : <FloatButton color='#108ee9' icon={<DoneAll style={{ color: 'white' }} />} show={true} clickCallback={this.changeToViewMode} />}
       </div>
     );
   }
