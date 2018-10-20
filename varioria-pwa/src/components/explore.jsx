@@ -33,18 +33,17 @@ class Explore extends Component {
   }
 
   renderDocumentsSubgrid(documents, title) {
-    console.log(documents)
     const data = documents.map((element) => {
       return (
         <div>
-          <GridListTile style={{height: '20vh', width: '14.14vh'}} key={element.image} onClick={(element) => {console.log(element.slug)}}>
+          <GridListTile style={{height: '20vh', width: '14.14vh'}} key={element.open_url} onClick={() => {this.props.history.push(`${element.open_url}`)}}>
               <Grid container alignItems="center" style={{height: '100%'}}>
                 <img src={element.image} alt={element.title} style={{width:'100%'}}/>
               </Grid>
               <GridListTileBar
                 style={{height: '25%'}}
-                title={element.title}
-                subtitle={<span>{<TimeAgo date={element.upload_time} />}</span>}
+                title={<div style={{fontSize: '0.8rem'}}>{element.title}</div>}
+                subtitle={<div style={{fontSize: '0.7rem'}}>{<TimeAgo date={element.upload_time} />}</div>}
               />
           </GridListTile>
         </div>

@@ -39,7 +39,6 @@ export function getMyReadlists() {
 export function getReadlist(slug) {
   const url = '/file_viewer/api/readlists/' + slug;
   const request = axios.get(url);
-  console.log("url is " + url)
 
   return {type: READLIST_GET, payload: request};
 }
@@ -106,6 +105,5 @@ export function createCoterie(data) {
 export function getSearchResults(term) {
   const url = 'api/search?key=' + term;
   const request = axios.get(url);
-  console.log(request);
   return {type: SEARCHRESULT_GET, payload: request};
 }
