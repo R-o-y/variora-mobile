@@ -5,6 +5,7 @@ export const DOCUMENT_GET_EXPLORE = 'document_get_explore';
 export const DOCUMENT_UPLOAD = 'document_upload';
 export const DOCUMENT_RENAME = 'document_rename';
 export const DOCUMENT_DELETE_SUCCESS = 'document_delete_success';
+export const DOCUMENT_UNCOLLECT_SUCCESS = 'document_uncollect_success';
 
 export const READLIST_GET_MY = 'readlist_get_my';
 export const READLIST_GET_EXPLORE = 'readlist_get_explore';

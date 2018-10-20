@@ -15,7 +15,8 @@ import {
   READLIST_GET,
   DOCUMENT_UPLOAD,
   DOCUMENT_RENAME,
-  DOCUMENT_DELETE_SUCCESS
+  DOCUMENT_DELETE_SUCCESS,
+  DOCUMENT_UNCOLLECT_SUCCESS
 } from './types';
 
 
@@ -74,6 +75,26 @@ export function deleteDocument(url, data, slug) {
 
 export function deleteDocumentSuccess(slug) {
   return {type: DOCUMENT_DELETE_SUCCESS, payload: slug}
+}
+
+export function uncollectDocument(url, data, slug) {
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(uncollectDocumentSuccess(slug));
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
+export function uncollectDocumentSuccess(slug) {
+  return {type: DOCUMENT_UNCOLLECT_SUCCESS, payload: slug}
 }
 
 

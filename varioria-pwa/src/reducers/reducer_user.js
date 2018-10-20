@@ -4,6 +4,7 @@ import {
   DOCUMENT_GET_MY,
   DOCUMENT_UPLOAD,
   DOCUMENT_DELETE_SUCCESS,
+  DOCUMENT_UNCOLLECT_SUCCESS,
   COTERIE_GET_MY,
   COTERIE_SWITCH
 } from '../actions/types';
@@ -32,6 +33,9 @@ export default function (state = [], action) {
         { uploadedDocuments: newUploadedDocuments,
           collectedDocuments: newCollectedDocuments
         });
+    case DOCUMENT_UNCOLLECT_SUCCESS:
+      const newCollected = _.filter(state.collectedDocuments, (slug) => {return slug !== action.payload});
+      return _.extend({}, state, {collectedDocuments: newCollected});
     case COTERIE_GET_MY:
       const joinedCoteries = action.payload.data.joinedCoteries;
       const administratedCoteries = action.payload.data.administratedCoteries;
