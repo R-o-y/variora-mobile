@@ -8,7 +8,6 @@ import {
   NOTIFICATION_GET_COMBINED,
   NOTIFICATION_READ,
   COTERIE_GET_MY,
-  COTERIE_SWITCH,
   COTERIE_CREATE,
   COTERIE_INVITE,
   SEARCHTERM_UPDATE,
@@ -153,13 +152,6 @@ export function getMyCoteries() {
   return {type: COTERIE_GET_MY, payload: request};
 }
 
-export function switchCoterie(coteriePk) {
-  return {
-    type: COTERIE_SWITCH,
-    payload: {
-      coteriePk
-    }
-  }
 }
 
 export function createCoterie(data) {

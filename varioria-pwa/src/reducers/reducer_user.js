@@ -6,7 +6,6 @@ import {
   DOCUMENT_DELETE_SUCCESS,
   DOCUMENT_UNCOLLECT_SUCCESS,
   COTERIE_GET_MY,
-  COTERIE_SWITCH
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -38,11 +37,9 @@ export default function (state = [], action) {
       const joinedCoteries = action.payload.data.joinedCoteries;
       const administratedCoteries = action.payload.data.administratedCoteries;
       return _.extend({}, state,
-        { joinedCoteries: _.map(joinedCoteries, 'pk'),
-          administratedCoteries: _.map(administratedCoteries, 'pk')
+        { joinedCoteries: _.map(joinedCoteries, 'uuid'),
+          administratedCoteries: _.map(administratedCoteries, 'uuid')
         });
-    case COTERIE_SWITCH:
-      return _.extend({}, state, { currentCoterie: action.payload.coteriePk })
     default:
       return state;
   }

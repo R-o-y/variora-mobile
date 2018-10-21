@@ -40,6 +40,11 @@ class Navbar extends Component {
     });
   }
 
+  getNewPathname(uuid) {
+    let currentTab = this.props.history.location.pathname.split('/').pop();
+    this.props.history.push(`/groups/${uuid}/${currentTab}`);
+  }
+
   renderCoterieItem(coteriePk) {
     let coterie = this.props.coteries[coteriePk];
     return (
@@ -52,7 +57,7 @@ class Navbar extends Component {
             { text: 'Cancel' },
             { text: 'OK', style:{color:'#1BA39C'},
               onPress: () => {
-              this.props.switchCoterie(coterie.pk);
+              this.getNewPathname(coterie.uuid);
               this.onClose('coterieModal');
             }},
           ])

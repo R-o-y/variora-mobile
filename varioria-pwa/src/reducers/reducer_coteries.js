@@ -10,8 +10,8 @@ export default function (state = [], action) {
       const joinedCoteries = action.payload.data.joinedCoteries;
       const administratedCoteries = action.payload.data.administratedCoteries;
       return _.extend(
-        _.extend({}, state, _.keyBy(joinedCoteries, 'pk')),
-        _.keyBy(administratedCoteries, 'pk'));
+        _.extend({}, state, _.keyBy(joinedCoteries, 'uuid')),
+        _.keyBy(administratedCoteries, 'uuid'));
     case COTERIE_CREATE:
       const new_coterie = action.payload.data;
       return _.extend({}, state, {[new_coterie.pk]: new_coterie});
