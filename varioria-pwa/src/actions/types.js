@@ -19,3 +19,4 @@ export const SEARCHRESULT_GET = 'search_result_get';
 export const COTERIE_GET_MY = 'coterie_get_my';
 export const COTERIE_SWITCH = 'coterie_switch';
 export const COTERIE_CREATE = 'coterie_create';
+export const COTERIE_INVITE = 'coterie_invite';

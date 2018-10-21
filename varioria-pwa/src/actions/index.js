@@ -10,17 +10,19 @@ import {
   COTERIE_GET_MY,
   COTERIE_SWITCH,
   COTERIE_CREATE,
+  COTERIE_INVITE,
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
   READLIST_GET,
   DOCUMENT_UPLOAD,
   DOCUMENT_RENAME,
   DOCUMENT_DELETE_SUCCESS,
-  DOCUMENT_UNCOLLECT_SUCCESS
+  DOCUMENT_UNCOLLECT_SUCCESS,
 } from './types';
 
 
-const FILE_UPLOAD_API_URL = '/file_viewer/api/documents/upload'
+const FILE_UPLOAD_API_URL = '/file_viewer/api/documents/upload';
+const INVITE_TO_COTERIE_API_URL = '/coterie/api/invite';
 
 export function getUser() {
   const url = '/api/user';
@@ -177,4 +179,14 @@ export function getSearchResults(term) {
   const request = axios.get(url);
   console.log(request);
   return {type: SEARCHRESULT_GET, payload: request};
+}
+
+export function inviteToCoterie(data) {
+  const request = axios({
+    method: 'post',
+    url: INVITE_TO_COTERIE_API_URL,
+    data
+  });
+
+  return {type: COTERIE_INVITE, payload: request};
 }
