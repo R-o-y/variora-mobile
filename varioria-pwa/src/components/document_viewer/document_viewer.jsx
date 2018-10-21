@@ -1,29 +1,31 @@
 import './document_viewer.css'
 
 import { ActivityIndicator, Icon, NavBar, TextareaItem } from 'antd-mobile';
+import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {
   constructGetAnnotationsQueryUrl,
   constructGetDocumentQueryUrl,
   range,
 } from './document_viewer_helper'
+import {
+  faPaperPlane,
+  faTimesCircle
+} from '@fortawesome/free-solid-svg-icons'
 
 import AddComment from '@material-ui/icons/AddComment';
 import AnnotationThread from './annotation_thread'
+import Avatar from '@material-ui/core/Avatar';
 import DoneAll from '@material-ui/icons/DoneAll';
 import Drawer from '@material-ui/core/Drawer';
 import FloatButton from './float_button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Rnd } from 'react-rnd'
 import Tappable from 'react-tappable';
-import axios from 'axios'
 import TextField from '@material-ui/core/TextField';
-import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import axios from 'axios'
+import { getCookie } from '../../utilities/helper';
 import { library } from '@fortawesome/fontawesome-svg-core'
-import {
-  faPaperPlane, faTimesCircle
-} from '@fortawesome/free-solid-svg-icons'
 
 library.add(faPaperPlane, faTimesCircle)
 
@@ -237,8 +239,32 @@ class DocumentViewer extends React.Component {
     }
 
     this.postAnnotation = () => {
-      // axios here
-      this.setState({mode: 'view', creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false})
+      var data = new FormData()
+      data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+      data.append('operation', 'annotate')
+      data.append('page_id', 'page_id_' + this.state.creatingAnnotationAtPageIndex)
+      data.append('annotation_content', this.state.newAnnotationContent)
+      data.append('top_percent', this.state.newAnnotationY / this.state.sampleHeight)
+      data.append('left_percent', this.state.newAnnotationX / this.state.sampleWidth)
+      data.append('height_percent', this.state.newAnnotationHeight / this.state.sampleHeight)
+      data.append('width_percent', this.state.newAnnotationWidth / this.state.sampleWidth)
+      data.append('frame_color', document.getElementById('annotation-being-created').style.backgroundColor)
+      data.append('document_id', this.state.document.pk)
+      data.append('is_public', true)
+      axios.post(window.location.pathname + '/', data).then(response => {
+        var newAnnotation = response.data['new_annotation_json']
+        var annotationsByPage = this.state.annotationsByPage
+        var annotations = this.state.annotations
+        annotationsByPage[parseInt(newAnnotation.page_index)].push(newAnnotation)
+        annotations[newAnnotation.uuid] = newAnnotation
+        this.setState({
+          annotations: annotations,
+          annotationsByPage: annotationsByPage,
+          newAnnotationContent: '',
+          mode: 'view', creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false
+        })
+        document.getElementsByTagName("BODY")[0].removeEventListener('touchmove', this.lockScroll)
+      })
     }
 
     this.cancelCurrentAnnotation = () => {
@@ -251,6 +277,7 @@ class DocumentViewer extends React.Component {
       this.setState({
         document: response.data
       })
+      console.log(response.data)
       PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
 
       const self = this
@@ -332,10 +359,6 @@ class DocumentViewer extends React.Component {
                 }}
                 onTouchEnd={(e) => {
                   if (this.state.mode === 'view') return
-                  console.log(this.state.newAnnotationX)
-                  console.log(this.state.newAnnotationY)
-                  console.log(this.state.newAnnotationWidth)
-                  console.log(this.state.newAnnotationHeight)
                   this.setState({newAnnotationInputOpen: true})
                 }}
               >
@@ -350,8 +373,8 @@ class DocumentViewer extends React.Component {
                     onDragStop={(e, d) => { this.setState({ newAnnotationX: d.x, newAnnotationY: d.y }) }}
                     onResize={(e, direction, ref, delta, position) => {
                       this.setState({
-                        newAnnotationWidth: ref.style.width,
-                        newAnnotationHeight: ref.style.height,
+                        newAnnotationWidth: parseFloat(ref.style.width),
+                        newAnnotationHeight: parseFloat(ref.style.height),
                         ...position,
                       });
                     }}
@@ -405,8 +428,7 @@ class DocumentViewer extends React.Component {
           ]}
           style={{
             boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
-            zIndex: 10000000,
-            position: 'relative',
+            zIndex: 10000000, position: 'relative',
             // borderBottom: '1px solid #c8c8c8',
             // height: 38
           }}
@@ -455,9 +477,8 @@ class DocumentViewer extends React.Component {
         </Drawer>
 
         <Drawer
-          anchor="bottom"
+          anchor="bottom" variant='persistent'
           open={this.state.newAnnotationInputOpen}
-          variant='persistent'
         >
           <div style={{textAlign: 'center'}}>
             {/* <TextareaItem
@@ -488,12 +509,8 @@ class DocumentViewer extends React.Component {
                 id="standard-bare"
                 // className={classes.textField}
                 // defaultValue="Bare"
-                placeholder="Placeholder"
-                margin="normal"
-                style={{width: '66vw', top: -2}}
-                multiline
-                fullWidth
-                value={this.state.newAnnotationContent}
+                placeholder="Placeholder" margin="normal" style={{width: '66vw', top: -2}}
+                multiline fullWidth value={this.state.newAnnotationContent}
                 onChange={event => {
                   this.setState({newAnnotationContent: event.target.value})
                 }}
