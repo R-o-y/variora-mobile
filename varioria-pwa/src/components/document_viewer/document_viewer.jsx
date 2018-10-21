@@ -287,19 +287,30 @@ class DocumentViewer extends React.Component {
                     creatingAnnotationAtPageIndex: pageIndex,
                     newAnnotationX: bottom_right_relative_x,
                     newAnnotationY: bottom_right_relative_y,
-                    newAnnotationWidth: 60,
-                    newAnnotationHeight: 60,
+                    newAnnotationWidth: 0,
+                    newAnnotationHeight: 0,
                   })
                 }}
                 onTouchMove={(e) => {
                   if (this.state.mode === 'view') return
-                  const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   const annotationBeingCreated = document.getElementById('annotation-being-created')
-                  if (annotationBeingCreated !== e.touches.item(0).target && !annotationBeingCreated.contains(e.touches.item(0).target))
-                    console.log(bottom_right_relative_x)
+                  if (annotationBeingCreated === e.touches.item(0).target ||annotationBeingCreated.contains(e.touches.item(0).target)) return
+
+                  const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
+
+                  this.setState({
+                    creatingAnnotationAtPageIndex: pageIndex,
+                    newAnnotationWidth: bottom_right_relative_x - this.state.newAnnotationX,
+                    newAnnotationHeight: bottom_right_relative_y - this.state.newAnnotationY,
+                  })
+
                 }}
                 onTouchEnd={(e) => {
                   if (this.state.mode === 'view') return
+                  console.log(this.state.newAnnotationX)
+                  console.log(this.state.newAnnotationY)
+                  console.log(this.state.newAnnotationWidth)
+                  console.log(this.state.newAnnotationHeight)
                 }}
               >
                 <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
