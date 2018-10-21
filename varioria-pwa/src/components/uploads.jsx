@@ -21,6 +21,7 @@ class Uploads extends Component {
       uploadedActionModal: false,
       collectedActionModal: false,
       selectedDocument: null,
+      loading: true
     };
 
     this.handleFiles = () => {
@@ -37,23 +38,27 @@ class Uploads extends Component {
       data.append('file_upload', file)
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       this.setState({ uploading: true })
-      // NOT SURE HOW TO HANDLE UPLOADING
       Toast.loading('Loading...')
         this.props.uploadDocument(data).then(() => {
           Toast.success('Upload success!', 1);
           this.setState({ uploading: false })
         })
-        // .catch(() => {
-        //   Toast.fail('Upload failed!', 1);
-        //   this.setState({ uploading: false })
-        // })
 
       this.finput.value = ''
     }
   }
 
   componentDidMount() {
-    this.props.getMyDocuments();
+    let groupUuid = this.props.match.params.groupUuid;
+    if (groupUuid) {
+      this.props.getMyCoteriesDocument(groupUuid).then(() => {
+        this.setState({loading: false})
+      })
+    } else {
+      this.props.getMyDocuments().then(() => {
+        this.setState({loading: false})
+      })
+    }
   }
 
   showModal(key, e) {
@@ -129,6 +134,17 @@ class Uploads extends Component {
   }
 
   renderCollectedList(list) {
+    if (!list.length) {
+      return (
+        <List>
+          <List.Item>
+            <div style={{color: 'grey', textAlign:'center' }}>
+              You haven't collected any document.
+            </div>
+          </List.Item>
+        </List>
+      )
+    }
     const items = list.map((itemId) => {
       return this.renderListItem(this.props.documents[itemId], false)
     })
@@ -280,18 +296,20 @@ class Uploads extends Component {
   }
 
   render() {
-    if (_.isEmpty(this.props.documents)) {
+    console.log(this.props.documents);
+
+    if (this.state.loading) {
       return (
         <div>
           <Navbar title="Uploads" history={this.props.history} />
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
-      );
+      )
     }
 
     return (
       <div>
-        <Navbar title="Uploads" history={this.props.history} />
+        <Navbar title="Uploads" history={this.props.history} group={this.props.match.params.groupUuid} />
         {this.renderStickyTab()}
         {this.renderUploadedActionModal()}
         {this.renderCollectedActionModal()}

@@ -6,6 +6,7 @@ import {
   DOCUMENT_DELETE_SUCCESS,
   DOCUMENT_UNCOLLECT_SUCCESS,
   COTERIE_GET_MY,
+  COTERIE_GET_MY_DOCUMENTS,
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -20,9 +21,15 @@ export default function (state = [], action) {
         { uploadedDocuments: _.map(uploadedDocuments, 'slug'),
           collectedDocuments: _.map(collectedDocuments, 'slug')
         });
+    case COTERIE_GET_MY_DOCUMENTS:
+      const coterieMyUploadedDocuments = action.payload.data;
+      return _.extend({}, state,
+        { uploadedDocuments: _.map(coterieMyUploadedDocuments, 'slug'),
+          collectedDocuments: []
+      });
     case DOCUMENT_UPLOAD:
       const addedUploadedDocuments = _.concat(state.uploadedDocuments, action.payload.data.slug);
-      return _.extend({}, state,{ uploadedDocuments: addedUploadedDocuments });
+      return _.extend({}, state, { uploadedDocuments: addedUploadedDocuments });
     case DOCUMENT_DELETE_SUCCESS:
       const newUploadedDocuments = _.filter(state.uploadedDocuments, (slug) => {return slug !== action.payload});
       const newCollectedDocuments = _.filter(state.collectedDocuments, (slug) => {return slug !== action.payload});

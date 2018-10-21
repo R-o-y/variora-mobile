@@ -8,6 +8,7 @@ import {
   NOTIFICATION_GET_COMBINED,
   NOTIFICATION_READ,
   COTERIE_GET_MY,
+  COTERIE_GET_MY_DOCUMENTS,
   COTERIE_CREATE,
   COTERIE_INVITE,
   SEARCHTERM_UPDATE,
@@ -152,6 +153,11 @@ export function getMyCoteries() {
   return {type: COTERIE_GET_MY, payload: request};
 }
 
+export function getMyCoteriesDocument(uuid) {
+  const url = `/coteries/api/coteries/${uuid}/members/me/uploaded-documents`;
+  const request = axios.get(url);
+
+  return {type: COTERIE_GET_MY_DOCUMENTS, payload: request};
 }
 
 export function createCoterie(data) {
