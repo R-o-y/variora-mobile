@@ -40,6 +40,11 @@ class Navbar extends Component {
     });
   }
 
+  goToGroup(uuid) {
+    let currentTab = this.props.history.location.pathname.split('/').pop();
+    this.props.history.push(`/groups/${uuid}/${currentTab}`);
+  }
+
   renderCoterieItem(coteriePk) {
     let coterie = this.props.coteries[coteriePk];
     return (
@@ -52,7 +57,7 @@ class Navbar extends Component {
             { text: 'Cancel' },
             { text: 'OK', style:{color:'#1BA39C'},
               onPress: () => {
-              this.props.switchCoterie(coterie.pk);
+              this.goToGroup(coterie.uuid);
               this.onClose('coterieModal');
             }},
           ])
@@ -86,10 +91,10 @@ class Navbar extends Component {
             />
           }
           rightContent={[
-            <Icon 
-              key="0" 
-              type="search" 
-              style={{ marginRight: '16px' }} 
+            <Icon
+              key="0"
+              type="search"
+              style={{ marginRight: '16px' }}
               onClick={(e) => {this.props.history.push('/search')}} />,
             <div key = "1">
             <PeopleOutlineIcon
@@ -112,6 +117,21 @@ class Navbar extends Component {
                 }
                 className="popup-list"
               >
+                <List.Item
+                  onClick={() => {
+                    let currentTab = this.props.history.location.pathname.split('/').pop();
+                    Modal.alert('Switch to public?', 'This is where everyone is in.', [
+                      { text: 'Cancel' },
+                      { text: 'OK', style: {color: '#1BA39C'},
+                        onPress: () => {
+                        this.props.history.push(`/${currentTab}`);
+                        this.onClose('coterieModal');
+                      }},
+                    ])
+                  }}
+                >
+                  Public
+                </List.Item>
                 { !hasJoinedCoteries && !hasAdministratedCoteries &&
                   <div>You have not joined any groups.</div>
                 }
