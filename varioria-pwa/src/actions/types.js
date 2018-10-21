@@ -20,3 +20,7 @@ export const SEARCHRESULT_GET = 'search_result_get';
 export const COTERIE_GET_MY = 'coterie_get_my';
 export const COTERIE_CREATE = 'coterie_create';
 export const COTERIE_INVITE = 'coterie_invite';
+
+export const INVITATION_GET = 'invitation_get';
+export const INVITATION_ACCEPT = 'invitation_accept';
+export const INVITATION_DECLINE = 'invitation_decline';

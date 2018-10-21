@@ -60,7 +60,7 @@ class Settings extends Component {
 
   handleFormSubmit() {
     var data = new FormData();
-    data.append('coterie_id', this.props.user.currentCoterie);
+    data.append('coterie_id', this.props.coteries[this.props.match.params.groupUuid].pk);
     data.append('invitee_emails', this.state.emails);
     data.append('invitation_message', this.state.message);
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));

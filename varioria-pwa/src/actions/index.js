@@ -18,11 +18,15 @@ import {
   DOCUMENT_RENAME,
   DOCUMENT_DELETE_SUCCESS,
   DOCUMENT_UNCOLLECT_SUCCESS,
+  INVITATION_GET,
+  INVITATION_ACCEPT,
+  INVITATION_DECLINE
 } from './types';
 
 
 const FILE_UPLOAD_API_URL = '/file_viewer/api/documents/upload';
 const INVITE_TO_COTERIE_API_URL = '/coterie/api/invite';
+const GET_INVITATION_API_URL = '/coterie/api/invitations';
 
 export function getUser() {
   const url = '/api/user';
@@ -136,13 +140,12 @@ export function getCombinedNotifications() {
 }
 
 export function markNotificationAsRead(url, slug) {
-  axios.get(url);
+  const request = axios.get(url);
 
   return {
     type: NOTIFICATION_READ,
-    payload: {
-      slug
-    }
+    payload: request,
+    slug
   }
 }
 
@@ -185,4 +188,30 @@ export function inviteToCoterie(data) {
   });
 
   return {type: COTERIE_INVITE, payload: request};
+}
+
+export function getInvitations() {
+  const request = axios.get(GET_INVITATION_API_URL);
+
+  return {type: INVITATION_GET, payload: request};
+}
+
+export function acceptInvitation(url, data, pk) {
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  })
+
+  return { type: INVITATION_ACCEPT, payload: request, pk }
+}
+
+export function declineInvitation(url, data, pk) {
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  })
+
+  return { type: INVITATION_DECLINE, payload: request, pk }
 }
