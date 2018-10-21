@@ -32,7 +32,7 @@ export function getUser() {
 }
 
 export function getMyDocuments() {
-  const url = 'file_viewer/api/documents';
+  const url = '/file_viewer/api/documents';
   const request = axios.get(url);
 
   return {type: DOCUMENT_GET_MY, payload: request};
@@ -101,7 +101,7 @@ export function uncollectDocumentSuccess(slug) {
 
 
 export function getMyReadlists() {
-  const url = 'file_viewer/api/readlists';
+  const url = '/file_viewer/api/readlists';
   const request = axios.get(url);
 
   return {type: READLIST_GET_MY, payload: request};
@@ -116,21 +116,21 @@ export function getReadlist(slug) {
 }
 
 export function getExploreDocuments() {
-  const url = 'file_viewer/api/documents/explore';
+  const url = '/file_viewer/api/documents/explore';
   const request = axios.get(url);
 
   return {type: DOCUMENT_GET_EXPLORE, payload: request};
 }
 
 export function getExploreReadlists() {
-  const url = 'file_viewer/api/readlists/explore';
+  const url = '/file_viewer/api/readlists/explore';
   const request = axios.get(url);
 
   return {type: READLIST_GET_EXPLORE, payload: request};
 }
 
 export function getCombinedNotifications() {
-  const url = 'notifications/api/combined';
+  const url = '/notifications/api/combined';
   const request = axios.get(url);
 
   return {type: NOTIFICATION_GET_COMBINED, payload: request};
@@ -148,7 +148,7 @@ export function markNotificationAsRead(url, slug) {
 }
 
 export function getMyCoteries() {
-  const url = 'coterie/api/coteries';
+  const url = '/coterie/api/coteries';
   const request = axios.get(url);
 
   return {type: COTERIE_GET_MY, payload: request};
@@ -164,7 +164,7 @@ export function switchCoterie(coteriePk) {
 }
 
 export function createCoterie(data) {
-  const url = 'coterie/api/coteries/create';
+  const url = '/coterie/api/coteries/create';
   const request = axios({
     method: 'post',
     url,
@@ -175,7 +175,7 @@ export function createCoterie(data) {
 }
 
 export function getSearchResults(term) {
-  const url = 'api/search?key=' + term;
+  const url = '/api/search?key=' + term;
   const request = axios.get(url);
   console.log(request);
   return {type: SEARCHRESULT_GET, payload: request};

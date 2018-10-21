@@ -36,8 +36,8 @@ class Explore extends Component {
     console.log(documents)
     const data = documents.map((element) => {
       return (
-        <div>
-          <GridListTile style={{height: '20vh', width: '14.14vh'}} key={element.image} onClick={(element) => {console.log(element.slug)}}>
+        <div key={element.image}>
+          <GridListTile style={{height: '20vh', width: '14.14vh'}} onClick={(element) => {console.log(element.slug)}}>
               <Grid container alignItems="center" style={{height: '100%'}}>
                 <img src={element.image} alt={element.title} style={{width:'100%'}}/>
               </Grid>
