@@ -14,7 +14,10 @@ class BottomTabBar extends React.Component {
       selectedTab: this.props.path.split('/').pop(),
       hidden: false
     };
-    this.parentPath = this.props.path.split('/').slice(0, -1).join('/');
+  }
+
+  getParentPath() {
+    return this.props.path.split('/').slice(0, -1).join('/');
   }
 
   render() {
@@ -36,7 +39,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'explore',
               });
-              this.props.history.push(`${this.parentPath}/explore`);
+              this.props.history.push(`${this.getParentPath()}/explore`);
             }}
           >
             {this.state.selectedTab === 'explore' && this.props.content}
@@ -51,7 +54,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'uploads',
               });
-              this.props.history.push(`${this.parentPath}/uploads`);
+              this.props.history.push(`${this.getParentPath()}/uploads`);
             }}
           >
             {this.state.selectedTab === 'uploads' && this.props.content}
@@ -66,7 +69,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'readlists',
               });
-              this.props.history.push(`${this.parentPath}/readlists`);
+              this.props.history.push(`${this.getParentPath()}/readlists`);
             }}
           >
             {this.state.selectedTab === 'readlists' && this.props.content}
@@ -81,7 +84,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'notifications',
               });
-              this.props.history.push(`${this.parentPath}/notifications`);
+              this.props.history.push(`${this.getParentPath()}/notifications`);
             }}
           >
             {this.state.selectedTab === 'notifications' && this.props.content}
@@ -96,7 +99,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'settings',
               });
-              this.props.history.push(`${this.parentPath}/settings`);
+              this.props.history.push(`${this.getParentPath()}/settings`);
             }}
           >
             {this.state.selectedTab === 'settings' && this.props.content}

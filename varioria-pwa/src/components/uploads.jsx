@@ -61,6 +61,17 @@ class Uploads extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    let newGroupUuid = this.props.match.params.groupUuid;
+    if (newGroupUuid !== prevProps.match.params.groupUuid) {
+      if (newGroupUuid) {
+        this.props.getMyCoteriesDocument(newGroupUuid);
+      } else {
+        this.props.getMyDocuments();
+      }
+    }
+  }
+
   showModal(key, e) {
     e.preventDefault();
     this.setState({

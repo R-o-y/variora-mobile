@@ -177,7 +177,7 @@ class Settings extends Component {
       );
     }
 
-    if (!this.props.user.currentCoterie) {
+    if (!this.props.match.params.groupUuid) {
       return (
         <div>
           <Navbar title="Settings" history={this.props.history} />
@@ -186,7 +186,7 @@ class Settings extends Component {
       )
     }
 
-    const currentCoterie = this.props.coteries[this.props.user.currentCoterie];
+    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
     return (
       <div>
         <Navbar title="Settings" history={this.props.history}/>
