@@ -24,7 +24,7 @@ class Explore extends Component {
     return (
       <Sticky>
         {({ style }) =>
-          <div style={{ ...style, zIndex: 1 }}>
+          <div style={{  ...style, zIndex: 1 }}>
             <Tabs.DefaultTabBar {...props} />
           </div>
         }
@@ -36,7 +36,7 @@ class Explore extends Component {
     const data = documents.map((element) => {
       return (
         <div>
-          <GridListTile style={{height: '20vh', width: '14.14vh'}} key={element.open_url} onClick={() => {this.props.history.push(`${element.open_url}`)}}>
+          <GridListTile style={{height: '56.56vw', width: '40vw'}} key={element.open_url} onClick={() => {this.props.history.push(`${element.open_url}`)}}>
               <Grid container alignItems="center" style={{height: '100%'}}>
                 <img src={element.image} alt={element.title} style={{width:'100%'}}/>
               </Grid>
