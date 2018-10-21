@@ -7,3 +7,29 @@
   box-shadow: rgba(28, 28, 28, 0.1) 0px -4px 2px !important;
   max-height: 38vh !important;
 }
+
+.comment-text {
+  padding: 5px;
+}
+
+.comment-text p {
+  margin: 0;
+}
+
+#post-annotation-btn {
+  height: 24px;
+  width: 24px;
+  vertical-align: bottom;
+  margin-bottom: 16px;
+  margin-left: 24px;
+  color: #108ee9;
+}
+
+#cancel-annotation-btn {
+  height: 24px;
+  width: 24px;
+  vertical-align: bottom;
+  margin-bottom: 16px;
+  margin-left: 24px;
+  color: #7f8c8d;
+}

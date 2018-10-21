@@ -24,7 +24,7 @@ class Explore extends Component {
     return (
       <Sticky>
         {({ style }) =>
-          <div style={{ ...style, zIndex: 1 }}>
+          <div style={{  ...style, zIndex: 1 }}>
             <Tabs.DefaultTabBar {...props} />
           </div>
         }
@@ -33,18 +33,17 @@ class Explore extends Component {
   }
 
   renderDocumentsSubgrid(documents, title) {
-    console.log(documents)
     const data = documents.map((element) => {
       return (
-        <div key={element.image}>
-          <GridListTile style={{height: '20vh', width: '14.14vh'}} onClick={(element) => {console.log(element.slug)}}>
+        <div key={element.open_url}>
+          <GridListTile style={{height: '56.56vw', width: '40vw'}} key={element.open_url} onClick={() => {this.props.history.push(`${element.open_url}`)}}>
               <Grid container alignItems="center" style={{height: '100%'}}>
                 <img src={element.image} alt={element.title} style={{width:'100%'}}/>
               </Grid>
               <GridListTileBar
                 style={{height: '25%'}}
-                title={element.title}
-                subtitle={<span>{<TimeAgo date={element.upload_time} />}</span>}
+                title={<div style={{fontSize: '0.8rem'}}>{element.title}</div>}
+                subtitle={<div style={{fontSize: '0.7rem'}}>{<TimeAgo date={element.upload_time} />}</div>}
               />
           </GridListTile>
         </div>
