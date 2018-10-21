@@ -362,26 +362,30 @@ class DocumentViewer extends React.Component {
                 {
                   this.state.annotationsByPage[pageIndex] !== undefined ?
                     this.state.annotationsByPage[pageIndex].map(annotation =>
-                      <div
-                        className='annotation-area'
-                        key={annotation.pk}
-                        style={{
-                          background: annotation.frame_color,
-                          position: 'absolute',
-                          width: this.state.sampleWidth * annotation.width_percent,
-                          height: this.state.sampleHeight * annotation.height_percent,
-                          left: this.state.sampleWidth * annotation.left_percent,
-                          top: this.state.sampleHeight * annotation.top_percent,
-                        }}
-                        ref={ele => this.annotationAreas[annotation.uuid] = ele}
-                        annotation-id={annotation.pk}
-                        annotation-uuid={annotation.uuid}
-                        onTouchEnd={() => {
+                      <Tappable
+                        moveThreshold={10}
+                        onTap={() => {
                           if (this.state.mode === 'comment') return
                           this.selectAnnotation(annotation.uuid)
                         }}
                       >
-                      </div>
+                        <div
+                          className='annotation-area'
+                          key={annotation.pk}
+                          style={{
+                            background: annotation.frame_color,
+                            position: 'absolute',
+                            width: this.state.sampleWidth * annotation.width_percent,
+                            height: this.state.sampleHeight * annotation.height_percent,
+                            left: this.state.sampleWidth * annotation.left_percent,
+                            top: this.state.sampleHeight * annotation.top_percent,
+                          }}
+                          ref={ele => this.annotationAreas[annotation.uuid] = ele}
+                          annotation-id={annotation.pk}
+                          annotation-uuid={annotation.uuid}
+                        >
+                        </div>
+                      </Tappable>
                     ) : null
                 }
               </div>
