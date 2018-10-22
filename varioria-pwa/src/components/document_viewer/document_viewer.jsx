@@ -36,6 +36,10 @@ library.add(faPaperPlane, faTimesCircle)
 /*eslint no-undef: "off"*/
 
 const RENDERING = 'RENDERING'
+const ANNOTATION_WIDTH_THRESHOLD = 8
+const ANNOTATION_HEIGHT_THRESHOLD = 8
+
+
 class DocumentViewer extends React.Component {
   constructor(props) {
     super(props)
@@ -312,9 +316,14 @@ class DocumentViewer extends React.Component {
     }
 
     function gestureOnRND(e) {
+      var target;
+      if (e.touches.item(0) === null)
+        target = e.target
+      else
+        target = e.touches.item(0).target
       const annotationBeingCreated = document.getElementById('annotation-being-created')
       if (annotationBeingCreated !== null)
-        if (annotationBeingCreated === e.touches.item(0).target || annotationBeingCreated.contains(e.touches.item(0).target))
+        if (annotationBeingCreated === target || annotationBeingCreated.contains(target))
           return true
       return false
     }
@@ -359,7 +368,15 @@ class DocumentViewer extends React.Component {
                 }}
                 onTouchEnd={(e) => {
                   if (this.state.mode === 'view') return
-                  this.setState({newAnnotationInputOpen: true})
+                  if (gestureOnRND(e)) return
+
+                  if (this.state.newAnnotationWidth < ANNOTATION_WIDTH_THRESHOLD || this.state.newAnnotationHeight < ANNOTATION_HEIGHT_THRESHOLD) {
+                    this.setState({
+                      creatingAnnotationAtPageIndex: undefined,
+                      newAnnotationInputOpen: false,
+                    })
+                  } else
+                    this.setState({newAnnotationInputOpen: true})
                 }}
               >
                 <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
