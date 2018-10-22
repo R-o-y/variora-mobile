@@ -21,7 +21,20 @@ import ReduxThunk from 'redux-thunk';
 
 import reducers from './reducers';
 
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
+
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true,
+    suppressDeprecationWarnings: true
+  },
+  palette: {
+    primary: {
+      main: "#1BA39C"
+    },
+  }
+});
 
 const store = createStore(
   reducers,
@@ -34,16 +47,18 @@ const store = createStore(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
 ReactDOM.render(
-  <Provider store={store}>
-      <BrowserRouter>
-        <Switch>
-          <Route path="/documents/:slug" component={DocumentViewer} />
-          <Route path="/search" component={Search} />
-          <Route path="/create-coterie-form" component={CreateCoterieForm} />
-          <Route path="/sign-in" component={Login} />
-          <Route path="/" component={App} />
-        </Switch>
-      </BrowserRouter>
-  </Provider>
+  <MuiThemeProvider theme={theme}>
+    <Provider store={store}>
+        <BrowserRouter>
+          <Switch>
+            <Route path="/documents/:slug" component={DocumentViewer} />
+            <Route path="/search" component={Search} />
+            <Route path="/create-coterie-form" component={CreateCoterieForm} />
+            <Route path="/sign-in" component={Login} />
+            <Route path="/" component={App} />
+          </Switch>
+        </BrowserRouter>
+    </Provider>
+  </MuiThemeProvider>
   , document.getElementById('root'));
 serviceWorker.unregister();

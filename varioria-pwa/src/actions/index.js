@@ -8,18 +8,25 @@ import {
   NOTIFICATION_GET_COMBINED,
   NOTIFICATION_READ,
   COTERIE_GET_MY,
-  COTERIE_SWITCH,
+  COTERIE_GET_MY_DOCUMENTS,
   COTERIE_CREATE,
+  COTERIE_INVITE,
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
   READLIST_GET,
   DOCUMENT_UPLOAD,
   DOCUMENT_RENAME,
-  DOCUMENT_DELETE_SUCCESS
+  DOCUMENT_DELETE_SUCCESS,
+  DOCUMENT_UNCOLLECT_SUCCESS,
+  INVITATION_GET,
+  INVITATION_ACCEPT,
+  INVITATION_DECLINE
 } from './types';
 
 
-const FILE_UPLOAD_API_URL = '/file_viewer/api/documents/upload'
+const FILE_UPLOAD_API_URL = '/file_viewer/api/documents/upload';
+const INVITE_TO_COTERIE_API_URL = '/coterie/api/invite';
+const GET_INVITATION_API_URL = '/coterie/api/invitations';
 
 export function getUser() {
   const url = '/api/user';
@@ -29,7 +36,7 @@ export function getUser() {
 }
 
 export function getMyDocuments() {
-  const url = 'file_viewer/api/documents';
+  const url = '/file_viewer/api/documents';
   const request = axios.get(url);
 
   return {type: DOCUMENT_GET_MY, payload: request};
@@ -76,9 +83,29 @@ export function deleteDocumentSuccess(slug) {
   return {type: DOCUMENT_DELETE_SUCCESS, payload: slug}
 }
 
+export function uncollectDocument(url, data, slug) {
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(uncollectDocumentSuccess(slug));
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
+export function uncollectDocumentSuccess(slug) {
+  return {type: DOCUMENT_UNCOLLECT_SUCCESS, payload: slug}
+}
+
 
 export function getMyReadlists() {
-  const url = 'file_viewer/api/readlists';
+  const url = '/file_viewer/api/readlists';
   const request = axios.get(url);
 
   return {type: READLIST_GET_MY, payload: request};
@@ -92,55 +119,52 @@ export function getReadlist(slug) {
 }
 
 export function getExploreDocuments() {
-  const url = 'file_viewer/api/documents/explore';
+  const url = '/file_viewer/api/documents/explore';
   const request = axios.get(url);
 
   return {type: DOCUMENT_GET_EXPLORE, payload: request};
 }
 
 export function getExploreReadlists() {
-  const url = 'file_viewer/api/readlists/explore';
+  const url = '/file_viewer/api/readlists/explore';
   const request = axios.get(url);
 
   return {type: READLIST_GET_EXPLORE, payload: request};
 }
 
 export function getCombinedNotifications() {
-  const url = 'notifications/api/combined';
+  const url = '/notifications/api/combined';
   const request = axios.get(url);
 
   return {type: NOTIFICATION_GET_COMBINED, payload: request};
 }
 
 export function markNotificationAsRead(url, slug) {
-  axios.get(url);
+  const request = axios.get(url);
 
   return {
     type: NOTIFICATION_READ,
-    payload: {
-      slug
-    }
+    payload: request,
+    slug
   }
 }
 
 export function getMyCoteries() {
-  const url = 'coterie/api/coteries';
+  const url = '/coterie/api/coteries';
   const request = axios.get(url);
 
   return {type: COTERIE_GET_MY, payload: request};
 }
 
-export function switchCoterie(coteriePk) {
-  return {
-    type: COTERIE_SWITCH,
-    payload: {
-      coteriePk
-    }
-  }
+export function getMyCoteriesDocument(uuid) {
+  const url = `/coteries/api/coteries/${uuid}/members/me/uploaded-documents`;
+  const request = axios.get(url);
+
+  return {type: COTERIE_GET_MY_DOCUMENTS, payload: request};
 }
 
 export function createCoterie(data) {
-  const url = 'coterie/api/coteries/create';
+  const url = '/coterie/api/coteries/create';
   const request = axios({
     method: 'post',
     url,
@@ -151,7 +175,43 @@ export function createCoterie(data) {
 }
 
 export function getSearchResults(term) {
-  const url = 'api/search?key=' + term;
+  const url = '/api/search?key=' + term;
   const request = axios.get(url);
   return {type: SEARCHRESULT_GET, payload: request};
+}
+
+export function inviteToCoterie(data) {
+  const request = axios({
+    method: 'post',
+    url: INVITE_TO_COTERIE_API_URL,
+    data
+  });
+
+  return {type: COTERIE_INVITE, payload: request};
+}
+
+export function getInvitations() {
+  const request = axios.get(GET_INVITATION_API_URL);
+
+  return {type: INVITATION_GET, payload: request};
+}
+
+export function acceptInvitation(url, data, pk) {
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  })
+
+  return { type: INVITATION_ACCEPT, payload: request, pk }
+}
+
+export function declineInvitation(url, data, pk) {
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  })
+
+  return { type: INVITATION_DECLINE, payload: request, pk }
 }

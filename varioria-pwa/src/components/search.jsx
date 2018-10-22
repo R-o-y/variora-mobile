@@ -61,7 +61,7 @@ class Search extends React.Component {
             arrow="horizontal"
             thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
             multipleLine
-            onClick={() => {this.props.history.push(`${element.url}`)}}
+            onClick={() => {this.props.history.push(`readlists/${element.slug}`)}}
           >
             {element.name}
             <List.Item.Brief>

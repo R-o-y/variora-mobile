@@ -2,17 +2,25 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Badge, List, WhiteSpace } from 'antd-mobile';
+import { Badge, List, WhiteSpace, Modal } from 'antd-mobile';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
 import moment from 'moment';
 import Avatar from '@material-ui/core/Avatar';
 import MailIcon from '@material-ui/icons/Mail';
+import DoneIcon from '@material-ui/icons/Done';
+import ClearIcon from '@material-ui/icons/Clear';
+import { getCookie } from '../utilities/helper';
 
 class Notifications extends Component {
+  state = { loading: true }
 
   componentDidMount() {
-    this.props.getCombinedNotifications();
+    this.props.getCombinedNotifications().then(() => {
+      this.props.getInvitations().then(() => {
+        this.setState({ loading: false })
+      })
+    })
   }
 
   getActionDescription(action) {
@@ -35,6 +43,68 @@ class Notifications extends Component {
     else {
       return moment(timestamp).format('YYYY-M-d')
     }
+  }
+
+  renderInvitationList(invitations) {
+    const items = invitations.map((invitation) => {
+      return (
+        <List.Item
+          key={invitation.pk}
+          thumb={<Avatar style={{height:50, width:50, backgroundColor:'#1BA39C'}}><MailIcon style={{height:40}}/></Avatar>}
+          extra={
+            <div style={{  display: 'flex', justifyContent: 'center', flexDirection: 'column', float:'right'}}>
+              <DoneIcon style={{marginBottom: 20, color: '1BA39C'}}
+                onClick={() => {
+                  Modal.alert('Accept', 'Accept invitation to join ' + invitation.coterie_name + '?', [
+                    { text: 'Cancel' },
+                    { text: 'Join', style: {color: '#1BA39C'},
+                      onPress: () => {
+                        let data = new FormData();
+                        data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                        this.props.acceptInvitation(invitation.accept_url, data, invitation.pk);
+                    }},
+                  ])
+                }}
+              />
+              <ClearIcon style={{color: 'red'}}
+                onClick={() => {
+                  Modal.alert('Decline', 'Decline invitation to join ' + invitation.coterie_name + '?', [
+                    { text: 'Cancel' },
+                    { text: 'Decline', style: {color: '#FF0000'},
+                      onPress: () => {
+                        let data = new FormData();
+                        data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                        this.props.declineInvitation(invitation.reject_url, data, invitation.pk);
+                    }},
+                  ])
+                }} />
+            </div>
+          }
+          align='middle'
+          multipleLine
+          wrap
+          style={{backgroundColor: '#edf9f6'}}
+          onClick={() => {}}
+        >
+          <b>{invitation.invitee_nickname + " invited you to join " + invitation.coterie_name}</b>
+          <List.Item.Brief>
+            { invitation.invitation_message }
+          </List.Item.Brief>
+        </List.Item>
+      )
+    })
+
+    return (
+      <div>
+        <WhiteSpace />
+          <List renderHeader={() => 'Pending invitaions'}
+            style={{textAlign: 'left'}}
+          >
+            {items}
+          </List>
+        <WhiteSpace />
+      </div>
+    )
   }
 
   renderNotificationsList(notifications) {
@@ -80,21 +150,36 @@ class Notifications extends Component {
   }
 
   render() {
-    if (_.isEmpty(this.props.notifications)) {
+    if (this.state.loading) {
       return (
         <div>
-          <Navbar title="Notifications" />
+          <Navbar title="Notifications" history={this.props.history} />
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
     }
 
-    const notifications = _.orderBy(this.props.notifications, 'timestamp', 'desc');
+    if (_.isEmpty(this.props.notifications) && _.isEmpty(this.props.invitations)) {
+      return (
+        <List>
+          <List.Item>
+            <List.Item.Brief>
+              You are up to date!
+            </List.Item.Brief>
+          </List.Item>
+        </List>
+      )
+    }
 
+    const notifications = _.orderBy(this.props.notifications, 'timestamp', 'desc');
+    const invitations = _.orderBy(this.props.invitations, 'pk', 'desc');
+
+    console.log(this.props);
     return (
       <div>
-        <Navbar title="Notifications" />
-        {this.renderNotificationsList(notifications)}
+        <Navbar title="Notifications" history={this.props.history} />
+        { invitations.length !== 0 && this.renderInvitationList(invitations) }
+        { this.renderNotificationsList(notifications) }
       </div>
     );
   }
@@ -103,6 +188,7 @@ class Notifications extends Component {
 function mapStateToProps(state) {
   return {
     notifications: state.notifications,
+    invitations: state.invitations,
   };
 }
 

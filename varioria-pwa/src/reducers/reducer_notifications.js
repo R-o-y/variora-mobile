@@ -10,7 +10,7 @@ export default function (state = [], action) {
       const notifications = action.payload.data;
       return _.extend({}, state, _.keyBy(notifications, 'slug'))
     case NOTIFICATION_READ:
-      let notification_read = state[action.payload.slug];
+      let notification_read = state[action.slug];
       notification_read.unread = false;
       return _.extend({}, state, {[notification_read.slug]: notification_read});
     default:

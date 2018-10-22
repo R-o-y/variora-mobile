@@ -1,21 +1,33 @@
 import './document_viewer.css'
 
-import { ActivityIndicator, Icon, NavBar } from 'antd-mobile';
+import { ActivityIndicator, Icon, NavBar, TextareaItem } from 'antd-mobile';
+import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {
   constructGetAnnotationsQueryUrl,
   constructGetDocumentQueryUrl,
   range,
 } from './document_viewer_helper'
+import {
+  faPaperPlane,
+  faTimesCircle
+} from '@fortawesome/free-solid-svg-icons'
 
 import AddComment from '@material-ui/icons/AddComment';
 import AnnotationThread from './annotation_thread'
+import Avatar from '@material-ui/core/Avatar';
 import DoneAll from '@material-ui/icons/DoneAll';
 import Drawer from '@material-ui/core/Drawer';
 import FloatButton from './float_button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Rnd } from 'react-rnd'
 import Tappable from 'react-tappable';
+import TextField from '@material-ui/core/TextField';
 import axios from 'axios'
+import { getCookie } from '../../utilities/helper';
+import { library } from '@fortawesome/fontawesome-svg-core'
+
+library.add(faPaperPlane, faTimesCircle)
 
 // import Drawer from 'rc-drawer';
 
@@ -50,10 +62,12 @@ class DocumentViewer extends React.Component {
       annotations: {},
       annotationsByPage: {},
       annotationOpen: false,
+      newAnnotationInputOpen: false,
       selectedAnnotation: undefined,
       mode: 'view',  // view or comment
       showFloatButton: true,
       creatingAnnotationAtPageIndex: undefined,
+      newAnnotationContent: '',
       // pageCanvasWidth: 660,
     }
 
@@ -220,8 +234,41 @@ class DocumentViewer extends React.Component {
     }
 
     this.changeToViewMode = () => {
-      this.setState({mode: 'view', creatingAnnotationAtPageIndex: undefined})
+      this.setState({mode: 'view', creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false})
       document.getElementsByTagName("BODY")[0].removeEventListener('touchmove', this.lockScroll)
+    }
+
+    this.postAnnotation = () => {
+      var data = new FormData()
+      data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+      data.append('operation', 'annotate')
+      data.append('page_id', 'page_id_' + this.state.creatingAnnotationAtPageIndex)
+      data.append('annotation_content', this.state.newAnnotationContent)
+      data.append('top_percent', this.state.newAnnotationY / this.state.sampleHeight)
+      data.append('left_percent', this.state.newAnnotationX / this.state.sampleWidth)
+      data.append('height_percent', this.state.newAnnotationHeight / this.state.sampleHeight)
+      data.append('width_percent', this.state.newAnnotationWidth / this.state.sampleWidth)
+      data.append('frame_color', document.getElementById('annotation-being-created').style.backgroundColor)
+      data.append('document_id', this.state.document.pk)
+      data.append('is_public', true)
+      axios.post(window.location.pathname + '/', data).then(response => {
+        var newAnnotation = response.data['new_annotation_json']
+        var annotationsByPage = this.state.annotationsByPage
+        var annotations = this.state.annotations
+        annotationsByPage[parseInt(newAnnotation.page_index)].push(newAnnotation)
+        annotations[newAnnotation.uuid] = newAnnotation
+        this.setState({
+          annotations: annotations,
+          annotationsByPage: annotationsByPage,
+          newAnnotationContent: '',
+          mode: 'view', creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false
+        })
+        document.getElementsByTagName("BODY")[0].removeEventListener('touchmove', this.lockScroll)
+      })
+    }
+
+    this.cancelCurrentAnnotation = () => {
+      this.setState({creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false})
     }
   }
 
@@ -230,6 +277,7 @@ class DocumentViewer extends React.Component {
       this.setState({
         document: response.data
       })
+      console.log(response.data)
       PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
 
       const self = this
@@ -263,6 +311,14 @@ class DocumentViewer extends React.Component {
       return [touch_absolute_x - page_top_left_x, touch_absolute_y - page_top_left_y]
     }
 
+    function gestureOnRND(e) {
+      const annotationBeingCreated = document.getElementById('annotation-being-created')
+      if (annotationBeingCreated !== null)
+        if (annotationBeingCreated === e.touches.item(0).target || annotationBeingCreated.contains(e.touches.item(0).target))
+          return true
+      return false
+    }
+
     var viewWrapper = (
       <div
         ref={(ele) => this.viewerWrappper = ele}
@@ -278,28 +334,32 @@ class DocumentViewer extends React.Component {
                 style={{position: 'relative', width: this.state.sampleWidth, height: this.state.sampleHeight}}
                 onTouchStart={(e) => {
                   if (this.state.mode === 'view') return
-                  const annotationBeingCreated = document.getElementById('annotation-being-created')
-                  if (annotationBeingCreated !== null)
-                    if (annotationBeingCreated === e.touches.item(0).target || annotationBeingCreated.contains(e.touches.item(0).target))
-                      return
+                  if (gestureOnRND(e)) return
+
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
                     creatingAnnotationAtPageIndex: pageIndex,
                     newAnnotationX: bottom_right_relative_x,
                     newAnnotationY: bottom_right_relative_y,
-                    newAnnotationWidth: 60,
-                    newAnnotationHeight: 60,
+                    newAnnotationWidth: 0,
+                    newAnnotationHeight: 0,
                   })
                 }}
                 onTouchMove={(e) => {
                   if (this.state.mode === 'view') return
+                  if (gestureOnRND(e)) return
+
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
-                  const annotationBeingCreated = document.getElementById('annotation-being-created')
-                  if (annotationBeingCreated !== e.touches.item(0).target && !annotationBeingCreated.contains(e.touches.item(0).target))
-                    console.log(bottom_right_relative_x)
+                  this.setState({
+                    creatingAnnotationAtPageIndex: pageIndex,
+                    newAnnotationWidth: bottom_right_relative_x - this.state.newAnnotationX,
+                    newAnnotationHeight: bottom_right_relative_y - this.state.newAnnotationY,
+                  })
+
                 }}
                 onTouchEnd={(e) => {
                   if (this.state.mode === 'view') return
+                  this.setState({newAnnotationInputOpen: true})
                 }}
               >
                 <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
@@ -313,8 +373,8 @@ class DocumentViewer extends React.Component {
                     onDragStop={(e, d) => { this.setState({ newAnnotationX: d.x, newAnnotationY: d.y }) }}
                     onResize={(e, direction, ref, delta, position) => {
                       this.setState({
-                        newAnnotationWidth: ref.style.width,
-                        newAnnotationHeight: ref.style.height,
+                        newAnnotationWidth: parseFloat(ref.style.width),
+                        newAnnotationHeight: parseFloat(ref.style.height),
                         ...position,
                       });
                     }}
@@ -325,26 +385,30 @@ class DocumentViewer extends React.Component {
                 {
                   this.state.annotationsByPage[pageIndex] !== undefined ?
                     this.state.annotationsByPage[pageIndex].map(annotation =>
-                      <div
-                        className='annotation-area'
-                        key={annotation.pk}
-                        style={{
-                          background: annotation.frame_color,
-                          position: 'absolute',
-                          width: this.state.sampleWidth * annotation.width_percent,
-                          height: this.state.sampleHeight * annotation.height_percent,
-                          left: this.state.sampleWidth * annotation.left_percent,
-                          top: this.state.sampleHeight * annotation.top_percent,
-                        }}
-                        ref={ele => this.annotationAreas[annotation.uuid] = ele}
-                        annotation-id={annotation.pk}
-                        annotation-uuid={annotation.uuid}
-                        onTouchEnd={() => {
+                      <Tappable
+                        moveThreshold={10}
+                        onTap={() => {
                           if (this.state.mode === 'comment') return
                           this.selectAnnotation(annotation.uuid)
                         }}
                       >
-                      </div>
+                        <div
+                          className='annotation-area'
+                          key={annotation.pk}
+                          style={{
+                            background: annotation.frame_color,
+                            position: 'absolute',
+                            width: this.state.sampleWidth * annotation.width_percent,
+                            height: this.state.sampleHeight * annotation.height_percent,
+                            left: this.state.sampleWidth * annotation.left_percent,
+                            top: this.state.sampleHeight * annotation.top_percent,
+                          }}
+                          ref={ele => this.annotationAreas[annotation.uuid] = ele}
+                          annotation-id={annotation.pk}
+                          annotation-uuid={annotation.uuid}
+                        >
+                        </div>
+                      </Tappable>
                     ) : null
                 }
               </div>
@@ -364,8 +428,7 @@ class DocumentViewer extends React.Component {
           ]}
           style={{
             boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
-            zIndex: 10000000,
-            position: 'relative',
+            zIndex: 10000000, position: 'relative',
             // borderBottom: '1px solid #c8c8c8',
             // height: 38
           }}
@@ -412,6 +475,55 @@ class DocumentViewer extends React.Component {
             }
           </div>
         </Drawer>
+
+        <Drawer
+          anchor="bottom" variant='persistent'
+          open={this.state.newAnnotationInputOpen}
+        >
+          <div style={{textAlign: 'center'}}>
+            {/* <TextareaItem
+              title={<img
+                alt="Remy Sharp"
+                style={{ height: 28, width: 28 }}
+                src="https://pmcvariety.files.wordpress.com/2015/07/naruto_movie-lionsgate.jpg?w=1000"
+              />}
+              placeholder="auto focus in Alipay client"
+              data-seed="logId"
+              ref={el => this.autoFocusInst = el}
+              autoHeight
+            /> */}
+            <Avatar
+              alt="Remy Sharp"
+              style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
+              src="https://pmcvariety.files.wordpress.com/2015/07/naruto_movie-lionsgate.jpg?w=1000"
+            />
+            <MuiThemeProvider theme={createMuiTheme({
+                palette: {
+                  primary: {
+                    main: '#3498db',
+                  }
+                },
+              })}
+            >
+              <TextField
+                id="standard-bare"
+                // className={classes.textField}
+                // defaultValue="Bare"
+                placeholder="Placeholder" margin="normal" style={{width: '66vw', top: -2}}
+                multiline fullWidth value={this.state.newAnnotationContent}
+                onChange={event => {
+                  this.setState({newAnnotationContent: event.target.value})
+                }}
+              />
+            </MuiThemeProvider>
+            {
+              this.state.newAnnotationContent.length === 0
+              ? <FontAwesomeIcon icon={['fas', 'times-circle']} id='cancel-annotation-btn' onClick={this.cancelCurrentAnnotation} />
+              : <FontAwesomeIcon icon={['fas', 'paper-plane']} id='post-annotation-btn' onClick={this.postAnnotation} />
+            }
+          </div>
+        </Drawer>
+
         { this.state.mode === 'view'
           ? <FloatButton color='rgb(27, 163, 156)' icon={<AddComment style={{ color: 'white' }} />} show={this.state.showFloatButton} clickCallback={this.changeToCommentMode} />
           : <FloatButton color='#108ee9' icon={<DoneAll style={{ color: 'white' }} />} show={true} clickCallback={this.changeToViewMode} />}

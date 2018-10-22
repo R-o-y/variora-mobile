@@ -18,8 +18,10 @@ class Uploads extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      actionModal: false,
+      uploadedActionModal: false,
+      collectedActionModal: false,
       selectedDocument: null,
+      loading: true
     };
 
     this.handleFiles = () => {
@@ -36,23 +38,38 @@ class Uploads extends Component {
       data.append('file_upload', file)
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       this.setState({ uploading: true })
-      // NOT SURE HOW TO HANDLE UPLOADING
       Toast.loading('Loading...')
         this.props.uploadDocument(data).then(() => {
           Toast.success('Upload success!', 1);
           this.setState({ uploading: false })
         })
-        // .catch(() => {
-        //   Toast.fail('Upload failed!', 1);
-        //   this.setState({ uploading: false })
-        // })
 
       this.finput.value = ''
     }
   }
 
   componentDidMount() {
-    this.props.getMyDocuments();
+    let groupUuid = this.props.match.params.groupUuid;
+    if (groupUuid) {
+      this.props.getMyCoteriesDocument(groupUuid).then(() => {
+        this.setState({loading: false})
+      })
+    } else {
+      this.props.getMyDocuments().then(() => {
+        this.setState({loading: false})
+      })
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    let newGroupUuid = this.props.match.params.groupUuid;
+    if (newGroupUuid !== prevProps.match.params.groupUuid) {
+      if (newGroupUuid) {
+        this.props.getMyCoteriesDocument(newGroupUuid);
+      } else {
+        this.props.getMyDocuments();
+      }
+    }
   }
 
   showModal(key, e) {
@@ -80,7 +97,7 @@ class Uploads extends Component {
     )
   }
 
-  renderListItem(item) {
+  renderListItem(item, isUpload) {
     return (
       <div key={item.slug}>
         <List.Item
@@ -97,7 +114,7 @@ class Uploads extends Component {
           style={{position: 'absolute', width:'10%', marginTop: -50, right: 5, color:'#a8a8a8', zIndex: 1}}
           onClick={(e) => {
             this.setState({selectedDocument: item.slug})
-            this.showModal('actionModal', e);
+            this.showModal(isUpload ? 'uploadedActionModal' : 'collectedActionModal', e);
           }}/>
       </div>
     )
@@ -117,7 +134,7 @@ class Uploads extends Component {
 
   renderUploadedList(list) {
     const items = list.map((itemId) => {
-      return this.renderListItem(this.props.documents[itemId])
+      return this.renderListItem(this.props.documents[itemId], true)
     })
     return (
       <List>
@@ -128,8 +145,19 @@ class Uploads extends Component {
   }
 
   renderCollectedList(list) {
+    if (!list.length) {
+      return (
+        <List>
+          <List.Item>
+            <div style={{color: 'grey', textAlign:'center' }}>
+              You haven't collected any document.
+            </div>
+          </List.Item>
+        </List>
+      )
+    }
     const items = list.map((itemId) => {
-      return this.renderListItem(this.props.documents[itemId])
+      return this.renderListItem(this.props.documents[itemId], false)
     })
     return (
       <List>
@@ -150,10 +178,10 @@ class Uploads extends Component {
             renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-              {this.renderUploadedList(this.props.user.uploadedDocuments)}
+              {this.renderUploadedList(_.orderBy(this.props.user.uploadedDocuments, (docSlug) => {return this.props.documents[docSlug].upload_time}, 'desc'))}
             </div>
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-              {this.renderCollectedList(this.props.user.collectedDocuments)}
+              {this.renderCollectedList(_.orderBy(this.props.user.collectedDocuments, (docSlug) => {return this.props.documents[docSlug].upload_time}, 'desc'))}
             </div>
           </Tabs>
         </StickyContainer>
@@ -176,14 +204,62 @@ class Uploads extends Component {
     )
   }
 
-  renderActionModal() {
+  renderCollectedActionModal() {
     let currDocument = this.props.documents[this.state.selectedDocument];
 
     return (
       <Modal
         popup
-        visible={this.state.actionModal}
-        onClose={() => this.onClose('actionModal')}
+        visible={this.state.collectedActionModal}
+        onClose={() => this.onClose('collectedActionModal')}
+        animationType="slide-up"
+      >
+        <List
+          renderHeader={() =>
+            <b style={{ color: "#1BA39C"}}>{currDocument.title}</b>
+          }
+          className="popup-list"
+        >
+          <List.Item
+            onClick={() => {
+              const location = window.location;
+              const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
+              copyToClipboard(url);
+              Toast.success('Copied to clipboard!', 1);}}
+          >
+            <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+            Share
+          </List.Item>
+          <List.Item
+            onClick={() => {
+              Modal.alert('Uncollect ' + currDocument.title + '?', '', [
+                { text: 'Cancel' },
+                { text: 'Uncollect', style:{color:'#FF0000'},
+                  onPress: () => {
+                    this.onClose('collectedActionModal');
+                    let data = new FormData();
+                    data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                    this.props.uncollectDocument(currDocument.uncollectUrl, data, currDocument.slug);
+                }},
+              ])
+            }}
+          >
+            <DeleteIcon style={{height: 18, color:'#e74c3c',marginRight: 20}}/>
+            <span style={{color:'#e74c3c'}}>Uncollect</span>
+          </List.Item>
+        </List>
+      </Modal>
+    )
+  }
+
+  renderUploadedActionModal() {
+    let currDocument = this.props.documents[this.state.selectedDocument];
+
+    return (
+      <Modal
+        popup
+        visible={this.state.uploadedActionModal}
+        onClose={() => this.onClose('uploadedActionModal')}
         animationType="slide-up"
       >
         <List
@@ -214,7 +290,7 @@ class Uploads extends Component {
                 { text: 'Cancel' },
                 { text: 'Delete', style:{color:'#FF0000'},
                   onPress: () => {
-                    this.onClose('actionModal');
+                    this.onClose('uploadedActionModal');
                     let data = new FormData();
                     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
                     this.props.deleteDocument(currDocument.delete_url, data, currDocument.slug);
@@ -231,20 +307,23 @@ class Uploads extends Component {
   }
 
   render() {
-    if (_.isEmpty(this.props.documents)) {
+    console.log(this.props.documents);
+
+    if (this.state.loading) {
       return (
         <div>
           <Navbar title="Uploads" history={this.props.history} />
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
-      );
+      )
     }
 
     return (
       <div>
-        <Navbar title="Uploads" history={this.props.history} />
+        <Navbar title="Uploads" history={this.props.history} group={this.props.match.params.groupUuid} />
         {this.renderStickyTab()}
-        {this.renderActionModal()}
+        {this.renderUploadedActionModal()}
+        {this.renderCollectedActionModal()}
         <input
           ref={item => this.finput = item}
           style={{ visibility: 'hidden' }}
