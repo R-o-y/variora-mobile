@@ -1,5 +1,7 @@
 import './document_viewer.css'
 
+import * as actions from '../../actions';
+
 import { ActivityIndicator, Icon, NavBar, TextareaItem } from 'antd-mobile';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {
@@ -24,6 +26,7 @@ import { Rnd } from 'react-rnd'
 import Tappable from 'react-tappable';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios'
+import { connect } from 'react-redux';
 import { getCookie } from '../../utilities/helper';
 import { library } from '@fortawesome/fontawesome-svg-core'
 
@@ -516,7 +519,7 @@ class DocumentViewer extends React.Component {
             <Avatar
               alt="Remy Sharp"
               style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
-              src="https://pmcvariety.files.wordpress.com/2015/07/naruto_movie-lionsgate.jpg?w=1000"
+              src={this.props.user.portrait_url}
             />
             <MuiThemeProvider theme={createMuiTheme({
                 palette: {
@@ -553,4 +556,12 @@ class DocumentViewer extends React.Component {
   }
 }
 
-export default DocumentViewer;
+
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+    coteries: state.coteries
+  };
+}
+
+export default connect(mapStateToProps, actions)(DocumentViewer);
