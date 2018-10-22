@@ -63,12 +63,14 @@ class Readlist extends Component {
               </IconButton>
             }
           />
-          <Typography variant="h5" component="h5">
-            {readlist.name}
-          </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            {readlist.owner.nickname} created {<TimeAgo date={readlist.create_time} />}
-          </Typography>
+          <div style={{textAlign: 'center'}}>
+            <Typography variant="h5" component="h5">
+              {readlist.name}
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary">
+              {readlist.owner.nickname} created {<TimeAgo date={readlist.create_time} />}
+            </Typography>
+          </div>
         </CardContent>
         <CardActions>
           <IconButton aria-label="Add to favorites">

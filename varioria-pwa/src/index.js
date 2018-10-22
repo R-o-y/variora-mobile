@@ -10,6 +10,8 @@ import { applyMiddleware, compose, createStore } from 'redux';
 import App from './App';
 import CreateCoterieForm from './components/create_coterie_form';
 import DocumentViewer from './components/document_viewer/document_viewer';
+import Readlist from './components/readlist';
+
 import Search from './components/search';
 
 import { Login } from './components/login/login'
@@ -52,6 +54,7 @@ ReactDOM.render(
         <BrowserRouter>
           <Switch>
             <Route path="/documents/:slug" component={DocumentViewer} />
+            <Route path='/readlists/:slug' component={Readlist}/>
             <Route path="/search" component={Search} />
             <Route path="/create-coterie-form" component={CreateCoterieForm} />
             <Route path="/sign-in" component={Login} />
