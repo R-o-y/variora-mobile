@@ -52,6 +52,7 @@ class DocumentViewer extends React.Component {
     this.currentPageIndex = 1
     this.annotationAreas = {}
     this.prevScroll = window.pageYOffset
+    this.annotationFirstTouch = false
     // this.touchLength = 0
     this.state = {
       document: {
@@ -243,6 +244,9 @@ class DocumentViewer extends React.Component {
     }
 
     this.postAnnotation = () => {
+      if (this.state.newAnnotationWidth < ANNOTATION_WIDTH_THRESHOLD || this.state.newAnnotationHeight < ANNOTATION_HEIGHT_THRESHOLD)
+        return
+
       var data = new FormData()
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       data.append('operation', 'annotate')
@@ -344,7 +348,9 @@ class DocumentViewer extends React.Component {
                 onTouchStart={(e) => {
                   if (this.state.mode === 'view') return
                   if (gestureOnRND(e)) return
+                  if (this.state.creatingAnnotationAtPageIndex !== undefined && this.state.creatingAnnotationAtPageIndex === pageIndex) return
 
+                  this.annotationFirstTouch = true
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
                     creatingAnnotationAtPageIndex: pageIndex,
@@ -357,6 +363,7 @@ class DocumentViewer extends React.Component {
                 onTouchMove={(e) => {
                   if (this.state.mode === 'view') return
                   if (gestureOnRND(e)) return
+                  if (!this.annotationFirstTouch) return
 
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
@@ -369,20 +376,17 @@ class DocumentViewer extends React.Component {
                 onTouchEnd={(e) => {
                   if (this.state.mode === 'view') return
                   if (gestureOnRND(e)) return
-
-                  if (this.state.newAnnotationWidth < ANNOTATION_WIDTH_THRESHOLD || this.state.newAnnotationHeight < ANNOTATION_HEIGHT_THRESHOLD) {
-                    this.setState({
-                      creatingAnnotationAtPageIndex: undefined,
-                      newAnnotationInputOpen: false,
-                    })
-                  } else
+                  if (this.annotationFirstTouch) {
+                    this.annotationFirstTouch = false
                     this.setState({newAnnotationInputOpen: true})
+                  }
                 }}
               >
                 <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
                 {
                   this.state.creatingAnnotationAtPageIndex === pageIndex ?
                   <Rnd
+                    bounds='parent'
                     id='annotation-being-created'
                     className='annotation-area'
                     size={{ width: this.state.newAnnotationWidth,  height: this.state.newAnnotationHeight }}
