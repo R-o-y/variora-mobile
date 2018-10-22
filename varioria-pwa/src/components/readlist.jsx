@@ -3,7 +3,7 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { WhiteSpace, List } from 'antd-mobile';
+import { WhiteSpace, List, NavBar, Icon } from 'antd-mobile';
 import moment from 'moment';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -93,7 +93,22 @@ class Readlist extends Component {
     }
     return (
       <div>
-        <Navbar title="Readlists" history={this.props.history}/>
+        <NavBar
+          mode="light"
+          history={this.props.history}
+          icon={<Icon type="left" onClick={() => this.props.history.goBack()}/>}
+          style={{
+            boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
+            zIndex: 10000000,
+            position: 'relative',
+            // borderBottom: '1px solid #c8c8c8',
+            // height: 38
+          }}
+        >
+          <span className='document-title'>
+          Readlists
+          </span>
+        </NavBar>
         {this.renderReadlistCard()}
         {this.renderDocumentList()}
       </div>

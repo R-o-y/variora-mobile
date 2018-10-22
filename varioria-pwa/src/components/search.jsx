@@ -72,6 +72,7 @@ class Search extends React.Component {
       })
       data = data.concat(readlists);
     }
+    
     console.log(data);
     return (
       <div>
