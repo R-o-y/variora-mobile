@@ -11,9 +11,27 @@ import { Tabs, WhiteSpace, List, Icon } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
 
 class Readlists extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      uploadedActionModal: false,
+      collectedActionModal: false,
+      selectedReadlist: null,
+      loading: true
+    };
+  }
 
   componentDidMount() {
-    this.props.getMyReadlists();
+    let groupUuid = this.props.match.params.groupUuid;
+    if (groupUuid) {
+      // this.props.getMyCoteriesDocument(groupUuid).then(() => {
+      //   this.setState({loading: false})
+      // })
+    } else {
+      this.props.getMyReadlists().then(() => {
+        this.setState({loading: false})
+      })
+    }
   }
 
   renderReactSticky(props) {
@@ -45,7 +63,7 @@ class Readlists extends Component {
     return (
       <List.Item
         thumb={<AddIcon style={{color:'grey'}} />}
-        onClick={() => {console.log('Create readlist clicked')}}
+        onClick={() => {this.props.history.push("/create-readlist-form")}}
       >
         <div style={{color:'grey'}}>New readlist</div>
         <List.Item.Brief>Click to create...</List.Item.Brief>
@@ -59,13 +77,14 @@ class Readlists extends Component {
         <div></div>
       )
     }
-    const data = list.map(element => {
+    const data = list.map(slug => {
+      let element = this.props.readlists[slug];
       return (
-        <div key={element.slug}>
+        <div key={slug}>
           <List.Item
             thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
             multipleLine
-            onClick={() => {this.props.history.push(`readlists/${element.slug}`)}}
+            onClick={() => {this.props.history.push(`readlists/${slug}`)}}
           >
             {element.name}
             <List.Item.Brief>{moment(element.create_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>
@@ -73,8 +92,8 @@ class Readlists extends Component {
           <Icon type="ellipsis"
             style={{position: 'absolute', width:'10%', marginTop: -50, right: 5, color:'#a8a8a8', zIndex: 1}}
             onClick={(e) => {
-              console.log('clicked ellipsis ' + element.slug);
-              this.setState({selectedDocument: element.slug})
+              console.log('clicked ellipsis ' + slug);
+              this.setState({selectedReadlist: slug})
               this.showModal('actionModal', e);
           }}/>
         </div>
@@ -93,7 +112,7 @@ class Readlists extends Component {
     return (
       <div>
         {this.renderAddReadlist()}
-        {this.renderReadlist(this.props.readlists.createdReadlists)}
+        {this.renderReadlist(_.orderBy(this.props.user.createdReadlists, (readlistSlug) => {return this.props.readlists[readlistSlug].create_time}, 'desc'))}
       </div>
     )
   }
@@ -101,7 +120,7 @@ class Readlists extends Component {
   renderCollectedReadlists() {
     return (
       <div>
-        {this.renderReadlist(this.props.readlists.collectedReadlists)}
+        {this.renderReadlist(_.orderBy(this.props.user.collectedReadlists, (readlistSlug) => {return this.props.readlists[readlistSlug].create_time}, 'desc'))}
       </div>
     )
   }
@@ -130,7 +149,7 @@ class Readlists extends Component {
   }
 
   render() {
-    if (_.isEmpty(this.props.readlists)) {
+    if (this.state.loading) {
       return (
         <div>
           <Navbar title="Readlists" history={this.props.history}/>

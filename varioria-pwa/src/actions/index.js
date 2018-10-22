@@ -14,6 +14,7 @@ import {
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
   READLIST_GET,
+  READLIST_CREATE,
   DOCUMENT_UPLOAD,
   DOCUMENT_RENAME,
   DOCUMENT_DELETE_SUCCESS,
@@ -174,6 +175,16 @@ export function createCoterie(data) {
   return {type: COTERIE_CREATE, payload: request};
 }
 
+export function createReadlist(data) {
+  const url = '/file_viewer/api/readlists/create';
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+
+  return {type: READLIST_CREATE, payload: request};
+}
 export function getSearchResults(term) {
   const url = '/api/search?key=' + term;
   const request = axios.get(url);

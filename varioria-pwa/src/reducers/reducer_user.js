@@ -5,6 +5,7 @@ import {
   DOCUMENT_UPLOAD,
   DOCUMENT_DELETE_SUCCESS,
   DOCUMENT_UNCOLLECT_SUCCESS,
+  READLIST_GET_MY,
   COTERIE_GET_MY,
   COTERIE_GET_MY_DOCUMENTS,
 } from '../actions/types';
@@ -46,6 +47,13 @@ export default function (state = [], action) {
       return _.extend({}, state,
         { joinedCoteries: _.map(joinedCoteries, 'uuid'),
           administratedCoteries: _.map(administratedCoteries, 'uuid')
+        });
+    case READLIST_GET_MY:
+      const createdReadlists = action.payload.data.created_readlists;
+      const collectedReadlists = action.payload.data.collected_readlists;
+      return _.extend({}, state,
+        { createdReadlists: _.map(createdReadlists, 'slug'),
+          collectedReadlists: _.map(collectedReadlists, 'slug')
         });
     default:
       return state;
