@@ -3,7 +3,7 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { WhiteSpace, List, NavBar, Icon } from 'antd-mobile';
+import { WhiteSpace, List, NavBar, Icon, Toast } from 'antd-mobile';
 import moment from 'moment';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -18,11 +18,24 @@ import CardHeader from '@material-ui/core/CardHeader';
 import EditIcon from '@material-ui/icons/Edit';
 import TimeAgo from 'react-timeago'
 
+import { getCookie, copyToClipboard } from '../utilities/helper';
+
 class Readlist extends Component {
 
   componentDidMount() {
     const { slug } = this.props.match.params
     this.props.getReadlist(slug);
+  }
+
+  onFavoriteIconClick() {
+    console.log("Fav icon clicked!");
+    // Collect the readlist.
+  }
+
+  onShareIconClick() {
+    const url = window.location;
+    copyToClipboard(url);
+    Toast.success('Copied to clipboard!', 1);
   }
 
   renderDocumentList() {
@@ -52,15 +65,22 @@ class Readlist extends Component {
 
   renderReadlistCard() {
     const readlist = this.props.readlists.readlist;
+    console.log(this.props.user)
+    console.log(readlist.owner.pk)
+    const isOwner = this.props.user.pk == readlist.owner.pk;
     return (
       <Card style={{margin: '15px 15px 5px 15px'}}>
         <CardContent>
           <CardHeader
             style={{paddingTop: '0', paddingRight: '0'}}
             action={
-              <IconButton>
-                <EditIcon />
-              </IconButton>
+              isOwner ? (
+                <IconButton>
+                  <EditIcon onClick={() => {this.props.history.push("/edit-readlist-form/" + this.props.readlists.readlist.slug)}} />
+                </IconButton>
+              ) : (
+                <div></div>
+              )
             }
           />
           <div style={{textAlign: 'center'}}>
@@ -74,10 +94,10 @@ class Readlist extends Component {
         </CardContent>
         <CardActions>
           <IconButton aria-label="Add to favorites">
-            <FavoriteIcon />
+            <FavoriteIcon onClick={this.onFavoriteIconClick}/>
           </IconButton>
           <IconButton aria-label="Share">
-            <ShareIcon />
+            <ShareIcon onClick={this.onShareIconClick}/>
           </IconButton>
         </CardActions>
       </Card>
@@ -120,7 +140,8 @@ class Readlist extends Component {
 
 function mapStateToProps(state) {
   return {
-    readlists: state.readlists
+    readlists: state.readlists,
+    user: state.user
   };
 }
 

@@ -6,16 +6,19 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
 import moment from 'moment';
 import AddIcon from '@material-ui/icons/AddBoxOutlined';
+import ShareIcon from '@material-ui/icons/Share';
+import DeleteIcon from '@material-ui/icons/DeleteForever';
 
-import { Tabs, WhiteSpace, List, Icon } from 'antd-mobile';
+import { Tabs, WhiteSpace, List, Modal, Toast, Icon } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
+import { getCookie, copyToClipboard } from '../utilities/helper';
 
 class Readlists extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      uploadedActionModal: false,
-      collectedActionModal: false,
+      createdReadlistActionModal: false,
+      collectedReadlistActionModal: false,
       selectedReadlist: null,
       loading: true
     };
@@ -24,7 +27,7 @@ class Readlists extends Component {
   componentDidMount() {
     let groupUuid = this.props.match.params.groupUuid;
     if (groupUuid) {
-      // this.props.getMyCoteriesDocument(groupUuid).then(() => {
+      // this.props.getMyCoteriesReadlists(groupUuid).then(() => {
       //   this.setState({loading: false})
       // })
     } else {
@@ -71,7 +74,61 @@ class Readlists extends Component {
     )
   }
 
-  renderReadlist(list) {
+  renderCreatedReadlistActionModal() {
+    let currReadlist = this.props.readlists[this.state.selectedReadlist];
+
+    return (
+      <Modal
+        popup
+        visible={this.state.createdReadlistActionModal}
+        onClose={() => this.onClose('createdReadlistActionModal')}
+        animationType="slide-up"
+      >
+        <List
+          renderHeader={() =>
+            <b style={{ color: "#1BA39C"}}>{currReadlist.name}</b>
+          }
+          className="popup-list"
+        >
+          <List.Item
+            onClick={() => {
+              const location = window.location;
+              const url = [location.protocol, '//', location.host, '/readlists/', currReadlist.slug].join('');
+              copyToClipboard(url);
+              Toast.success('Copied to clipboard!', 1);}}
+          >
+            <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+            Share
+          </List.Item>
+          {/* <List.Item
+            onClick={() => {this.renderRenameModal(currDocument)}}
+          >
+            <CreateIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+            Rename
+          </List.Item> */}
+          <List.Item
+            onClick={() => {
+              Modal.alert('Delete ' + currReadlist.name + '?', '', [
+                { text: 'Cancel' },
+                { text: 'Delete', style:{color:'#FF0000'},
+                  onPress: () => {
+                    this.onClose('createdReadlistActionModal');
+                    let data = new FormData();
+                    data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                    this.props.deleteReadlist(currReadlist.delete_url, data, currReadlist.slug);
+                }},
+              ])
+            }}
+          >
+            <DeleteIcon style={{height: 18, color:'#e74c3c',marginRight: 20}}/>
+            <span style={{color:'#e74c3c'}}>Delete</span>
+          </List.Item>
+        </List>
+      </Modal>
+    )
+  }
+
+  renderReadlist(list, isCreated) {
     if (_.isEmpty(list)) {
       return (
         <div></div>
@@ -94,8 +151,8 @@ class Readlists extends Component {
             onClick={(e) => {
               console.log('clicked ellipsis ' + slug);
               this.setState({selectedReadlist: slug})
-              this.showModal('actionModal', e);
-          }}/>
+              this.showModal(isCreated ? 'createdReadlistActionModal' : 'collectedReadlistActionModal', e);
+            }}/>
         </div>
       )
     })
@@ -112,7 +169,7 @@ class Readlists extends Component {
     return (
       <div>
         {this.renderAddReadlist()}
-        {this.renderReadlist(_.orderBy(this.props.user.createdReadlists, (readlistSlug) => {return this.props.readlists[readlistSlug].create_time}, 'desc'))}
+        {this.renderReadlist(_.orderBy(this.props.user.createdReadlists, (readlistSlug) => {return this.props.readlists[readlistSlug].create_time}, 'desc'), true)}
       </div>
     )
   }
@@ -120,7 +177,7 @@ class Readlists extends Component {
   renderCollectedReadlists() {
     return (
       <div>
-        {this.renderReadlist(_.orderBy(this.props.user.collectedReadlists, (readlistSlug) => {return this.props.readlists[readlistSlug].create_time}, 'desc'))}
+        {this.renderReadlist(_.orderBy(this.props.user.collectedReadlists, (readlistSlug) => {return this.props.readlists[readlistSlug].create_time}, 'desc'), false)}
       </div>
     )
   }
@@ -162,6 +219,7 @@ class Readlists extends Component {
       <div>
         <Navbar title="Readlists" history={this.props.history}/>
         {this.renderStickyTab()}
+        {this.renderCreatedReadlistActionModal()}
       </div>
     );
   }
