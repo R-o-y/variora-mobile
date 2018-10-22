@@ -215,8 +215,11 @@ class DocumentViewer extends React.Component {
     this.selectAnnotation = (uuid) => {
       if (this.state.selectedAnnotation !== undefined)
         this.annotationAreas[this.state.selectedAnnotation.uuid].classList.remove('highlighted-annotation-area')
+
       this.setState({selectedAnnotation: this.state.annotations[uuid]})
       this.annotationAreas[uuid].classList.add('highlighted-annotation-area')
+      const rgba = this.annotationAreas[uuid].style.background
+      this.annotationAreas[uuid].style.borderColor = rgba.split(',').slice(0,3).join(',') + ', 0.38)'
 
       if (!this.state.annotationOpen) {
         this.styleDrawer()
