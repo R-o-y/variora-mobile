@@ -1,3 +1,5 @@
+import './theme.css'
+
 import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
