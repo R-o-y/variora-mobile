@@ -533,7 +533,7 @@ class DocumentViewer extends React.Component {
                 id="standard-bare"
                 // className={classes.textField}
                 // defaultValue="Bare"
-                placeholder="Placeholder" margin="normal" style={{width: '66vw', top: -2}}
+                placeholder="Type in your comment..." margin="normal" style={{width: '66vw', top: -2}}
                 multiline fullWidth value={this.state.newAnnotationContent}
                 onChange={event => {
                   this.setState({newAnnotationContent: event.target.value})
