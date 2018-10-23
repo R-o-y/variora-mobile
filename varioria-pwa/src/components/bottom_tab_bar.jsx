@@ -16,8 +16,12 @@ class BottomTabBar extends React.Component {
     };
   }
 
-  getParentPath() {
-    return this.props.path.split('/').slice(0, -1).join('/');
+  getGroupPath() {
+    const path = this.props.path
+    const slices = path.split('/').slice(1)
+    if (slices.length >= 1 && slices[0] === 'groups')
+      return path.split('/').slice(0, -1).join('/')
+    return ''
   }
 
   render() {
@@ -39,7 +43,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'explore',
               });
-              this.props.history.push(`${this.getParentPath()}/explore`);
+              this.props.history.push(`${this.getGroupPath()}/explore`);
             }}
           >
             {this.state.selectedTab === 'explore' && this.props.content}
@@ -54,7 +58,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'uploads',
               });
-              this.props.history.push(`${this.getParentPath()}/uploads`);
+              this.props.history.push(`${this.getGroupPath()}/uploads`);
             }}
           >
             {this.state.selectedTab === 'uploads' && this.props.content}
@@ -69,7 +73,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'readlists',
               });
-              this.props.history.push(`${this.getParentPath()}/readlists`);
+              this.props.history.push(`${this.getGroupPath()}/readlists`);
             }}
           >
             {this.state.selectedTab === 'readlists' && this.props.content}
@@ -84,7 +88,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'notifications',
               });
-              this.props.history.push(`${this.getParentPath()}/notifications`);
+              this.props.history.push(`${this.getGroupPath()}/notifications`);
             }}
           >
             {this.state.selectedTab === 'notifications' && this.props.content}
@@ -99,7 +103,7 @@ class BottomTabBar extends React.Component {
               this.setState({
                 selectedTab: 'settings',
               });
-              this.props.history.push(`${this.getParentPath()}/settings`);
+              this.props.history.push(`${this.getGroupPath()}/settings`);
             }}
           >
             {this.state.selectedTab === 'settings' && this.props.content}
