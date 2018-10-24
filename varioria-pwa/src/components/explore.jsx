@@ -1,3 +1,5 @@
+import './theme.css'
+
 import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
@@ -36,13 +38,13 @@ class Explore extends Component {
     const data = documents.map((element) => {
       return (
         <div key={element.open_url}>
-          <GridListTile style={{height: '56.56vw', width: '40vw'}} key={element.open_url} onClick={() => {this.props.history.push(`${element.open_url}`)}}>
+          <GridListTile className={'grid-tile'} key={element.open_url} onClick={() => {this.props.history.push(`${element.open_url}`)}}>
               <Grid container alignItems="center" style={{height: '100%'}}>
-                <img src={element.image} alt={element.title} style={{width:'100%'}}/>
+                <img src={element.image} alt={element.title}/>
               </Grid>
               <GridListTileBar
                 style={{height: '25%'}}
-                title={<div style={{fontSize: '0.8rem'}}>{element.title}</div>}
+                title={<div style={{fontSize: '0.8rem', fontWeight: 'bold'}}>{element.title}</div>}
                 subtitle={<div style={{fontSize: '0.7rem'}}>{<TimeAgo date={element.upload_time} />}</div>}
               />
           </GridListTile>
@@ -137,7 +139,7 @@ class Explore extends Component {
     if (_.isEmpty(this.props.explore) || _.isEmpty(this.props.explore.documents) || _.isEmpty(this.props.explore.readlists)) {
       return (
         <div>
-          <Navbar title="Explore" history={this.props.history}/>
+          <Navbar title="Explore" history={this.props.history} match={this.props.match}/>
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
@@ -145,7 +147,7 @@ class Explore extends Component {
 
     return (
       <div>
-        <Navbar title="Explore" history={this.props.history}/>
+        <Navbar title="Explore" history={this.props.history} match={this.props.match}/>
         {this.renderStickyTab()}
       </div>
     );

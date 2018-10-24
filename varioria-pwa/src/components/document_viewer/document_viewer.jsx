@@ -1,5 +1,7 @@
 import './document_viewer.css'
 
+import * as actions from '../../actions';
+
 import { ActivityIndicator, Icon, NavBar, TextareaItem } from 'antd-mobile';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {
@@ -24,6 +26,7 @@ import { Rnd } from 'react-rnd'
 import Tappable from 'react-tappable';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios'
+import { connect } from 'react-redux';
 import { getCookie } from '../../utilities/helper';
 import { library } from '@fortawesome/fontawesome-svg-core'
 
@@ -36,6 +39,10 @@ library.add(faPaperPlane, faTimesCircle)
 /*eslint no-undef: "off"*/
 
 const RENDERING = 'RENDERING'
+const ANNOTATION_WIDTH_THRESHOLD = 8
+const ANNOTATION_HEIGHT_THRESHOLD = 8
+
+
 class DocumentViewer extends React.Component {
   constructor(props) {
     super(props)
@@ -48,6 +55,7 @@ class DocumentViewer extends React.Component {
     this.currentPageIndex = 1
     this.annotationAreas = {}
     this.prevScroll = window.pageYOffset
+    this.annotationFirstTouch = false
     // this.touchLength = 0
     this.state = {
       document: {
@@ -207,8 +215,11 @@ class DocumentViewer extends React.Component {
     this.selectAnnotation = (uuid) => {
       if (this.state.selectedAnnotation !== undefined)
         this.annotationAreas[this.state.selectedAnnotation.uuid].classList.remove('highlighted-annotation-area')
+
       this.setState({selectedAnnotation: this.state.annotations[uuid]})
       this.annotationAreas[uuid].classList.add('highlighted-annotation-area')
+      const rgba = this.annotationAreas[uuid].style.background
+      this.annotationAreas[uuid].style.borderColor = rgba.split(',').slice(0,3).join(',') + ', 0.38)'
 
       if (!this.state.annotationOpen) {
         this.styleDrawer()
@@ -239,6 +250,9 @@ class DocumentViewer extends React.Component {
     }
 
     this.postAnnotation = () => {
+      if (this.state.newAnnotationWidth < ANNOTATION_WIDTH_THRESHOLD || this.state.newAnnotationHeight < ANNOTATION_HEIGHT_THRESHOLD)
+        return
+
       var data = new FormData()
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       data.append('operation', 'annotate')
@@ -312,9 +326,14 @@ class DocumentViewer extends React.Component {
     }
 
     function gestureOnRND(e) {
+      var target;
+      if (e.touches.item(0) === null)
+        target = e.target
+      else
+        target = e.touches.item(0).target
       const annotationBeingCreated = document.getElementById('annotation-being-created')
       if (annotationBeingCreated !== null)
-        if (annotationBeingCreated === e.touches.item(0).target || annotationBeingCreated.contains(e.touches.item(0).target))
+        if (annotationBeingCreated === target || annotationBeingCreated.contains(target))
           return true
       return false
     }
@@ -335,10 +354,14 @@ class DocumentViewer extends React.Component {
                 onTouchStart={(e) => {
                   if (this.state.mode === 'view') return
                   if (gestureOnRND(e)) return
+                  if (this.state.creatingAnnotationAtPageIndex !== undefined && this.state.creatingAnnotationAtPageIndex === pageIndex) return
 
+                  this.annotationFirstTouch = true
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
                     creatingAnnotationAtPageIndex: pageIndex,
+                    originalAnnotationX: bottom_right_relative_x,
+                    originalAnnotationY: bottom_right_relative_y,
                     newAnnotationX: bottom_right_relative_x,
                     newAnnotationY: bottom_right_relative_y,
                     newAnnotationWidth: 0,
@@ -348,24 +371,32 @@ class DocumentViewer extends React.Component {
                 onTouchMove={(e) => {
                   if (this.state.mode === 'view') return
                   if (gestureOnRND(e)) return
+                  if (!this.annotationFirstTouch) return
 
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
                     creatingAnnotationAtPageIndex: pageIndex,
-                    newAnnotationWidth: bottom_right_relative_x - this.state.newAnnotationX,
-                    newAnnotationHeight: bottom_right_relative_y - this.state.newAnnotationY,
+                    newAnnotationX: bottom_right_relative_x > this.state.originalAnnotationX ? this.state.originalAnnotationX : bottom_right_relative_x,
+                    newAnnotationY: bottom_right_relative_y > this.state.originalAnnotationY ? this.state.originalAnnotationY : bottom_right_relative_y,
+                    newAnnotationWidth: Math.abs(bottom_right_relative_x - this.state.originalAnnotationX),
+                    newAnnotationHeight: Math.abs(bottom_right_relative_y - this.state.originalAnnotationY),
                   })
 
                 }}
                 onTouchEnd={(e) => {
                   if (this.state.mode === 'view') return
-                  this.setState({newAnnotationInputOpen: true})
+                  if (gestureOnRND(e)) return
+                  if (this.annotationFirstTouch) {
+                    this.annotationFirstTouch = false
+                    this.setState({newAnnotationInputOpen: true})
+                  }
                 }}
               >
                 <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
                 {
                   this.state.creatingAnnotationAtPageIndex === pageIndex ?
                   <Rnd
+                    bounds='parent'
                     id='annotation-being-created'
                     className='annotation-area'
                     size={{ width: this.state.newAnnotationWidth,  height: this.state.newAnnotationHeight }}
@@ -375,7 +406,8 @@ class DocumentViewer extends React.Component {
                       this.setState({
                         newAnnotationWidth: parseFloat(ref.style.width),
                         newAnnotationHeight: parseFloat(ref.style.height),
-                        ...position,
+                        newAnnotationX: position.x,
+                        newAnnotationY: position.y,
                       });
                     }}
                     style={{backgroundColor: 'rgba(0, 170, 0, 0.18)'}}
@@ -470,7 +502,7 @@ class DocumentViewer extends React.Component {
           <div ref={ele => this.annotationWrapper = ele}>
             {
               selectedAnnotation !== undefined ? (
-                <AnnotationThread selectedAnnotation={selectedAnnotation} />
+                <AnnotationThread selectedAnnotation={selectedAnnotation} annotationArea={this.annotationAreas[selectedAnnotation.uuid]}/>
               ) : null
             }
           </div>
@@ -495,7 +527,7 @@ class DocumentViewer extends React.Component {
             <Avatar
               alt="Remy Sharp"
               style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
-              src="https://pmcvariety.files.wordpress.com/2015/07/naruto_movie-lionsgate.jpg?w=1000"
+              src={this.props.user.portrait_url}
             />
             <MuiThemeProvider theme={createMuiTheme({
                 palette: {
@@ -509,7 +541,7 @@ class DocumentViewer extends React.Component {
                 id="standard-bare"
                 // className={classes.textField}
                 // defaultValue="Bare"
-                placeholder="Placeholder" margin="normal" style={{width: '66vw', top: -2}}
+                placeholder="Type in your comment..." margin="normal" style={{width: '66vw', top: -2}}
                 multiline fullWidth value={this.state.newAnnotationContent}
                 onChange={event => {
                   this.setState({newAnnotationContent: event.target.value})
@@ -532,4 +564,12 @@ class DocumentViewer extends React.Component {
   }
 }
 
-export default DocumentViewer;
+
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+    coteries: state.coteries
+  };
+}
+
+export default connect(mapStateToProps, actions)(DocumentViewer);

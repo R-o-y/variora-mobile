@@ -209,7 +209,7 @@ class Readlists extends Component {
     if (this.state.loading) {
       return (
         <div>
-          <Navbar title="Readlists" history={this.props.history}/>
+          <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
@@ -217,7 +217,7 @@ class Readlists extends Component {
 
     return (
       <div>
-        <Navbar title="Readlists" history={this.props.history}/>
+        <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>
         {this.renderStickyTab()}
         {this.renderCreatedReadlistActionModal()}
       </div>

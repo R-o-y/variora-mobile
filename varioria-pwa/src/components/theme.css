@@ -1,0 +1,18 @@
+* {
+    -webkit-overflow-scrolling: touch;
+}
+
+.grid-tile {
+    height: 56.56vw;
+    width: 40vw;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.grid-tile img {
+    width: 100%;
+}
+
+.grid-tile div {
+    border-radius: 5px;
+}

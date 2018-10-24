@@ -7,11 +7,12 @@ import {
   faUserPlus,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons'
-
+import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
+import Badge from '@material-ui/core/Badge';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -73,6 +74,7 @@ class Navbar extends Component {
     const hasAdministratedCoteries = !_.isEmpty(this.props.user.administratedCoteries);
     const hasJoinedCoteries = !_.isEmpty(this.props.user.joinedCoteries);
     console.log(this.props)
+
     return (
       <div>
         <NavBar
@@ -81,6 +83,7 @@ class Navbar extends Component {
             boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
             zIndex: 10000000,
             position: 'relative',
+            paddingRight: 8,
           }}
           leftContent={
             <Avatar
@@ -95,15 +98,29 @@ class Navbar extends Component {
               key="0"
               type="search"
               style={{ marginRight: '16px' }}
-              onClick={(e) => {this.props.history.push('/search')}} />,
+              onClick={(e) => {this.props.history.push('/search')}}
+            />,
             <div key = "1">
-            <PeopleOutlineIcon
-              style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
-              onClick={(e) => {
-                this.props.getMyCoteries();
-                this.showModal('coterieModal', e);
-              }}
-            />
+            <Badge
+              color="primary"
+              classes={{ badge: this.props.classes.badge }}
+              badgeContent={
+                <Avatar className={this.props.classes.avatar}>
+                  <span style={{fontSize: '80%'}}>
+                    {this.props.match.params.groupUuid ?
+                      this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0) :
+                      "P"}
+                  </span>
+                </Avatar>}
+            >
+              <PeopleOutlineIcon
+                style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
+                onClick={(e) => {
+                  this.props.getMyCoteries();
+                  this.showModal('coterieModal', e);
+                }}
+              />
+            </Badge>
             <Modal
               popup
               visible={this.state.coterieModal}
@@ -187,4 +204,16 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, actions)(Navbar);
+const styles = theme => ({
+  badge: {
+    top: 6,
+    right: -16,
+    border: `1px solid white`,
+  },
+  avatar: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'orange'
+  },
+});
+export default connect(mapStateToProps, actions)(withStyles(styles)(Navbar));
