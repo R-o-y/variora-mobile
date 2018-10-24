@@ -502,7 +502,7 @@ class DocumentViewer extends React.Component {
           <div ref={ele => this.annotationWrapper = ele}>
             {
               selectedAnnotation !== undefined ? (
-                <AnnotationThread selectedAnnotation={selectedAnnotation} />
+                <AnnotationThread selectedAnnotation={selectedAnnotation} annotationArea={this.annotationAreas[selectedAnnotation.uuid]}/>
               ) : null
             }
           </div>

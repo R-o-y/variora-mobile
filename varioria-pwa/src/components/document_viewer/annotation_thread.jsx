@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom';
 import TimeAgo from 'react-timeago';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -67,9 +68,15 @@ function reduce_comment(comment) {
 
 const MENU_ITEM_HEIGHT = 48;
 const options = [
-  <span><FontAwesomeIcon icon={faPencilAlt} style={{padding: '0 8px 0 0'}} />Edit</span>,
-  <span><FontAwesomeIcon icon={faLink} style={{padding: '0 8px 0 0'}} />Share link</span>,
-  <span><FontAwesomeIcon icon={faTrashAlt} style={{padding: '0 8px 0 0'}} />Delete</span>,
+  <div><SmallButton size="small" color="primary">
+    <FontAwesomeIcon icon={faPencilAlt} />
+  </SmallButton><Typography variant={'caption'}>Edit</Typography></div>,
+  <div><SmallButton size="small" color="primary">
+    <FontAwesomeIcon icon={faLink} />
+  </SmallButton><Typography variant={'caption'}>Share link</Typography></div>,
+  <div><SmallButton size="small" color="primary">
+    <FontAwesomeIcon icon={faTrashAlt} />
+  </SmallButton><Typography variant={'caption'}>Delete</Typography></div>,
 ];
 
 
@@ -81,10 +88,9 @@ class AnnotationThread extends React.Component {
     //how come I don't need this?
   }
 
-  commentBlock (comment) {
+  commentBlock (comment, isHead=false) {
     return (
-      <div key={comment.uuid}>
-        <Divider />
+      <div key={comment.uuid} className={isHead ? 'comment-head' : 'comment-body'}>
         <Grid>
           {/* TOP ROW OF COMMENT --- Contains: content */}
           <Grid>
@@ -105,11 +111,12 @@ class AnnotationThread extends React.Component {
               </Grid>
             </Grid>
             {/* BOTTOM ROW RIGHT SIDE --- Contains: Locate, Reply, Like, More options */}
+            {isHead && 
             <Grid item>
-              <SmallButton size="small" color="primary" onClick={() => {/* TODO:function to locate */}} >
+              <SmallButton size="small" color="primary" onClick={() => {ReactDOM.findDOMNode(this.props.annotationArea.scrollIntoView())/* TODO: enable smooth scroll */}} >
                 <FontAwesomeIcon icon={faLocationArrow} />
               </SmallButton>
-            </Grid>
+            </Grid>}
             <Grid item>
               <SmallButton size="small" color="primary" onClick={() => {/* TODO:function to reply */}} >
                 <FontAwesomeIcon icon={faReply} />
@@ -147,15 +154,14 @@ class AnnotationThread extends React.Component {
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
     var selectedAnnotation = this.props.selectedAnnotation
-    var comment = reduce_comment(selectedAnnotation)
     return (
       <div>
-        {this.commentBlock(comment)}
+        {this.commentBlock(reduce_comment(selectedAnnotation), true)}
         {selectedAnnotation.replies.map(reply =>
-          this.commentBlock(reduce_comment(reply), this)
+          this.commentBlock(reduce_comment(reply))
         )}
         <Menu
-          id="long-menu"
+          className='menu'
           anchorEl={anchorEl}
           open={open}
           onClose={this.handleClose}
