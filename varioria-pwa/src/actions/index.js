@@ -11,6 +11,7 @@ import {
   COTERIE_GET_MY_DOCUMENTS,
   COTERIE_CREATE,
   COTERIE_INVITE,
+  COTERIE_DOCUMENT_UPLOAD,
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
   READLIST_GET,
@@ -25,6 +26,7 @@ import {
 
 
 const FILE_UPLOAD_API_URL = '/file_viewer/api/documents/upload';
+const COTERIE_DOCUMENT_UPLOAD_API_URL = '/coterie/api/coteriedocuments/upload';
 const INVITE_TO_COTERIE_API_URL = '/coterie/api/invite';
 const GET_INVITATION_API_URL = '/coterie/api/invitations';
 
@@ -51,6 +53,17 @@ export function uploadDocument(data) {
   });
 
   return {type: DOCUMENT_UPLOAD, payload: request};
+}
+
+export function uploadCoterieDocument(data) {
+  const request = axios({
+    method: 'post',
+    headers: {'Content-Type': 'multipart/form-data'},
+    url: COTERIE_DOCUMENT_UPLOAD_API_URL,
+    data
+  });
+
+  return {type: COTERIE_DOCUMENT_UPLOAD, payload: request};
 }
 
 export function renameDocument(url, data) {

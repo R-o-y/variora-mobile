@@ -7,6 +7,7 @@ import {
   DOCUMENT_UNCOLLECT_SUCCESS,
   COTERIE_GET_MY,
   COTERIE_GET_MY_DOCUMENTS,
+  COTERIE_DOCUMENT_UPLOAD,
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -28,6 +29,7 @@ export default function (state = [], action) {
           collectedDocuments: []
       });
     case DOCUMENT_UPLOAD:
+    case COTERIE_DOCUMENT_UPLOAD:
       const addedUploadedDocuments = _.concat(state.uploadedDocuments, action.payload.data.slug);
       return _.extend({}, state, { uploadedDocuments: addedUploadedDocuments });
     case DOCUMENT_DELETE_SUCCESS:

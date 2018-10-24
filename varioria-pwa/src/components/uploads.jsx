@@ -39,10 +39,20 @@ class Uploads extends Component {
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       this.setState({ uploading: true })
       Toast.loading('Loading...')
+
+      if (!this.props.match.params.groupUuid) {
         this.props.uploadDocument(data).then(() => {
           Toast.success('Upload success!', 1);
           this.setState({ uploading: false })
         })
+      } else {
+        const coterie_pk = this.props.coteries[this.props.match.params.groupUuid].pk;
+        data.append('coterie_pk', coterie_pk);
+        this.props.uploadCoterieDocument(data).then(() => {
+          Toast.success('Upload success!', 1);
+          this.setState({ uploading: false })
+        })
+      }
 
       this.finput.value = ''
     }
@@ -339,7 +349,8 @@ class Uploads extends Component {
 function mapStateToProps(state) {
   return {
     user: state.user,
-    documents: state.documents
+    documents: state.documents,
+    coteries: state.coteries,
   };
 }
 
