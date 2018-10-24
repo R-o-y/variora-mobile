@@ -13,8 +13,26 @@
   padding: 5px;
 }
 
-.comment-text p {
-  margin: 0;
+.comment-head {
+  box-shadow: 0 4px 2px #eee;
+}
+
+.comment-body {
+  border: 2px solid #eee;
+  border-top: 0;
+}
+
+.menu span {
+  display: inline-block;
+}
+
+.menu li{
+  padding: 0 10px;
+}
+
+.menu Button {
+  padding: 0;
+  padding-right: 10px;
 }
 
 #post-annotation-btn {
