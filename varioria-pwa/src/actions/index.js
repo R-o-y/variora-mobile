@@ -10,6 +10,8 @@ import {
   COTERIE_GET_MY,
   COTERIE_GET_MY_DOCUMENTS,
   COTERIE_CREATE,
+  COTERIE_UPDATE,
+  COTERIE_UPDATE_SUCCESS,
   COTERIE_INVITE,
   COTERIE_DOCUMENT_UPLOAD,
   SEARCHTERM_UPDATE,
@@ -185,6 +187,29 @@ export function createCoterie(data) {
   });
 
   return {type: COTERIE_CREATE, payload: request};
+}
+
+export function updateCoterie(data, pk) {
+  const url = `/coterie/api/coteries/${pk}/update`
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+
+  return {type: COTERIE_UPDATE, payload: request};
+}
+
+export function updateCoterieSuccess(uuid, name, description) {
+
+  return {
+    type: COTERIE_UPDATE_SUCCESS,
+    payload: {
+      uuid,
+      name,
+      description
+    }
+  }
 }
 
 export function getSearchResults(term) {

@@ -29,7 +29,8 @@ class Settings extends Component {
     this.state = {
       isFetching: true,
       memberModal: false,
-      inviteDialog: false
+      inviteDialog: false,
+      editDialog: false
     }
   }
 
@@ -67,6 +68,23 @@ class Settings extends Component {
     this.props.inviteToCoterie(data);
   }
 
+  handleGroupEdit() {
+    let currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+
+    let data = new FormData();
+    data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+    if (this.state.new_name && (this.state.new_name !== currentCoterie.name)) {
+      data.append('new_name', this.state.new_name);
+    }
+    if (this.state.new_desc && (this.state.new_desc !== currentCoterie.description)) {
+      data.append('new_desc', this.state.new_desc);
+    }
+    this.props.updateCoterie(data, currentCoterie.pk).then((response) => {
+      this.props.updateCoterieSuccess(currentCoterie.uuid, this.state.new_name, this.state.new_desc)
+    })
+  }
+
   renderMember(member) {
     return (
       <List.Item
@@ -85,8 +103,10 @@ class Settings extends Component {
         <Card>
           <Card.Header
             title={<span style={{marginLeft:20}}>{currentCoterie.name}</span>}
-            thumb={<PeopleOutlineIcon style={{color: 'rgb(101, 119, 134)'}}  />}
-            extra={<EditIcon onClick={() => console.log('edit clicked')} />}
+            thumb={<PeopleOutlineIcon style={{color: 'rgb(101, 119, 134)'}} />}
+            extra={
+              <EditIcon onClick={(e) => {this.showModal('editDialog', e)}} />
+            }
           />
           <Card.Body>
             <div>{currentCoterie.description}</div>
@@ -167,6 +187,51 @@ class Settings extends Component {
     )
   }
 
+  renderEditDialog() {
+    let currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+
+    return (
+      <div>
+        <Dialog
+          open={this.state.editDialog}
+          onClose={() => this.onClose('editDialog')}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="form-dialog-title">Edit Group Info</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              multiline
+              margin="dense"
+              id="new_name"
+              label="New name"
+              defaultValue={currentCoterie.name}
+              fullWidth
+              onChange={this.handleChange('new_name')}
+            />
+            <TextField
+              multiline
+              margin="dense"
+              id="new_desc"
+              label="New description"
+              defaultValue={currentCoterie.description}
+              fullWidth
+              onChange={this.handleChange('new_desc')}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.onClose('editDialog')} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={() => {this.onClose('editDialog'); this.handleGroupEdit();}} color="primary">
+              Send
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    )
+  }
+
   render() {
     if (_.isEmpty(this.props.user) || this.state.isFetching) {
       return (
@@ -185,6 +250,7 @@ class Settings extends Component {
         </div>
       )
     }
+    console.log(this.state);
 
     const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
     return (
@@ -220,6 +286,7 @@ class Settings extends Component {
 
         {this.renderMemberModal(currentCoterie)}
         {this.renderInviteDialog()}
+        {this.renderEditDialog()}
 
       </div>
     );
