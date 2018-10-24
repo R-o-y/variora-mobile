@@ -360,6 +360,8 @@ class DocumentViewer extends React.Component {
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
                     creatingAnnotationAtPageIndex: pageIndex,
+                    originalAnnotationX: bottom_right_relative_x,
+                    originalAnnotationY: bottom_right_relative_y,
                     newAnnotationX: bottom_right_relative_x,
                     newAnnotationY: bottom_right_relative_y,
                     newAnnotationWidth: 0,
@@ -374,8 +376,10 @@ class DocumentViewer extends React.Component {
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
                     creatingAnnotationAtPageIndex: pageIndex,
-                    newAnnotationWidth: bottom_right_relative_x - this.state.newAnnotationX,
-                    newAnnotationHeight: bottom_right_relative_y - this.state.newAnnotationY,
+                    newAnnotationX: bottom_right_relative_x > this.state.originalAnnotationX ? this.state.originalAnnotationX : bottom_right_relative_x,
+                    newAnnotationY: bottom_right_relative_y > this.state.originalAnnotationY ? this.state.originalAnnotationY : bottom_right_relative_y,
+                    newAnnotationWidth: Math.abs(bottom_right_relative_x - this.state.originalAnnotationX),
+                    newAnnotationHeight: Math.abs(bottom_right_relative_y - this.state.originalAnnotationY),
                   })
 
                 }}
@@ -402,7 +406,8 @@ class DocumentViewer extends React.Component {
                       this.setState({
                         newAnnotationWidth: parseFloat(ref.style.width),
                         newAnnotationHeight: parseFloat(ref.style.height),
-                        ...position,
+                        newAnnotationX: position.x,
+                        newAnnotationY: position.y,
                       });
                     }}
                     style={{backgroundColor: 'rgba(0, 170, 0, 0.18)'}}
