@@ -13,9 +13,15 @@ import logo from './logo.svg'
 
 
 class App extends Component {
+  state = {
+    loading: true
+  }
+
   componentDidMount() {
     this.props.getUser();
-    this.props.getMyCoteries();
+    this.props.getMyCoteries().then(() => {
+      this.setState({loading: false})
+    });
 
     // axios.get('/file_viewer/api/documents').then(response => {
     //   this.setState({
@@ -30,7 +36,7 @@ class App extends Component {
   }
 
   render() {
-    if (_.isEmpty(this.props.user) || _.isEmpty(this.props.coteries)) {
+    if (_.isEmpty(this.props.user) || this.state.loading) {
       return (
         <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
       )

@@ -116,6 +116,7 @@ class Navbar extends Component {
               <PeopleOutlineIcon
                 style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
                 onClick={(e) => {
+                  this.props.getMyCoteries();
                   this.showModal('coterieModal', e);
                 }}
               />

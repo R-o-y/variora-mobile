@@ -14,6 +14,7 @@ import {
   COTERIE_UPDATE_SUCCESS,
   COTERIE_INVITE,
   COTERIE_DOCUMENT_UPLOAD,
+  COTERIE_LEAVE,
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
   READLIST_GET,
@@ -210,6 +211,17 @@ export function updateCoterieSuccess(uuid, name, description) {
       description
     }
   }
+}
+
+export function leaveCoterie(data, pk) {
+  const url = `/coterie/api/coteries/${pk}/exit`
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+
+  return {type: COTERIE_LEAVE, payload: request, pk};
 }
 
 export function getSearchResults(term) {

@@ -10,7 +10,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import ExitIcon from '@material-ui/icons/ExitToApp';
-
+import KeyIcon from '@material-ui/icons/VpnKey';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -29,6 +29,7 @@ class Settings extends Component {
     this.state = {
       isFetching: true,
       memberModal: false,
+      adminModal: false,
       inviteDialog: false,
       editDialog: false
     }
@@ -97,6 +98,7 @@ class Settings extends Component {
   }
 
   renderGroupInfo(currentCoterie) {
+    let isAdmin = this.props.user.administratedCoteries.includes(currentCoterie.uuid);
     return (
       <WingBlank size="lg">
         <WhiteSpace size="lg" />
@@ -104,7 +106,7 @@ class Settings extends Component {
           <Card.Header
             title={<span style={{marginLeft:20}}>{currentCoterie.name}</span>}
             thumb={<PeopleOutlineIcon style={{color: 'rgb(101, 119, 134)'}} />}
-            extra={
+            extra={ isAdmin &&
               <EditIcon onClick={(e) => {this.showModal('editDialog', e)}} />
             }
           />
@@ -134,6 +136,29 @@ class Settings extends Component {
         >
           {currentCoterie.members.map((member) => {
             return this.renderMember(member);
+          })}
+        </List>
+      </Modal>
+    )
+  }
+
+  renderAdminModal(currentCoterie) {
+    return (
+      <Modal
+        popup
+        visible={this.state.adminModal}
+        onClose={() => this.onClose('adminModal')}
+        animationType="slide-up"
+        style={{overflow: 'auto', maxHeight: '80vh'}}
+      >
+        <List
+          renderHeader={() =>
+            <b style={{color: "#1BA39C"}}>Administrators</b>
+          }
+          className="popup-list"
+        >
+          {currentCoterie.administrators.map((admin) => {
+            return this.renderMember(admin);
           })}
         </List>
       </Modal>
@@ -250,15 +275,24 @@ class Settings extends Component {
         </div>
       )
     }
-    console.log(this.state);
 
     const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+    let isAdmin = this.props.user.administratedCoteries.includes(currentCoterie.uuid);
+    console.log(this.props.user);
     return (
       <div>
         <Navbar title="Settings" history={this.props.history} match={this.props.match}/>
         {this.renderGroupInfo(currentCoterie)}
 
         <List>
+          <List.Item
+           thumb={<KeyIcon style={{color: 'orange'}} />}
+           extra={currentCoterie.administrators.length}
+           arrow="horizontal"
+           onClick={(e) => {this.showModal('adminModal', e)}}
+          >
+            Administrators
+          </List.Item>
           <List.Item
            thumb={<PeopleIcon style={{color: '42A5F5'}} />}
            extra={currentCoterie.members.length}
@@ -267,23 +301,50 @@ class Settings extends Component {
           >
             Members
           </List.Item>
-          <List.Item
-           thumb={<PersonAddIcon style={{color: '#1BA39C'}} />}
-           onClick={(e) => {this.showModal('inviteDialog', e)}}
-          >
-            Add someone
-          </List.Item>
+          { isAdmin &&
+            <List.Item
+             thumb={<PersonAddIcon style={{color: '#1BA39C'}} />}
+             onClick={(e) => {this.showModal('inviteDialog', e)}}
+            >
+              Add someone
+            </List.Item>
+          }
         </List>
 
         <WhiteSpace size="lg" />
-        <List>
-          <List.Item
-           thumb={<ExitIcon style={{color: '#FF0000'}} />}
-           onClick={() => {}}>
-            Leave group
-          </List.Item>
-        </List>
+        { !isAdmin &&
+          <List>
+            <List.Item
+             thumb={<ExitIcon style={{color: '#FF0000'}} />}
+             onClick={() => {
+               Modal.alert('Leave ' + currentCoterie.name + '?',
+               'Are you sure to exit this group? This cannot be undone',
+               [
+                 { text: 'Cancel' },
+                 { text: 'Leave', style:{color:'#FF0000'},
+                   onPress: () => {
+                     let data = new FormData();
+                     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                     this.props.leaveCoterie(data, currentCoterie.pk);
+                     this.props.history.push('/explore');
+                 }},
+               ])
+             }}>
+              Leave group
+            </List.Item>
+          </List>
+        }
+        { isAdmin &&
+          <List>
+            <List.Item
+             thumb={<ExitIcon style={{color: '#FF0000'}} />}
+             onClick={() => {}}>
+              Delete group
+            </List.Item>
+          </List>
+        }
 
+        {this.renderAdminModal(currentCoterie)}
         {this.renderMemberModal(currentCoterie)}
         {this.renderInviteDialog()}
         {this.renderEditDialog()}
