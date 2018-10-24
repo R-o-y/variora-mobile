@@ -153,7 +153,7 @@ class Notifications extends Component {
     if (this.state.loading) {
       return (
         <div>
-          <Navbar title="Notifications" history={this.props.history} />
+          <Navbar title="Notifications" history={this.props.history} match={this.props.match}/>
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
@@ -161,13 +161,16 @@ class Notifications extends Component {
 
     if (_.isEmpty(this.props.notifications) && _.isEmpty(this.props.invitations)) {
       return (
-        <List>
-          <List.Item>
-            <List.Item.Brief>
-              You are up to date!
-            </List.Item.Brief>
-          </List.Item>
-        </List>
+        <div>
+          <Navbar title="Notifications" history={this.props.history} match={this.props.match}/>
+          <List>
+            <List.Item>
+              <List.Item.Brief>
+                You are up to date!
+              </List.Item.Brief>
+            </List.Item>
+          </List>
+        </div>
       )
     }
 
@@ -177,7 +180,7 @@ class Notifications extends Component {
     console.log(this.props);
     return (
       <div>
-        <Navbar title="Notifications" history={this.props.history} />
+        <Navbar title="Notifications" history={this.props.history} match={this.props.match}/>
         { invitations.length !== 0 && this.renderInvitationList(invitations) }
         { this.renderNotificationsList(notifications) }
       </div>

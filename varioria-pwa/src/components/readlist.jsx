@@ -86,14 +86,14 @@ class Readlist extends Component {
     if (!this.props.readlists.readlist) {
       return (
         <div>
-          <Navbar title="Readlists" history={this.props.history}/>
+          <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       )
     }
     return (
       <div>
-        <Navbar title="Readlists" history={this.props.history}/>
+        <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>
         {this.renderReadlistCard()}
         {this.renderDocumentList()}
       </div>

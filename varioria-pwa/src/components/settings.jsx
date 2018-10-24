@@ -171,7 +171,7 @@ class Settings extends Component {
     if (_.isEmpty(this.props.user) || this.state.isFetching) {
       return (
         <div>
-          <Navbar title="Settings" history={this.props.history} />
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
@@ -180,7 +180,7 @@ class Settings extends Component {
     if (!this.props.match.params.groupUuid) {
       return (
         <div>
-          <Navbar title="Settings" history={this.props.history} />
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
           <h2> You are in the public group. </h2>
         </div>
       )
@@ -189,7 +189,7 @@ class Settings extends Component {
     const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
     return (
       <div>
-        <Navbar title="Settings" history={this.props.history}/>
+        <Navbar title="Settings" history={this.props.history} match={this.props.match}/>
         {this.renderGroupInfo(currentCoterie)}
 
         <List>

@@ -312,7 +312,7 @@ class Uploads extends Component {
     if (this.state.loading) {
       return (
         <div>
-          <Navbar title="Uploads" history={this.props.history} />
+          <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       )
@@ -320,7 +320,7 @@ class Uploads extends Component {
 
     return (
       <div>
-        <Navbar title="Uploads" history={this.props.history} group={this.props.match.params.groupUuid} />
+        <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
         {this.renderStickyTab()}
         {this.renderUploadedActionModal()}
         {this.renderCollectedActionModal()}
