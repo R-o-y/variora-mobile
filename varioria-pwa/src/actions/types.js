@@ -19,7 +19,12 @@ export const SEARCHRESULT_GET = 'search_result_get';
 
 export const COTERIE_GET_MY = 'coterie_get_my';
 export const COTERIE_CREATE = 'coterie_create';
+export const COTERIE_UPDATE = 'coterie_update';
+export const COTERIE_UPDATE_SUCCESS = 'coterie_update_success';
 export const COTERIE_INVITE = 'coterie_invite';
+export const COTERIE_DOCUMENT_UPLOAD = 'coterie_document_upload';
+export const COTERIE_LEAVE = 'coterie_leave';
+export const COTERIE_DELETE = 'coterie_delete';
 
 export const INVITATION_GET = 'invitation_get';
 export const INVITATION_ACCEPT = 'invitation_accept';

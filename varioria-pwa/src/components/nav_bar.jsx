@@ -104,7 +104,14 @@ class Navbar extends Component {
             <Badge
               color="primary"
               classes={{ badge: this.props.classes.badge }}
-              badgeContent={<Avatar className={this.props.classes.avatar}><span style={{fontSize: '80%'}}>N</span></Avatar>}
+              badgeContent={
+                <Avatar className={this.props.classes.avatar}>
+                  <span style={{fontSize: '80%'}}>
+                    {this.props.match.params.groupUuid ?
+                      this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0) :
+                      "P"}
+                  </span>
+                </Avatar>}
             >
               <PeopleOutlineIcon
                 style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}

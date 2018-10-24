@@ -4,7 +4,8 @@ import {
   DOCUMENT_UPLOAD,
   DOCUMENT_RENAME,
   DOCUMENT_DELETE_SUCCESS,
-  COTERIE_GET_MY_DOCUMENTS
+  COTERIE_GET_MY_DOCUMENTS,
+  COTERIE_DOCUMENT_UPLOAD,
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -21,6 +22,7 @@ export default function (state = [], action) {
       return _.extend({}, state, _.keyBy(myUploadedDocuments, 'slug'));
 
     case DOCUMENT_UPLOAD:
+    case COTERIE_DOCUMENT_UPLOAD:
       const uploadedDocument = action.payload.data;
       return _.extend({}, state, {[uploadedDocument.slug]: uploadedDocument});
 

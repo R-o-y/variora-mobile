@@ -10,7 +10,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import ExitIcon from '@material-ui/icons/ExitToApp';
-
+import KeyIcon from '@material-ui/icons/VpnKey';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -29,7 +29,9 @@ class Settings extends Component {
     this.state = {
       isFetching: true,
       memberModal: false,
-      inviteDialog: false
+      adminModal: false,
+      inviteDialog: false,
+      editDialog: false
     }
   }
 
@@ -67,6 +69,23 @@ class Settings extends Component {
     this.props.inviteToCoterie(data);
   }
 
+  handleGroupEdit() {
+    let currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+
+    let data = new FormData();
+    data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+    if (this.state.new_name && (this.state.new_name !== currentCoterie.name)) {
+      data.append('new_name', this.state.new_name);
+    }
+    if (this.state.new_desc && (this.state.new_desc !== currentCoterie.description)) {
+      data.append('new_desc', this.state.new_desc);
+    }
+    this.props.updateCoterie(data, currentCoterie.pk).then((response) => {
+      this.props.updateCoterieSuccess(currentCoterie.uuid, this.state.new_name, this.state.new_desc)
+    })
+  }
+
   renderMember(member) {
     return (
       <List.Item
@@ -79,14 +98,17 @@ class Settings extends Component {
   }
 
   renderGroupInfo(currentCoterie) {
+    let isAdmin = this.props.user.administratedCoteries.includes(currentCoterie.uuid);
     return (
       <WingBlank size="lg">
         <WhiteSpace size="lg" />
         <Card>
           <Card.Header
             title={<span style={{marginLeft:20}}>{currentCoterie.name}</span>}
-            thumb={<PeopleOutlineIcon style={{color: 'rgb(101, 119, 134)'}}  />}
-            extra={<EditIcon onClick={() => console.log('edit clicked')} />}
+            thumb={<PeopleOutlineIcon style={{color: 'rgb(101, 119, 134)'}} />}
+            extra={ isAdmin &&
+              <EditIcon onClick={(e) => {this.showModal('editDialog', e)}} />
+            }
           />
           <Card.Body>
             <div>{currentCoterie.description}</div>
@@ -114,6 +136,29 @@ class Settings extends Component {
         >
           {currentCoterie.members.map((member) => {
             return this.renderMember(member);
+          })}
+        </List>
+      </Modal>
+    )
+  }
+
+  renderAdminModal(currentCoterie) {
+    return (
+      <Modal
+        popup
+        visible={this.state.adminModal}
+        onClose={() => this.onClose('adminModal')}
+        animationType="slide-up"
+        style={{overflow: 'auto', maxHeight: '80vh'}}
+      >
+        <List
+          renderHeader={() =>
+            <b style={{color: "#1BA39C"}}>Administrators</b>
+          }
+          className="popup-list"
+        >
+          {currentCoterie.administrators.map((admin) => {
+            return this.renderMember(admin);
           })}
         </List>
       </Modal>
@@ -167,11 +212,56 @@ class Settings extends Component {
     )
   }
 
+  renderEditDialog() {
+    let currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+
+    return (
+      <div>
+        <Dialog
+          open={this.state.editDialog}
+          onClose={() => this.onClose('editDialog')}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="form-dialog-title">Edit Group Info</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              multiline
+              margin="dense"
+              id="new_name"
+              label="New name"
+              defaultValue={currentCoterie.name}
+              fullWidth
+              onChange={this.handleChange('new_name')}
+            />
+            <TextField
+              multiline
+              margin="dense"
+              id="new_desc"
+              label="New description"
+              defaultValue={currentCoterie.description}
+              fullWidth
+              onChange={this.handleChange('new_desc')}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.onClose('editDialog')} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={() => {this.onClose('editDialog'); this.handleGroupEdit();}} color="primary">
+              Send
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    )
+  }
+
   render() {
     if (_.isEmpty(this.props.user) || this.state.isFetching) {
       return (
         <div>
-          <Navbar title="Settings" history={this.props.history} />
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
@@ -180,19 +270,29 @@ class Settings extends Component {
     if (!this.props.match.params.groupUuid) {
       return (
         <div>
-          <Navbar title="Settings" history={this.props.history} />
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
           <h2> You are in the public group. </h2>
         </div>
       )
     }
 
     const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+    let isAdmin = this.props.user.administratedCoteries.includes(currentCoterie.uuid);
+    console.log(this.props.user);
     return (
       <div>
-        <Navbar title="Settings" history={this.props.history}/>
+        <Navbar title="Settings" history={this.props.history} match={this.props.match}/>
         {this.renderGroupInfo(currentCoterie)}
 
         <List>
+          <List.Item
+           thumb={<KeyIcon style={{color: 'orange'}} />}
+           extra={currentCoterie.administrators.length}
+           arrow="horizontal"
+           onClick={(e) => {this.showModal('adminModal', e)}}
+          >
+            Administrators
+          </List.Item>
           <List.Item
            thumb={<PeopleIcon style={{color: '42A5F5'}} />}
            extra={currentCoterie.members.length}
@@ -201,25 +301,66 @@ class Settings extends Component {
           >
             Members
           </List.Item>
-          <List.Item
-           thumb={<PersonAddIcon style={{color: '#1BA39C'}} />}
-           onClick={(e) => {this.showModal('inviteDialog', e)}}
-          >
-            Add someone
-          </List.Item>
+          { isAdmin &&
+            <List.Item
+             thumb={<PersonAddIcon style={{color: '#1BA39C'}} />}
+             onClick={(e) => {this.showModal('inviteDialog', e)}}
+            >
+              Add someone
+            </List.Item>
+          }
         </List>
 
         <WhiteSpace size="lg" />
-        <List>
-          <List.Item
-           thumb={<ExitIcon style={{color: '#FF0000'}} />}
-           onClick={() => {}}>
-            Leave group
-          </List.Item>
-        </List>
+        { !isAdmin &&
+          <List>
+            <List.Item
+             thumb={<ExitIcon style={{color: '#FF0000'}} />}
+             onClick={() => {
+               Modal.alert('Leave ' + currentCoterie.name + '?',
+               'Are you sure to exit this group? This cannot be undone',
+               [
+                 { text: 'Cancel' },
+                 { text: 'Leave', style:{color:'#FF0000'},
+                   onPress: () => {
+                     let data = new FormData();
+                     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                     this.props.leaveCoterie(data, currentCoterie.pk, currentCoterie.uuid);
+                     this.props.history.push('/explore');
+                 }},
+               ])
+             }}>
+              Leave group
+            </List.Item>
+          </List>
+        }
+        { isAdmin &&
+          <List>
+            <List.Item
+             thumb={<ExitIcon style={{color: '#FF0000'}} />}
+             onClick={() => {
+               Modal.alert('Delete ' + currentCoterie.name + '?',
+               'Are you sure? Deleting the group can affect all existing members. This cannot be undone',
+               [
+                 { text: 'Cancel' },
+                 { text: 'Leave', style:{color: '#FF0000'},
+                   onPress: () => {
+                     let data = new FormData();
+                     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                     this.props.deleteCoterie(data, currentCoterie.pk, currentCoterie.uuid);
+                     this.props.history.push('/explore');
+                 }},
+               ])
+             }}>
+              Delete group
+            </List.Item>
+          </List>
+        }
 
+        {this.renderAdminModal(currentCoterie)}
         {this.renderMemberModal(currentCoterie)}
         {this.renderInviteDialog()}
+        {this.renderEditDialog()}
 
       </div>
     );
