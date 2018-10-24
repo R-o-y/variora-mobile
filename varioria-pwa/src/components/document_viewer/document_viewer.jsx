@@ -410,7 +410,6 @@ class DocumentViewer extends React.Component {
                         newAnnotationY: position.y,
                       });
                     }}
-                    style={{backgroundColor: 'rgba(0, 170, 0, 0.18)'}}
                   >
                   </Rnd> : null
                 }
@@ -525,7 +524,7 @@ class DocumentViewer extends React.Component {
               autoHeight
             /> */}
             <Avatar
-              alt="Remy Sharp"
+              alt="User Portrait"
               style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
               src={this.props.user.portrait_url}
             />

@@ -22,7 +22,6 @@ import {
 } from '@fortawesome/fontawesome-free-regular'
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Divider from '@material-ui/core/Divider';
 
 const SmallChip = withStyles({
   root: {
@@ -67,19 +66,6 @@ function reduce_comment(comment) {
 }
 
 const MENU_ITEM_HEIGHT = 48;
-const options = [
-  <div><SmallButton size="small" color="primary">
-    <FontAwesomeIcon icon={faPencilAlt} />
-  </SmallButton><Typography variant={'caption'}>Edit</Typography></div>,
-  <div><SmallButton size="small" color="primary">
-    <FontAwesomeIcon icon={faLink} />
-  </SmallButton><Typography variant={'caption'}>Share link</Typography></div>,
-  <div><SmallButton size="small" color="primary">
-    <FontAwesomeIcon icon={faTrashAlt} />
-  </SmallButton><Typography variant={'caption'}>Delete</Typography></div>,
-];
-
-
 
 class AnnotationThread extends React.Component {
   constructor (props) {
@@ -153,7 +139,7 @@ class AnnotationThread extends React.Component {
   render() {
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
-    var selectedAnnotation = this.props.selectedAnnotation
+    var selectedAnnotation = this.props.selectedAnnotation;
     return (
       <div>
         {this.commentBlock(reduce_comment(selectedAnnotation), true)}
@@ -171,11 +157,21 @@ class AnnotationThread extends React.Component {
             },
           }}
         >
-          {options.map(option => (
-            <MenuItem key={option} selected={option === 'Pyxis'} onClick={this.handleClose}>
-              {option}
-            </MenuItem>
-          ))}
+          <MenuItem onClick={this.handleClose}>
+            <SmallButton size="small" color="primary">
+              <FontAwesomeIcon icon={faPencilAlt} />
+            </SmallButton><Typography variant={'caption'}>Edit</Typography>
+          </MenuItem>
+          <MenuItem onClick={this.handleClose}>
+            <SmallButton size="small" color="primary">
+              <FontAwesomeIcon icon={faLink} />
+            </SmallButton><Typography variant={'caption'}>Share link</Typography>
+          </MenuItem>
+          <MenuItem onClick={this.handleClose}>
+            <SmallButton size="small" color="primary">
+              <FontAwesomeIcon icon={faTrashAlt} />
+            </SmallButton><Typography variant={'caption'}>Delete</Typography>
+          </MenuItem>
         </Menu>
       </div>
     )
