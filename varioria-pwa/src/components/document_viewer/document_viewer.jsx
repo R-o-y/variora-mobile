@@ -262,7 +262,7 @@ class DocumentViewer extends React.Component {
       data.append('left_percent', this.state.newAnnotationX / this.state.sampleWidth)
       data.append('height_percent', this.state.newAnnotationHeight / this.state.sampleHeight)
       data.append('width_percent', this.state.newAnnotationWidth / this.state.sampleWidth)
-      data.append('frame_color', document.getElementById('annotation-being-created').style.backgroundColor)
+      data.append('frame_color', window.getComputedStyle(document.getElementById('annotation-being-created') ,null).getPropertyValue('background-color'))
       data.append('document_id', this.state.document.pk)
       data.append('is_public', true)
       axios.post(window.location.pathname + '/', data).then(response => {
@@ -381,19 +381,19 @@ class DocumentViewer extends React.Component {
 
                 }}
                 onTouchEnd={(e) => {
+                  this.setState({
+                    newAnnotationX: this.rnd.draggable.state.x,
+                    newAnnotationY: this.rnd.draggable.state.y,
+                    newAnnotationWidth: this.rnd.props.size.width,
+                    newAnnotationHeight: this.rnd.props.size.height,
+                  })
                   if (this.state.mode === 'view') return
                   if (gestureOnRND(e)) return
                   if (this.annotationFirstTouch) {
                     this.annotationFirstTouch = false
                     this.setState({newAnnotationInputOpen: true})
+                    return
                   }
-                  if (!this.annotationFirstTouch) return
-                  const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
-                  this.setState({
-                    creatingAnnotationAtPageIndex: pageIndex,
-                    newAnnotationX: bottom_right_relative_x,
-                    newAnnotationY: bottom_right_relative_y,
-                  })
                 }}
               >
                 <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
