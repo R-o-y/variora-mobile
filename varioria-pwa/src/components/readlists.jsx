@@ -49,19 +49,6 @@ class Readlists extends Component {
     )
   }
 
-  showModal(key, e) {
-    e.preventDefault();
-    this.setState({
-      [key]: true,
-    });
-  }
-
-  onClose(key) {
-    this.setState({
-      [key]: false,
-    });
-  }
-
   renderAddReadlist() {
     return (
       <List.Item
@@ -71,60 +58,6 @@ class Readlists extends Component {
         <div style={{color:'grey'}}>New readlist</div>
         <List.Item.Brief>Click to create...</List.Item.Brief>
       </List.Item>
-    )
-  }
-
-  renderCreatedReadlistActionModal() {
-    let currReadlist = this.props.readlists[this.state.selectedReadlist];
-
-    return (
-      <Modal
-        popup
-        visible={this.state.createdReadlistActionModal}
-        onClose={() => this.onClose('createdReadlistActionModal')}
-        animationType="slide-up"
-      >
-        <List
-          renderHeader={() =>
-            <b style={{ color: "#1BA39C"}}>{currReadlist.name}</b>
-          }
-          className="popup-list"
-        >
-          <List.Item
-            onClick={() => {
-              const location = window.location;
-              const url = [location.protocol, '//', location.host, '/readlists/', currReadlist.slug].join('');
-              copyToClipboard(url);
-              Toast.success('Copied to clipboard!', 1);}}
-          >
-            <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
-            Share
-          </List.Item>
-          {/* <List.Item
-            onClick={() => {this.renderRenameModal(currDocument)}}
-          >
-            <CreateIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
-            Rename
-          </List.Item> */}
-          <List.Item
-            onClick={() => {
-              Modal.alert('Delete ' + currReadlist.name + '?', '', [
-                { text: 'Cancel' },
-                { text: 'Delete', style:{color:'#FF0000'},
-                  onPress: () => {
-                    this.onClose('createdReadlistActionModal');
-                    let data = new FormData();
-                    data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-                    this.props.deleteReadlist(currReadlist.delete_url, data, currReadlist.slug);
-                }},
-              ])
-            }}
-          >
-            <DeleteIcon style={{height: 18, color:'#e74c3c',marginRight: 20}}/>
-            <span style={{color:'#e74c3c'}}>Delete</span>
-          </List.Item>
-        </List>
-      </Modal>
     )
   }
 
@@ -141,18 +74,12 @@ class Readlists extends Component {
           <List.Item
             thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
             multipleLine
+            arrow="horizontal"
             onClick={() => {this.props.history.push(`readlists/${slug}`)}}
           >
             {element.name}
             <List.Item.Brief>{moment(element.create_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>
           </List.Item>
-          <Icon type="ellipsis"
-            style={{position: 'absolute', width:'10%', marginTop: -50, right: 5, color:'#a8a8a8', zIndex: 1}}
-            onClick={(e) => {
-              console.log('clicked ellipsis ' + slug);
-              this.setState({selectedReadlist: slug})
-              this.showModal(isCreated ? 'createdReadlistActionModal' : 'collectedReadlistActionModal', e);
-            }}/>
         </div>
       )
     })
@@ -219,7 +146,6 @@ class Readlists extends Component {
       <div>
         <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>
         {this.renderStickyTab()}
-        {this.renderCreatedReadlistActionModal()}
       </div>
     );
   }

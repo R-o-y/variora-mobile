@@ -3,6 +3,11 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import { Button, Icon, InputItem, List, NavBar, TextareaItem, WhiteSpace } from 'antd-mobile';
 import { getCookie } from '../utilities/helper';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 class EditReadlistForm extends Component {
 
@@ -30,6 +35,10 @@ class EditReadlistForm extends Component {
     this.props.history.goBack();
   }
 
+  handleDelete() {
+    console.log("delete readlist")
+  }
+
   render() {
     return (
       <div>
@@ -38,6 +47,23 @@ class EditReadlistForm extends Component {
           icon={<Icon type="left" color="#1BA39C" />}
           onLeftClick={() => this.props.history.goBack()}
         >Edit Readlist</NavBar>
+      <WhiteSpace />
+      <ExpansionPanel>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Danger Zone</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <Typography>
+            Once you delete this list, all followers and you will no longer have access.
+          </Typography>
+        </ExpansionPanelDetails>
+        <Button
+          type="danger"
+          onClick={() => this.handleDelete()}>
+          Delete
+        </Button>
+      </ExpansionPanel>
+      <WhiteSpace />
         <List>
           <InputItem
             clear
