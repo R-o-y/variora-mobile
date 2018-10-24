@@ -1,25 +1,18 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
 import TimeAgo from 'react-timeago';
+import axios from 'axios'
+import { getCookie } from '../../utilities/helper';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faLocationArrow,
-  faReply,
-  faThumbsUp as faThumbsUped,
-  faEllipsisV,
-  faTrashAlt,
-  faPencilAlt,
-  faLink,
-} from '@fortawesome/free-solid-svg-icons'
-import {
-  faThumbsUp,
-} from '@fortawesome/fontawesome-free-regular'
+import { faLocationArrow, faReply, faThumbsUp as faThumbsUped, faEllipsisV, faTrashAlt, faPencilAlt, faLink } from '@fortawesome/free-solid-svg-icons'
+import { faThumbsUp } from '@fortawesome/fontawesome-free-regular'
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
@@ -62,6 +55,7 @@ function reduce_comment(comment) {
     timeago: timeago,
     content: content,
     uuid: comment.uuid,
+    numReplies: comment.replies ? comment.replies.length : 0,
   }
 }
 
@@ -78,6 +72,17 @@ class AnnotationThread extends React.Component {
     return (
       <div key={comment.uuid} className={isHead ? 'comment-head' : 'comment-body'}>
         <Grid>
+          <Grid container justify="flex-start" alignItems="center" wrap="nowrap">
+            <Grid item>
+              <SmallChip
+                label={comment.nickname}
+                avatar={<Avatar src={comment.portrait_url} />}
+              />
+            </Grid>
+            <Grid item>
+              <Typography variant="caption">{comment.prefix} <TimeAgo date={comment.timeago} /></Typography>
+            </Grid>
+          </Grid>
           {/* TOP ROW OF COMMENT --- Contains: content */}
           <Grid>
             <div className='comment-text' dangerouslySetInnerHTML={{__html: comment.content /*TODO: Style this p*/}}></div>
@@ -86,37 +91,31 @@ class AnnotationThread extends React.Component {
           <Grid container justify="space-between" alignItems="center" wrap="nowrap">
             {/* BOTTOM ROW LEFT SIDE --- Contains: portrait, name, post/edit time */}
             <Grid container justify="flex-start" alignItems="center" wrap="nowrap">
-              <Grid item>
-                <SmallChip
-                  label={comment.nickname}
-                  avatar={<Avatar src={comment.portrait_url} />}
-                />
-              </Grid>
-              <Grid item>
-                <Typography variant="caption">{comment.prefix} <TimeAgo date={comment.timeago} /></Typography>
-              </Grid>
+              {isHead && <SmallChip icon={<KeyboardArrowDown/>} label={comment.numReplies + ((comment.numReplies==1) ? ' reply' : ' replies')} variant='outlined'></SmallChip>}
             </Grid>
             {/* BOTTOM ROW RIGHT SIDE --- Contains: Locate, Reply, Like, More options */}
-            {isHead && 
-            <Grid item>
-              <SmallButton size="small" color="primary" onClick={() => {ReactDOM.findDOMNode(this.props.annotationArea.scrollIntoView())/* TODO: enable smooth scroll */}} >
-                <FontAwesomeIcon icon={faLocationArrow} />
-              </SmallButton>
-            </Grid>}
-            <Grid item>
-              <SmallButton size="small" color="primary" onClick={() => {/* TODO:function to reply */}} >
-                <FontAwesomeIcon icon={faReply} />
-              </SmallButton>
-            </Grid>
-            <Grid item>
-              <SmallButton size="small" color="primary" onClick={() => {/* TODO:function to like */}} >
-                <FontAwesomeIcon icon={faThumbsUp} />
-              </SmallButton>
-            </Grid>
-            <Grid item>
-              <SmallButton size="small" color="primary" onClick={this.handleClick}>
-                <FontAwesomeIcon icon={faEllipsisV} />
-              </SmallButton>
+            <Grid container justify="flex-end" alignItems="center" wrap="nowrap">
+              {isHead && //Locate Arrow only exists for header
+              <Grid item>
+                <SmallButton color="primary" onClick={() => {ReactDOM.findDOMNode(this.props.annotationArea.scrollIntoView())/* TODO: enable smooth scroll */}} >
+                  <FontAwesomeIcon icon={faLocationArrow} />
+                </SmallButton>
+              </Grid>}
+              <Grid item>
+                <SmallButton color="primary" onClick={() => {/* TODO:function to reply */}} >
+                  <FontAwesomeIcon icon={faReply} />
+                </SmallButton>
+              </Grid>
+              <Grid item>
+                <SmallButton color="primary" onClick={() => {this.likeComment(comment.uuid)}} >
+                  <FontAwesomeIcon icon={faThumbsUp} />
+                </SmallButton>
+              </Grid>
+              <Grid item>
+                <SmallButton color="primary" onClick={this.handleClick}>
+                  <FontAwesomeIcon icon={faEllipsisV} />
+                </SmallButton>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
@@ -135,6 +134,16 @@ class AnnotationThread extends React.Component {
   handleClose = value => {
     this.setState({ anchorEl: null });
   };
+
+  likeComment = (uuid) => {
+    var data = new FormData()
+    data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+    data.append('operation', 'like_annotation_reply')
+    data.append('annotation_reply_id', uuid)
+    axios.post(window.location.pathname + '/', data).then(response => {
+      console.log(response)
+    })
+  }
 
   render() {
     const { anchorEl } = this.state;
@@ -158,19 +167,19 @@ class AnnotationThread extends React.Component {
           }}
         >
           <MenuItem onClick={this.handleClose}>
-            <SmallButton size="small" color="primary">
+            <SmallButton color="primary">
               <FontAwesomeIcon icon={faPencilAlt} />
-            </SmallButton><Typography variant={'caption'}>Edit</Typography>
+            </SmallButton><Typography>Edit</Typography>
           </MenuItem>
           <MenuItem onClick={this.handleClose}>
-            <SmallButton size="small" color="primary">
+            <SmallButton color="primary">
               <FontAwesomeIcon icon={faLink} />
-            </SmallButton><Typography variant={'caption'}>Share link</Typography>
+            </SmallButton><Typography>Share link</Typography>
           </MenuItem>
           <MenuItem onClick={this.handleClose}>
-            <SmallButton size="small" color="primary">
+            <SmallButton color="primary">
               <FontAwesomeIcon icon={faTrashAlt} />
-            </SmallButton><Typography variant={'caption'}>Delete</Typography>
+            </SmallButton><Typography>Delete</Typography>
           </MenuItem>
         </Menu>
       </div>

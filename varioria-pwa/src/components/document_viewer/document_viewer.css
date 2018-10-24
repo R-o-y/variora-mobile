@@ -4,8 +4,7 @@
 }
 
 .annotation-drawer {
-  border-top: 0 !important;
-  box-shadow: rgba(28, 28, 28, 0.1) 0px -4px 2px !important;
+  box-shadow:  0px -2px 2px #eee !important;
   max-height: 38vh !important;
 }
 
@@ -15,19 +14,28 @@
 
 .comment-head {
   box-shadow: 0 4px 2px #eee;
+  padding-right: 4px;
+  margin-bottom: 4px;
+  border-radius: 0 0 10px 10px;
 }
 
 .comment-body {
-  border: 2px solid #eee;
-  border-top: 0;
+  box-shadow: 0 4px 4px #eee;
+  margin: 4px;
+  border: 1px solid #eee;
+  border-radius: 10px;
 }
 
 .menu span {
   display: inline-block;
 }
 
-.menu li{
-  padding: 0 10px;
+.menu ul {
+  padding: 0;
+}
+
+.menu li {
+  padding: 10px;
 }
 
 .menu Button {
@@ -56,4 +64,9 @@
 #annotation-being-created {
   z-index: 1;
   background-color: rgba(0, 170, 0, 0.18);
+}
+
+.annotation-being-created-handles > div {
+  background: rgba(0, 170, 0, 0.18);
+  border-radius: 50%;
 }

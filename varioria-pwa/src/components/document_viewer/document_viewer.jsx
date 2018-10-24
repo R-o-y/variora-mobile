@@ -360,8 +360,6 @@ class DocumentViewer extends React.Component {
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
                     creatingAnnotationAtPageIndex: pageIndex,
-                    originalAnnotationX: bottom_right_relative_x,
-                    originalAnnotationY: bottom_right_relative_y,
                     newAnnotationX: bottom_right_relative_x,
                     newAnnotationY: bottom_right_relative_y,
                     newAnnotationWidth: 0,
@@ -375,12 +373,11 @@ class DocumentViewer extends React.Component {
 
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
-                    creatingAnnotationAtPageIndex: pageIndex,
-                    newAnnotationX: bottom_right_relative_x > this.state.originalAnnotationX ? this.state.originalAnnotationX : bottom_right_relative_x,
-                    newAnnotationY: bottom_right_relative_y > this.state.originalAnnotationY ? this.state.originalAnnotationY : bottom_right_relative_y,
-                    newAnnotationWidth: Math.abs(bottom_right_relative_x - this.state.originalAnnotationX),
-                    newAnnotationHeight: Math.abs(bottom_right_relative_y - this.state.originalAnnotationY),
+                    newAnnotationWidth: Math.abs(bottom_right_relative_x - this.state.newAnnotationX),
+                    newAnnotationHeight: Math.abs(bottom_right_relative_y - this.state.newAnnotationY),
                   })
+                  this.rnd.updatePosition({ x: bottom_right_relative_x < this.state.newAnnotationX ? bottom_right_relative_x : this.state.newAnnotationX,
+                                            y: bottom_right_relative_y < this.state.newAnnotationY ? bottom_right_relative_y : this.state.newAnnotationY })
 
                 }}
                 onTouchEnd={(e) => {
@@ -390,24 +387,34 @@ class DocumentViewer extends React.Component {
                     this.annotationFirstTouch = false
                     this.setState({newAnnotationInputOpen: true})
                   }
+                  if (!this.annotationFirstTouch) return
+                  const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
+                  this.setState({
+                    creatingAnnotationAtPageIndex: pageIndex,
+                    newAnnotationX: bottom_right_relative_x,
+                    newAnnotationY: bottom_right_relative_y,
+                  })
                 }}
               >
                 <canvas style={{position: 'absolute'}} className='page-canvas' id={'page-canvas-' + (i + 1)}></canvas>
                 {
                   this.state.creatingAnnotationAtPageIndex === pageIndex ?
                   <Rnd
+                    ref={c => { this.rnd = c; }}
                     bounds='parent'
+                    size={{ width: this.state.newAnnotationWidth,  height: this.state.newAnnotationHeight }}
                     id='annotation-being-created'
                     className='annotation-area'
-                    size={{ width: this.state.newAnnotationWidth,  height: this.state.newAnnotationHeight }}
-                    position={{ x: this.state.newAnnotationX, y: this.state.newAnnotationY }}
+                    resizeHandleWrapperClass='annotation-being-created-handles'
+                    enableResizing={{bottom:false,bottomLeft:true,bottomRight:true,left:false,right:false,top:false,topLeft:true,topRight:true}}
                     onDragStop={(e, d) => { this.setState({ newAnnotationX: d.x, newAnnotationY: d.y }) }}
-                    onResize={(e, direction, ref, delta, position) => {
+                    onResizeStop={(e, direction, ref, delta, position) => {
+                      direction = direction.toLowerCase()
                       this.setState({
                         newAnnotationWidth: parseFloat(ref.style.width),
                         newAnnotationHeight: parseFloat(ref.style.height),
-                        newAnnotationX: position.x,
-                        newAnnotationY: position.y,
+                        newAnnotationX: position.x - (direction.includes("left") ? delta.width : 0),
+                        newAnnotationY: position.y - (direction.includes("top") ? delta.height : 0),
                       });
                     }}
                   >
