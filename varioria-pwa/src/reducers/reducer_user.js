@@ -9,6 +9,7 @@ import {
   COTERIE_GET_MY_DOCUMENTS,
   COTERIE_DOCUMENT_UPLOAD,
   COTERIE_LEAVE,
+  COTERIE_DELETE,
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -51,8 +52,11 @@ export default function (state = [], action) {
           administratedCoteries: _.map(administratedCoteries, 'uuid')
         });
     case COTERIE_LEAVE:
-      const joinedCoteriesAfterLeave = _.filter(state.joinedCoteries, (uuid) => {return uuid !== action.pk});
+      const joinedCoteriesAfterLeave = _.filter(state.joinedCoteries, (uuid) => {return uuid !== action.uuid});
       return _.extend({}, state, { joinedCoteries: joinedCoteriesAfterLeave});
+    case COTERIE_DELETE:
+      const administratedCoteriesAfterDelete = _.filter(state.administratedCoteries, (uuid) => {return uuid !== action.uuid});
+      return _.extend({}, state, { administratedCoteries: administratedCoteriesAfterDelete});
     default:
       return state;
   }

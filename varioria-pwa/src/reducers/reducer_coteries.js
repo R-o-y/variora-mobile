@@ -2,6 +2,7 @@ import _ from 'lodash';
 import {
   COTERIE_GET_MY,
   COTERIE_CREATE,
+  COTERIE_DELETE,
   COTERIE_UPDATE_SUCCESS,
 } from '../actions/types';
 
@@ -16,6 +17,8 @@ export default function (state = [], action) {
     case COTERIE_CREATE:
       const new_coterie = action.payload.data;
       return _.extend({}, state, {[new_coterie.pk]: new_coterie});
+    case COTERIE_DELETE:
+      return _.omit(state, action.uuid);
     case COTERIE_UPDATE_SUCCESS:
       const updated_coterie = state[action.payload.uuid];
       if (action.payload.name) updated_coterie.name = action.payload.name;

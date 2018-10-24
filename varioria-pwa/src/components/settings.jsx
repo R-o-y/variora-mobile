@@ -325,7 +325,7 @@ class Settings extends Component {
                    onPress: () => {
                      let data = new FormData();
                      data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-                     this.props.leaveCoterie(data, currentCoterie.pk);
+                     this.props.leaveCoterie(data, currentCoterie.pk, currentCoterie.uuid);
                      this.props.history.push('/explore');
                  }},
                ])
@@ -338,7 +338,20 @@ class Settings extends Component {
           <List>
             <List.Item
              thumb={<ExitIcon style={{color: '#FF0000'}} />}
-             onClick={() => {}}>
+             onClick={() => {
+               Modal.alert('Delete ' + currentCoterie.name + '?',
+               'Are you sure? Deleting the group can affect all existing members. This cannot be undone',
+               [
+                 { text: 'Cancel' },
+                 { text: 'Leave', style:{color: '#FF0000'},
+                   onPress: () => {
+                     let data = new FormData();
+                     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                     this.props.deleteCoterie(data, currentCoterie.pk, currentCoterie.uuid);
+                     this.props.history.push('/explore');
+                 }},
+               ])
+             }}>
               Delete group
             </List.Item>
           </List>
