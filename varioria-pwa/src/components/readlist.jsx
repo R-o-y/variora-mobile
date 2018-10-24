@@ -87,9 +87,12 @@ class Readlist extends Component {
             <Typography variant="h5" component="h5">
               {readlist.name}
             </Typography>
-            <Typography variant="subtitle1" color="textSecondary">
-              {readlist.owner.nickname} created {<TimeAgo date={readlist.create_time} />}
-            </Typography>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <Avatar alt={readlist.owner.nickname} src={readlist.owner.portrait_url} style={{width: 28, height: 28, paddingRight: 5}}/>
+              <Typography variant="subtitle1" color="textSecondary">
+                {readlist.owner.nickname} created {<TimeAgo date={readlist.create_time} />}
+              </Typography>
+            </div>
           </div>
         </CardContent>
         <CardActions>
