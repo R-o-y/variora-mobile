@@ -38,13 +38,13 @@ class Explore extends Component {
     const data = documents.map((element) => {
       return (
         <div key={element.open_url}>
-          <GridListTile style={{height: '56.56vw', width: '40vw'}} key={element.open_url} onClick={() => {this.props.history.push(`${element.open_url}`)}}>
+          <GridListTile className={'grid-tile'} key={element.open_url} onClick={() => {this.props.history.push(`${element.open_url}`)}}>
               <Grid container alignItems="center" style={{height: '100%'}}>
-                <img src={element.image} alt={element.title} style={{width:'100%'}}/>
+                <img src={element.image} alt={element.title}/>
               </Grid>
               <GridListTileBar
                 style={{height: '25%'}}
-                title={<div style={{fontSize: '0.8rem'}}>{element.title}</div>}
+                title={<div style={{fontSize: '0.8rem', fontWeight: 'bold'}}>{element.title}</div>}
                 subtitle={<div style={{fontSize: '0.7rem'}}>{<TimeAgo date={element.upload_time} />}</div>}
               />
           </GridListTile>
