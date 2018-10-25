@@ -22,6 +22,8 @@ import {
   READLIST_CREATE,
   READLIST_EDIT,
   READLIST_DELETE_SUCCESS,
+  READLIST_COLLECT_SUCCESS,
+  READLIST_UNCOLLECT_SUCCESS,
   READLIST_REMOVE_DOCUMENT_SUCCESS,
   DOCUMENT_UPLOAD,
   DOCUMENT_RENAME,
@@ -235,6 +237,49 @@ export function editReadlist(url, data) {
 
   return {type: READLIST_EDIT, payload: request};
 }
+
+export function collectReadlist(data, slug) {
+  const url = "/file_viewer/api/readlists/" + slug + "/collect";
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(collectReadlistSuccess(slug));
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
+export function collectReadlistSuccess(slug) {
+  return {type: READLIST_COLLECT_SUCCESS, payload: slug}
+}
+
+export function uncollectReadlist(data, slug) {
+  const url = "/file_viewer/api/readlists/" + slug + "/uncollect";
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(uncollectReadlistSuccess(slug));
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
+export function uncollectReadlistSuccess(slug) {
+  return {type: READLIST_UNCOLLECT_SUCCESS, payload: slug}
+}
+
 
 export function documentChangeReadlists(pk, data) {
   const url = '/file_viewer/api/documents/' + pk + '/changereadlists'

@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Favorite from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import Avatar from '@material-ui/core/Avatar';
@@ -22,14 +23,43 @@ import { getCookie, copyToClipboard } from '../utilities/helper';
 
 class Readlist extends Component {
 
-  componentDidMount() {
-    const { slug } = this.props.match.params
-    this.props.getReadlist(slug);
+  state = {
+    collected: false
   }
 
-  onFavoriteIconClick() {
-    console.log("Fav icon clicked!");
-    // Collect the readlist.
+  componentDidMount() {
+    const { slug } = this.props.match.params
+    this.props.getReadlist(slug).then(() => {
+      const collected = this.props.user.collectedReadlists.includes(this.props.readlists.readlist.slug);
+      this.setState({
+        collected
+      })
+    });
+  }
+
+  onCollectIconClick = () => {
+    const readlist = this.props.readlists.readlist;
+    const isOwner = this.props.user.pk == readlist.owner.pk;
+    if (isOwner) {
+      Toast.fail('You are the owner of this readlist')
+      return
+    }
+    let data = new FormData();
+    data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+    if (this.state.collected) {
+      console.log("uncollectin")
+      this.props.uncollectReadlist(data, readlist.slug).then(() => {
+        this.setState({collected: false})
+        console.log("uncollected")
+      });
+    } else {
+      console.log("collectin")
+      this.props.collectReadlist(data, readlist.slug).then(() => {
+        this.setState({collected: true})
+        console.log("collected")
+      });
+    }
+    // this.props.uncollectDocument(currDocument.uncollectUrl, data, currDocument.slug);
   }
 
   onShareIconClick() {
@@ -66,8 +96,6 @@ class Readlist extends Component {
   renderReadlistCard() {
     const readlist = this.props.readlists.readlist;
     // TODO: why is this.props.user empty upon page refresh?
-    console.log(this.props.user)
-    console.log(readlist.owner.pk)
     const isOwner = this.props.user.pk == readlist.owner.pk;
     return (
       <Card style={{margin: '15px 15px 5px 15px'}}>
@@ -102,7 +130,10 @@ class Readlist extends Component {
         </CardContent>
         <CardActions>
           <IconButton aria-label="Add to favorites">
-            <FavoriteIcon onClick={this.onFavoriteIconClick}/>
+            {this.state.collected? 
+              <FavoriteIcon onClick={this.onCollectIconClick}/> : 
+              <Favorite onClick={this.onCollectIconClick}/>
+            }
           </IconButton>
           <IconButton aria-label="Share">
             <ShareIcon onClick={this.onShareIconClick}/>
