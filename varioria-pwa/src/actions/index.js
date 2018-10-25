@@ -22,6 +22,7 @@ import {
   READLIST_CREATE,
   READLIST_EDIT,
   READLIST_DELETE_SUCCESS,
+  READLIST_REMOVE_DOCUMENT_SUCCESS,
   DOCUMENT_UPLOAD,
   DOCUMENT_RENAME,
   DOCUMENT_DELETE_SUCCESS,
@@ -226,7 +227,6 @@ export function createReadlist(data) {
 }
 
 export function editReadlist(url, data) {
-  console.log(url)
   const request = axios({
     method: 'post',
     url,
@@ -234,6 +234,29 @@ export function editReadlist(url, data) {
   });
 
   return {type: READLIST_EDIT, payload: request};
+}
+
+export function documentChangeReadlists(pk, data) {
+  const url = '/file_viewer/api/documents/' + pk + '/changereadlists'
+  console.log("making req to " + url + " with data")
+  console.log(data)
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(removeFromReadlistSuccess());
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
+export function removeFromReadlistSuccess() {
+  return {type: READLIST_REMOVE_DOCUMENT_SUCCESS, payload: {}}
 }
 
 export function createCoterie(data) {

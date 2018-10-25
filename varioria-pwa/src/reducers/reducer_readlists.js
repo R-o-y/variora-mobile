@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import {
   READLIST_GET_MY,
-  READLIST_GET
+  READLIST_GET,
+  READLIST_REMOVE_DOCUMENT_SUCCESS
 } from '../actions/types';
 
 export default function (state = [], action) {

@@ -13,6 +13,7 @@ import CreateReadlistForm from './components/create_readlist_form';
 import EditReadlistForm from './components/edit_readlist_form';
 import DocumentViewer from './components/document_viewer/document_viewer';
 import Readlist from './components/readlist';
+import AddToReadlist from './components/add_to_readlist';
 
 import Search from './components/search';
 
@@ -59,6 +60,7 @@ ReactDOM.render(
             <Route path='/readlists/:slug' component={Readlist}/>
             <Route path="/search/:groupUuid" component={Search} />
             <Route path="/search" component={Search} />
+            <Route path="/add-to-readlists" component={AddToReadlist} />
             <Route path="/create-coterie-form" component={CreateCoterieForm} />
             <Route path="/create-readlist-form" component={CreateReadlistForm} />
             <Route path="/edit-readlist-form/:slug" component={EditReadlistForm} />
