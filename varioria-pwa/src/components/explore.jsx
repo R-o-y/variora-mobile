@@ -72,7 +72,7 @@ class Explore extends Component {
         <List.Item
           key={element.slug}
           extra={<TimeAgo date={element.create_time} />}
-          thumb={element.owner.portrait_url}
+          thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
           multipleLine
           onClick={() => {this.props.history.push(`${element.url}`)}}
         >

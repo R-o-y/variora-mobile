@@ -6,14 +6,35 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
 import moment from 'moment';
 import AddIcon from '@material-ui/icons/AddBoxOutlined';
+import ShareIcon from '@material-ui/icons/Share';
+import DeleteIcon from '@material-ui/icons/DeleteForever';
 
-import { Tabs, WhiteSpace, List, Icon } from 'antd-mobile';
+import { Tabs, WhiteSpace, List, Modal, Toast, Icon } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
+import { getCookie, copyToClipboard } from '../utilities/helper';
 
 class Readlists extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      createdReadlistActionModal: false,
+      collectedReadlistActionModal: false,
+      selectedReadlist: null,
+      loading: true
+    };
+  }
 
   componentDidMount() {
-    this.props.getMyReadlists();
+    let groupUuid = this.props.match.params.groupUuid;
+    if (groupUuid) {
+      // this.props.getMyCoteriesReadlists(groupUuid).then(() => {
+      //   this.setState({loading: false})
+      // })
+    } else {
+      this.props.getMyReadlists().then(() => {
+        this.setState({loading: false})
+      })
+    }
   }
 
   renderReactSticky(props) {
@@ -28,24 +49,11 @@ class Readlists extends Component {
     )
   }
 
-  showModal(key, e) {
-    e.preventDefault();
-    this.setState({
-      [key]: true,
-    });
-  }
-
-  onClose(key) {
-    this.setState({
-      [key]: false,
-    });
-  }
-
   renderAddReadlist() {
     return (
       <List.Item
         thumb={<AddIcon style={{color:'grey'}} />}
-        onClick={() => {console.log('Create readlist clicked')}}
+        onClick={() => {this.props.history.push("/create-readlist-form")}}
       >
         <div style={{color:'grey'}}>New readlist</div>
         <List.Item.Brief>Click to create...</List.Item.Brief>
@@ -53,30 +61,25 @@ class Readlists extends Component {
     )
   }
 
-  renderReadlist(list) {
+  renderReadlist(list, isCreated) {
     if (_.isEmpty(list)) {
       return (
         <div></div>
       )
     }
-    const data = list.map(element => {
+    const data = list.map(slug => {
+      let element = this.props.readlists[slug];
       return (
-        <div key={element.slug}>
+        <div key={slug}>
           <List.Item
             thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
             multipleLine
-            onClick={() => {this.props.history.push(`readlists/${element.slug}`)}}
+            arrow="horizontal"
+            onClick={() => {this.props.history.push(`readlists/${slug}`)}}
           >
             {element.name}
             <List.Item.Brief>{moment(element.create_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>
           </List.Item>
-          <Icon type="ellipsis"
-            style={{position: 'absolute', width:'10%', marginTop: -50, right: 5, color:'#a8a8a8', zIndex: 1}}
-            onClick={(e) => {
-              console.log('clicked ellipsis ' + element.slug);
-              this.setState({selectedDocument: element.slug})
-              this.showModal('actionModal', e);
-          }}/>
         </div>
       )
     })
@@ -93,7 +96,7 @@ class Readlists extends Component {
     return (
       <div>
         {this.renderAddReadlist()}
-        {this.renderReadlist(this.props.readlists.createdReadlists)}
+        {this.renderReadlist(_.orderBy(this.props.user.createdReadlists, (readlistSlug) => {return this.props.readlists[readlistSlug].create_time}, 'desc'), true)}
       </div>
     )
   }
@@ -101,7 +104,7 @@ class Readlists extends Component {
   renderCollectedReadlists() {
     return (
       <div>
-        {this.renderReadlist(this.props.readlists.collectedReadlists)}
+        {this.renderReadlist(_.orderBy(this.props.user.collectedReadlists, (readlistSlug) => {return this.props.readlists[readlistSlug].create_time}, 'desc'), false)}
       </div>
     )
   }
@@ -130,7 +133,7 @@ class Readlists extends Component {
   }
 
   render() {
-    if (_.isEmpty(this.props.readlists)) {
+    if (this.state.loading) {
       return (
         <div>
           <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>

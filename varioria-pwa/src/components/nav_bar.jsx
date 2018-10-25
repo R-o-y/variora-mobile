@@ -23,8 +23,7 @@ class Navbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      coterieModal: false,
-      searchMode: false
+      coterieModal: false
     };
   }
 
@@ -98,7 +97,7 @@ class Navbar extends Component {
               key="0"
               type="search"
               style={{ marginRight: '16px' }}
-              onClick={(e) => {this.props.history.push('/search')}}
+              onClick={(e) => {this.props.match.params.groupUuid ? this.props.history.push('/search/' + this.props.match.params.groupUuid) : this.props.history.push('/search')}}
             />,
             <div key = "1">
             <Badge

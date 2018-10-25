@@ -232,6 +232,13 @@ class Uploads extends Component {
         >
           <List.Item
             onClick={() => {
+              this.props.history.push('/add-to-readlists')
+            }}>
+            <AddIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+            Add To Readlist
+          </List.Item>
+          <List.Item
+            onClick={() => {
               const location = window.location;
               const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
               copyToClipboard(url);
@@ -264,7 +271,6 @@ class Uploads extends Component {
 
   renderUploadedActionModal() {
     let currDocument = this.props.documents[this.state.selectedDocument];
-
     return (
       <Modal
         popup
@@ -278,6 +284,13 @@ class Uploads extends Component {
           }
           className="popup-list"
         >
+          <List.Item
+            onClick={() => {
+              this.props.history.push('/add-to-readlists/' + currDocument.slug)
+            }}>
+            <AddIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+            Add To Readlist
+          </List.Item>
           <List.Item
             onClick={() => {
               const location = window.location;
