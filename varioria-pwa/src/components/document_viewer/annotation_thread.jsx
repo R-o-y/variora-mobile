@@ -104,7 +104,7 @@ class AnnotationThread extends React.Component {
                 </SmallButton>
               </Grid>}
               <Grid item>
-                <SmallButton color="primary" onClick={() => {this.replyComment()}} >
+                <SmallButton color="primary" onClick={() => {this.replyComment(comment.uuid)}} >
                   <FontAwesomeIcon icon={faReply} />
                 </SmallButton>
               </Grid>
@@ -148,8 +148,9 @@ class AnnotationThread extends React.Component {
     element.scrollIntoView();
   }
 
-  replyComment = () => {
+  replyComment = (uuid) => {
     this.props.setParentState({
+      replyToAnnotationReplyId: uuid,
       annotationOpen: false,
       annotationLinearLinkedListOpen: true,
     }) /**Hide current annotation drawer and show text input */

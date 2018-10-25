@@ -287,6 +287,22 @@ class DocumentViewer extends React.Component {
       this.setState({creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false})
     }
 
+    this.postAnnotationReply = () => {
+
+      var data = new FormData()
+      data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+      data.append('operation', 'reply_annotation')
+      data.append('annotation_content', this.state.newAnnotationReplyContent)
+      data.append('reply_to_annotation_id', this.state.selectedAnnotation.uuid)
+      data.append('reply_to_annotation_reply_id', this.state.replyToAnnotationReplyId)
+      data.append('document_id', this.state.document.pk)
+      data.append('is_public', true)
+      axios.post(window.location.pathname + '/', data).then(response => {
+        var newAnnotationReply = response.data['new_annotation_json']
+        console.log(newAnnotationReply)
+      })
+    }
+
     this.cancelCurrentAnnotationReply = () => {
       this.setState({annotationOpen: true, annotationLinearLinkedListOpen: false,})
     }
@@ -597,7 +613,7 @@ class DocumentViewer extends React.Component {
                 placeholder="Type in your reply..." margin="normal" style={{width: '66vw', top: -2}}
                 multiline fullWidth value={this.state.newAnnotationReplyContent}
                 onChange={event => {
-                  this.setState({newAnnotationContent: event.target.value})
+                  this.setState({newAnnotationReplyContent: event.target.value})
                 }}
               />
             </MuiThemeProvider>
