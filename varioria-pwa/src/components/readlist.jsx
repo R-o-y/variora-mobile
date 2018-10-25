@@ -23,7 +23,8 @@ import { getCookie, copyToClipboard } from '../utilities/helper';
 class Readlist extends Component {
 
   state = {
-    collected: false
+    collected: false,
+    loading: true
   }
 
   componentDidMount() {
@@ -42,7 +43,8 @@ class Readlist extends Component {
       console.log(this.props.user);
       this.setState({
         collected,
-        isOwner
+        isOwner,
+        loading: false
       });
     };
     fetchData();
@@ -153,7 +155,7 @@ class Readlist extends Component {
   }
 
   render() {
-    if (!this.props.readlists.readlist) {
+    if (this.state.loading) {
       return (
         <div>
           <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>

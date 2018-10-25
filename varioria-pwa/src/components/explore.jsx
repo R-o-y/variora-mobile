@@ -16,10 +16,20 @@ import { Tabs, WhiteSpace, List } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
 
 class Explore extends Component {
+  state = { loading: true }
 
   componentDidMount() {
-    this.props.getExploreDocuments();
-    this.props.getExploreReadlists();
+    const fetchData = async () => {
+      try {
+        await this.props.getExploreDocuments();
+        await this.props.getExploreReadlists();    
+      } catch (error) {
+        console.error(error);
+        return;
+      }
+      this.setState({loading: false})
+    }
+    fetchData();
   }
 
   renderReactSticky(props) {
@@ -35,6 +45,9 @@ class Explore extends Component {
   }
 
   renderDocumentsSubgrid(documents, title) {
+    if (!documents.length) {
+      return (<div></div>)
+    }
     const data = documents.map((element) => {
       return (
         <div key={element.open_url}>
@@ -67,6 +80,9 @@ class Explore extends Component {
   }
 
   renderReadlistsSublist(readlists, title) {
+    if (!readlists.length) {
+      return (<div></div>)
+    }
     const data = readlists.map(element => {
       return (
         <List.Item
@@ -136,7 +152,7 @@ class Explore extends Component {
   }
 
   render() {
-    if (_.isEmpty(this.props.explore) || _.isEmpty(this.props.explore.documents) || _.isEmpty(this.props.explore.readlists)) {
+    if (this.state.loading) {
       return (
         <div>
           <Navbar title="Explore" history={this.props.history} match={this.props.match}/>
