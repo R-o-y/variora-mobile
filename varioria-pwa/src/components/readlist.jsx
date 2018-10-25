@@ -9,7 +9,6 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Favorite from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -28,19 +27,30 @@ class Readlist extends Component {
   }
 
   componentDidMount() {
-    const { slug } = this.props.match.params
-    this.props.getReadlist(slug).then(() => {
+    const { slug } = this.props.match.params;
+    const fetchData = async () => {
+      try {
+        await this.props.getReadlist(slug);
+        await this.props.getUser();
+        await this.props.getMyReadlists();
+      } catch (error) {
+        console.error(error);
+        return;
+      }
       const collected = this.props.user.collectedReadlists.includes(this.props.readlists.readlist.slug);
+      const isOwner = this.props.user.pk == this.props.readlists.readlist.owner.pk;
+      console.log(this.props.user);
       this.setState({
-        collected
-      })
-    });
+        collected,
+        isOwner
+      });
+    };
+    fetchData();
   }
 
   onCollectIconClick = () => {
     const readlist = this.props.readlists.readlist;
-    const isOwner = this.props.user.pk == readlist.owner.pk;
-    if (isOwner) {
+    if (this.state.isOwner) {
       Toast.fail('You are the owner of this readlist')
       return
     }
@@ -95,8 +105,7 @@ class Readlist extends Component {
 
   renderReadlistCard() {
     const readlist = this.props.readlists.readlist;
-    // TODO: why is this.props.user empty upon page refresh?
-    const isOwner = this.props.user.pk == readlist.owner.pk;
+    const isOwner = this.state.isOwner;
     return (
       <Card style={{margin: '15px 15px 5px 15px'}}>
         <CardContent>

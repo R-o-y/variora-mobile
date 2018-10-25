@@ -4,13 +4,8 @@ import { NavBar, Icon, ActivityIndicator, List, WhiteSpace, Button } from 'antd-
 import { connect } from 'react-redux';
 import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Toolbar from "@material-ui/core/Toolbar";
-import InputBase from "@material-ui/core/InputBase";
 import * as actions from '../actions';
-import moment from 'moment';
-import TimeAgo from 'react-timeago'
 import { StickyContainer } from 'react-sticky';
-import { symbol } from 'prop-types';
 import Checkbox from '@material-ui/core/Checkbox';
 import { getCookie } from '../utilities/helper';
 
@@ -20,23 +15,27 @@ class AddToReadlist extends React.Component {
     this.state = {
       loading: true,
       currDocument: {},
-      readlists: [] // {name: 'GEH', brief: '0 documents', checked: true}
+      readlists: []
     }
   }
 
   componentDidMount() {
-    // TODO: refreshing this page will make this.props.documents empty, how to handle that?
     let groupUuid = this.props.match.params.groupUuid;
-    const currDocument = this.props.documents[window.location.href.split('/').pop()]
-    const currDocumentUuid = currDocument.uuid.replace(/-/g, '');
-    if (groupUuid) {
-      // this.props.getMyCoteriesReadlists(groupUuid).then(() => {
-      //   this.setState({loading: false})
-      // })
-    } else {
-      this.props.getMyReadlists().then(() => {
-        let readlists = this.props.user.createdReadlists.map(slug => {
-          let element = this.props.readlists[slug];
+    const fetchData = async () => {
+      try {
+        if (groupUuid) {
+        } else {
+          await this.props.getMyDocuments();
+          await this.props.getMyReadlists();
+        }
+      } catch (error) {
+        console.error(error);
+        return;
+      }
+      const currDocument = this.props.documents[window.location.href.split('/').pop()]
+      const currDocumentUuid = currDocument.uuid.replace(/-/g, '');
+      let readlists = this.props.user.createdReadlists.map(slug => {
+        let element = this.props.readlists[slug];
           return {
             uuid: element.uuid,
             name: element.name,
@@ -44,12 +43,12 @@ class AddToReadlist extends React.Component {
             checked: element.documents_uuids.includes(currDocumentUuid)
           }
         })
-        this.setState({currDocument: currDocument, loading: false, readlists: readlists})
-      })
+      this.setState({currDocument: currDocument, loading: false, readlists: readlists})
     }
+    fetchData();
   }
 
-  handleChange = (index) => event => {
+  handleChange = (index) => () => {
     console.log(this.state);
     const {readlists} = this.state;
     readlists[index].checked = !readlists[index].checked;
@@ -71,7 +70,7 @@ class AddToReadlist extends React.Component {
     for (let i = 0; i < removeReadlists.length; i++) {
       data.append('remove_readlists[]', removeReadlists[i]);
     }
-    this.props.documentChangeReadlists(currDocument.pk, data)
+    this.props.documentChangeReadlists(currDocument.pk, data);
     this.props.history.goBack();
   }
 
