@@ -70,12 +70,14 @@ class DocumentViewer extends React.Component {
       annotations: {},
       annotationsByPage: {},
       annotationOpen: false,
+      annotationLinearLinkedListOpen: false,
       newAnnotationInputOpen: false,
       selectedAnnotation: undefined,
       mode: 'view',  // view or comment
       showFloatButton: true,
       creatingAnnotationAtPageIndex: undefined,
       newAnnotationContent: '',
+      newAnnotationReplyContent: '',
       // pageCanvasWidth: 660,
     }
 
@@ -223,7 +225,7 @@ class DocumentViewer extends React.Component {
 
       if (!this.state.annotationOpen) {
         this.styleDrawer()
-        this.setState({ annotationOpen: true });
+        this.setState({ annotationOpen: true , annotationLinearLinkedListOpen: false });
       }
     }
 
@@ -283,6 +285,10 @@ class DocumentViewer extends React.Component {
 
     this.cancelCurrentAnnotation = () => {
       this.setState({creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false})
+    }
+
+    this.cancelCurrentAnnotationReply = () => {
+      this.setState({annotationOpen: true, annotationLinearLinkedListOpen: false,})
     }
   }
 
@@ -381,14 +387,14 @@ class DocumentViewer extends React.Component {
 
                 }}
                 onTouchEnd={(e) => {
+                  if (this.state.mode === 'view') return
+                  if (gestureOnRND(e)) return
                   this.setState({
                     newAnnotationX: this.rnd.draggable.state.x,
                     newAnnotationY: this.rnd.draggable.state.y,
                     newAnnotationWidth: this.rnd.props.size.width,
                     newAnnotationHeight: this.rnd.props.size.height,
                   })
-                  if (this.state.mode === 'view') return
-                  if (gestureOnRND(e)) return
                   if (this.annotationFirstTouch) {
                     this.annotationFirstTouch = false
                     this.setState({newAnnotationInputOpen: true})
@@ -405,8 +411,6 @@ class DocumentViewer extends React.Component {
                     size={{ width: this.state.newAnnotationWidth,  height: this.state.newAnnotationHeight }}
                     id='annotation-being-created'
                     className='annotation-area'
-                    resizeHandleWrapperClass='annotation-being-created-handles'
-                    enableResizing={{bottom:false,bottomLeft:true,bottomRight:true,left:false,right:false,top:false,topLeft:true,topRight:true}}
                     onDragStop={(e, d) => { this.setState({ newAnnotationX: d.x, newAnnotationY: d.y }) }}
                     onResizeStop={(e, direction, ref, delta, position) => {
                       direction = direction.toLowerCase()
@@ -508,7 +512,11 @@ class DocumentViewer extends React.Component {
           <div ref={ele => this.annotationWrapper = ele}>
             {
               selectedAnnotation !== undefined ? (
-                <AnnotationThread selectedAnnotation={selectedAnnotation} annotationArea={this.annotationAreas[selectedAnnotation.uuid]}/>
+                <AnnotationThread
+                  selectedAnnotation={selectedAnnotation}
+                  annotationArea={this.annotationAreas[selectedAnnotation.uuid]}
+                  setParentState={this.setState.bind(this)}
+                />
               ) : null
             }
           </div>
@@ -558,6 +566,45 @@ class DocumentViewer extends React.Component {
               this.state.newAnnotationContent.length === 0
               ? <FontAwesomeIcon icon={['fas', 'times-circle']} id='cancel-annotation-btn' onClick={this.cancelCurrentAnnotation} />
               : <FontAwesomeIcon icon={['fas', 'paper-plane']} id='post-annotation-btn' onClick={this.postAnnotation} />
+            }
+          </div>
+        </Drawer>
+
+        <Drawer
+          anchor="bottom"
+          open={this.state.annotationLinearLinkedListOpen}
+          onClose={() => this.reopenAnnotationThread()}
+          variant='persistent'
+        >
+          <div style={{textAlign: 'center'}}>
+            <Avatar
+              alt="User Portrait"
+              style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
+              src={this.props.user.portrait_url}
+            />
+            <MuiThemeProvider theme={createMuiTheme({
+                palette: {
+                  primary: {
+                    main: '#3498db',
+                  }
+                },
+              })}
+            >
+              <TextField
+                ref={ele => this.annotationReplyText = ele}
+                // className={classes.textField}
+                // defaultValue="Bare"
+                placeholder="Type in your reply..." margin="normal" style={{width: '66vw', top: -2}}
+                multiline fullWidth value={this.state.newAnnotationReplyContent}
+                onChange={event => {
+                  this.setState({newAnnotationContent: event.target.value})
+                }}
+              />
+            </MuiThemeProvider>
+            {
+              this.state.newAnnotationReplyContent.length === 0
+              ? <FontAwesomeIcon icon={['fas', 'times-circle']} id='cancel-annotation-btn' onClick={this.cancelCurrentAnnotationReply} />
+              : <FontAwesomeIcon icon={['fas', 'paper-plane']} id='post-annotation-btn' onClick={this.postAnnotationReply} />
             }
           </div>
         </Drawer>

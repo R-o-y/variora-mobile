@@ -65,8 +65,3 @@
   z-index: 1;
   background-color: rgba(0, 170, 0, 0.18);
 }
-
-.annotation-being-created-handles > div {
-  background: rgba(0, 170, 0, 0.18);
-  border-radius: 50%;
-}

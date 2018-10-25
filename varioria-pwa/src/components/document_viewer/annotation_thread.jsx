@@ -2,7 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom';
 import TimeAgo from 'react-timeago';
 import axios from 'axios'
-import { getCookie } from '../../utilities/helper';
+import { getCookie, copyToClipboard } from '../../utilities/helper';
+import * as actions from '../../actions';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
@@ -64,7 +66,7 @@ const MENU_ITEM_HEIGHT = 48;
 class AnnotationThread extends React.Component {
   constructor (props) {
     super(props);
-    //this.handleClickOpen = this.handleClickOpen.bind(this);
+    //this.openContextMenuOpen = this.openContextMenuOpen.bind(this);
     //how come I don't need this?
   }
 
@@ -85,7 +87,7 @@ class AnnotationThread extends React.Component {
           </Grid>
           {/* TOP ROW OF COMMENT --- Contains: content */}
           <Grid>
-            <div className='comment-text' dangerouslySetInnerHTML={{__html: comment.content /*TODO: Style this p*/}}></div>
+            <div className='comment-text' dangerouslySetInnerHTML={{__html: comment.content}}></div>
           </Grid>
           {/* BOTTOM ROW OF COMMENT --- Contains: User info, 4 buttons to modify comment */}
           <Grid container justify="space-between" alignItems="center" wrap="nowrap">
@@ -97,12 +99,12 @@ class AnnotationThread extends React.Component {
             <Grid container justify="flex-end" alignItems="center" wrap="nowrap">
               {isHead && //Locate Arrow only exists for header
               <Grid item>
-                <SmallButton color="primary" onClick={() => {ReactDOM.findDOMNode(this.props.annotationArea.scrollIntoView())/* TODO: enable smooth scroll */}} >
+                <SmallButton color="primary" onClick={() => {this.locateComment(this.props.annotationArea)}} >
                   <FontAwesomeIcon icon={faLocationArrow} />
                 </SmallButton>
               </Grid>}
               <Grid item>
-                <SmallButton color="primary" onClick={() => {/* TODO:function to reply */}} >
+                <SmallButton color="primary" onClick={() => {this.replyComment()}} >
                   <FontAwesomeIcon icon={faReply} />
                 </SmallButton>
               </Grid>
@@ -112,7 +114,7 @@ class AnnotationThread extends React.Component {
                 </SmallButton>
               </Grid>
               <Grid item>
-                <SmallButton color="primary" onClick={this.handleClick}>
+                <SmallButton color="primary" onClick={event => this.openContextMenu(event, comment.uuid)}>
                   <FontAwesomeIcon icon={faEllipsisV} />
                 </SmallButton>
               </Grid>
@@ -124,16 +126,34 @@ class AnnotationThread extends React.Component {
   }
 
   state = {
-    anchorEl: null,
+    commentMenuElement: null,
+    commentMenuUuid: null,
   };
 
-  handleClick = event => {
-    this.setState({ anchorEl: event.currentTarget });
+  openContextMenu = (event, uuid) => {
+    this.setState({
+      commentMenuElement: event.currentTarget,
+      commentMenuUuid: uuid,
+    });
   };
 
-  handleClose = value => {
-    this.setState({ anchorEl: null });
+  closeContextMenu = value => {
+    this.setState({ commentMenuElement: null });
   };
+
+  /** LOCATE REPLY LIKE EDIT SHARE DELETE */
+
+  locateComment = (element) => {
+    /* TODO: enable smooth scroll */
+    element.scrollIntoView();
+  }
+
+  replyComment = () => {
+    this.props.setParentState({
+      annotationOpen: false,
+      annotationLinearLinkedListOpen: true,
+    }) /**Hide current annotation drawer and show text input */
+  }
 
   likeComment = (uuid) => {
     var data = new FormData()
@@ -145,9 +165,35 @@ class AnnotationThread extends React.Component {
     })
   }
 
+  editComment = () => {
+    /** TODO: How to display edit */
+    this.closeContextMenu();
+  }
+
+  shareComment = () => {
+    let url = [window.location.protocol, '//', window.location.host, window.location.pathname].join('') + '?annotation=' + this.state.commentMenuUuid;
+    copyToClipboard(url);
+    /* TODO: Debug why not copying. Add toast to indicate copied to clipboard to util? or here. Change to share function in future?*/
+    console.log(url)
+    this.closeContextMenu();
+  }
+
+  deleteComment = () => {
+    var data = new FormData()
+    data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+    data.append('operation', 'delete_annotation_reply')
+    data.append('annotation_reply_id', this.state.commentMenuUuid)
+    data.append('document_id', this.state.document.pk)
+    axios.post(window.location.pathname + '/', data).then(response => {
+      console.log(response)
+    })
+    /* TODO: Debug why not copying. Add toast to indicate copied to clipboard to util? or here. Change to share function in future?*/
+    this.closeContextMenu();
+  }
+
   render() {
-    const { anchorEl } = this.state;
-    const open = Boolean(anchorEl);
+    const { commentMenuElement } = this.state;
+    const open = Boolean(commentMenuElement);
     var selectedAnnotation = this.props.selectedAnnotation;
     return (
       <div>
@@ -157,26 +203,26 @@ class AnnotationThread extends React.Component {
         )}
         <Menu
           className='menu'
-          anchorEl={anchorEl}
+          anchorEl={commentMenuElement}
           open={open}
-          onClose={this.handleClose}
+          onClose={this.closeContextMenu}
           PaperProps={{
             style: {
               maxHeight: MENU_ITEM_HEIGHT * 4.5,
             },
           }}
         >
-          <MenuItem onClick={this.handleClose}>
+          <MenuItem onClick={this.editComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faPencilAlt} />
             </SmallButton><Typography>Edit</Typography>
           </MenuItem>
-          <MenuItem onClick={this.handleClose}>
+          <MenuItem onClick={this.shareComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faLink} />
             </SmallButton><Typography>Share link</Typography>
           </MenuItem>
-          <MenuItem onClick={this.handleClose}>
+          <MenuItem onClick={this.deleteComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faTrashAlt} />
             </SmallButton><Typography>Delete</Typography>
@@ -187,4 +233,12 @@ class AnnotationThread extends React.Component {
   }
 }
 
-export default AnnotationThread;
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+    coteries: state.coteries,
+    document: state.document,
+  };
+}
+
+export default connect(mapStateToProps, actions)(AnnotationThread);
