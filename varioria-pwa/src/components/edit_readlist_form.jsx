@@ -3,6 +3,7 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import { Button, Icon, InputItem, List, NavBar, TextareaItem, WhiteSpace } from 'antd-mobile';
 import { getCookie } from '../utilities/helper';
+import Avatar from '@material-ui/core/Avatar';
 
 class EditReadlistForm extends Component {
 
@@ -22,11 +23,13 @@ class EditReadlistForm extends Component {
     let { readlist_name, readlist_description } = this.state;
 
     let data = new FormData();
-    data.append('readlist_name', readlist_name);
-    data.append('description', readlist_description);
+    data.append('new_name', readlist_name);
+    data.append('new_desc', readlist_description);
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
-    this.props.editReadlist(data, this.props.readlists.readlist.slug);
+    this.props.editReadlist(this.props.readlists.readlist.rename_url, data);
+    // TODO: bugged if change both at once. Why is there a different url to change the desc?
+    this.props.editReadlist(this.props.readlists.readlist.change_desc_url, data);
     this.props.history.goBack();
   }
 

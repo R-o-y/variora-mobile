@@ -17,12 +17,17 @@ class Search extends React.Component {
     }
   }
 
+  componentDidMount() {
+    this.props.getMyCoteries();
+  }
+
   onChange = (e) => {
     e.preventDefault();
     const searchTerm = e.target.value;
     console.log(searchTerm, "onChange")
     this.setState({searchTerm: searchTerm})
     if (searchTerm !== '') {
+      // TODO: search within group api call
       this.props.getSearchResults(searchTerm);
     }
   };
@@ -84,6 +89,11 @@ class Search extends React.Component {
   }
 
   render() {
+    let placeholder = "Search globally.."
+    let groupUuid = this.props.match.params.groupUuid;
+    if (groupUuid && this.props.coteries[this.props.match.params.groupUuid]) {
+      placeholder = "Search within " + this.props.coteries[this.props.match.params.groupUuid]['name'];
+    }
     return (
       <div>
         <NavBar
@@ -100,10 +110,11 @@ class Search extends React.Component {
           <span className='document-title'>
             <Toolbar>
               <InputBase 
-                placeholder="Search" 
+                placeholder={placeholder}
                 autoFocus={true}
                 value={this.state.searchTerm || ''}
                 onChange={this.onChange}
+                fullWidth={true}
               />
             </Toolbar>
           </span>
@@ -124,7 +135,8 @@ class Search extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    search: state.search
+    search: state.search,
+    coteries: state.coteries
   };
 }
 

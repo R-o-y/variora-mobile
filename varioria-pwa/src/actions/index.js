@@ -225,9 +225,8 @@ export function createReadlist(data) {
   return {type: READLIST_CREATE, payload: request};
 }
 
-export function editReadlist(data, slug) {
-  const url = '/file_viewer/api/readlists/edit';
-
+export function editReadlist(url, data) {
+  console.log(url)
   const request = axios({
     method: 'post',
     url,

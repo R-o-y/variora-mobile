@@ -65,6 +65,7 @@ class Readlist extends Component {
 
   renderReadlistCard() {
     const readlist = this.props.readlists.readlist;
+    // TODO: why is this.props.user empty upon page refresh?
     console.log(this.props.user)
     console.log(readlist.owner.pk)
     const isOwner = this.props.user.pk == readlist.owner.pk;
@@ -87,9 +88,13 @@ class Readlist extends Component {
             <Typography variant="h5" component="h5">
               {readlist.name}
             </Typography>
+            <Typography variant="subtitle1">
+              {readlist.description}
+            </Typography>
+            <br />
             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-              <Avatar alt={readlist.owner.nickname} src={readlist.owner.portrait_url} style={{width: 28, height: 28, paddingRight: 5}}/>
-              <Typography variant="subtitle1" color="textSecondary">
+              <Avatar alt={readlist.owner.nickname} src={readlist.owner.portrait_url} style={{width: 28, height: 28}}/>
+              <Typography variant="subtitle2" color="textSecondary" style={{paddingLeft: 5}}>
                 {readlist.owner.nickname} created {<TimeAgo date={readlist.create_time} />}
               </Typography>
             </div>
