@@ -6,7 +6,9 @@
     height: 56.56vw;
     width: 40vw;
     background: #fff;
-    border-radius: 5px;
+    border-radius: 3px;
+    margin-left: 3px;
+    margin-right: 3px;
 }
 
 .grid-tile img {
@@ -14,5 +16,5 @@
 }
 
 .grid-tile div {
-    border-radius: 5px;
+    border-radius: 0 0 3px 3px;
 }
