@@ -28,7 +28,7 @@ class Readlists extends Component {
     let groupUuid = this.props.match.params.groupUuid;
     if (groupUuid) {
       // this.props.getMyCoteriesReadlists(groupUuid).then(() => {
-      //   this.setState({loading: false})
+        this.setState({loading: false})
       // })
     } else {
       this.props.getMyReadlists().then(() => {
@@ -62,9 +62,30 @@ class Readlists extends Component {
   }
 
   renderReadlist(list, isCreated) {
-    if (_.isEmpty(list)) {
+    // ================ TODO: TEMP CODE UNTIL GROUP-BASED READLISTS ========================
+    let groupUuid = this.props.match.params.groupUuid;
+    if (groupUuid) {
       return (
-        <div></div>
+        <List>
+          <List.Item>
+            <div style={{color: 'grey', textAlign:'center' }}>
+              Group-based readlists still in development.
+            </div>
+          </List.Item>
+        </List>
+      )
+    }
+    // =====================================================================================
+
+    if (!list.length) {
+      return (
+        <List>
+          <List.Item>
+            <div style={{color: 'grey', textAlign:'center' }}>
+              You haven't created any readlists.
+            </div>
+          </List.Item>
+        </List>
       )
     }
     const data = list.map(slug => {
