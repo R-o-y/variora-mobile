@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Button, Icon, InputItem, List, NavBar, TextareaItem, WhiteSpace } from 'antd-mobile';
+import { Button, Icon, InputItem, List, NavBar, TextareaItem, WhiteSpace, Modal } from 'antd-mobile';
 import { getCookie } from '../utilities/helper';
 import Avatar from '@material-ui/core/Avatar';
 
@@ -34,7 +34,17 @@ class EditReadlistForm extends Component {
   }
 
   handleDelete() {
-    console.log("delete readlist")
+    const readlist = this.props.readlists.readlist;
+    Modal.alert('Delete ' + this.state.readlist_name + '?', 'All followers and you will no longer have access', [
+      { text: 'Cancel' },
+      { text: 'Delete', style:{color:'#FF0000'},
+        onPress: () => {
+          let data = new FormData();
+          data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+          this.props.deleteReadlist(readlist.delete_url, data, readlist.slug);
+          this.props.history.push('/readlists')
+      }},
+    ])
   }
 
   render() {
@@ -69,6 +79,14 @@ class EditReadlistForm extends Component {
               style={{backgroundColor: "#1BA39C"}}
               onClick={() => this.handleSubmit()}
             >Edit</Button>
+          </List.Item>
+          <List.Item>
+            <Button
+              type="danger"
+              type="primary"
+              style={{backgroundColor: "#e74c3c"}}
+              onClick={() => this.handleDelete()}
+            >Delete</Button>
           </List.Item>
         </List>
       </div>

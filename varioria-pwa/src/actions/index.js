@@ -142,10 +142,6 @@ export function getReadlist(slug) {
 }
 
 export function deleteReadlist(url, data, slug) {
-  console.log(url, "URL")
-  console.log(data, "data")
-  console.log(slug, "slug")
-
   return function(dispatch) {
     return axios({
       method: 'post',
@@ -153,7 +149,7 @@ export function deleteReadlist(url, data, slug) {
       data
     })
     .then(() => {
-      dispatch(deleteReadlistSuccess(slug));
+      dispatch(deleteDocumentSuccess(slug));
       return;
     }).catch(error => {
       throw(error);
@@ -162,9 +158,9 @@ export function deleteReadlist(url, data, slug) {
 }
 
 export function deleteReadlistSuccess(slug) {
-  console.log("readlist " + slug + " deleted!!!");
   return {type: READLIST_DELETE_SUCCESS, payload: slug}
 }
+
 
 export function getExploreDocuments() {
   const url = '/file_viewer/api/documents/explore';
