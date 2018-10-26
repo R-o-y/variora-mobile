@@ -146,8 +146,7 @@ class AnnotationThread extends React.Component {
   /** LOCATE REPLY LIKE EDIT SHARE DELETE */
 
   locateComment = (element) => {
-    /* TODO: enable smooth scroll */
-    element.scrollIntoView();
+    element.scrollIntoView({behavior: "smooth"});
   }
 
   replyComment = (comment) => {
