@@ -105,7 +105,7 @@ class AnnotationThread extends React.Component {
                 </SmallButton>
               </Grid>}
               <Grid item>
-                <SmallButton color="primary" onClick={() => {this.replyComment(comment)}} >
+                <SmallButton color="primary" onClick={() => {isHead ? this.replyAnnotation(comment) : this.replyReply(comment)}} >
                   <FontAwesomeIcon icon={faReply} />
                 </SmallButton>
               </Grid>
@@ -149,7 +149,16 @@ class AnnotationThread extends React.Component {
     element.scrollIntoView({behavior: "smooth"});
   }
 
-  replyComment = (comment) => {
+  replyAnnotation = (comment) => {
+    this.props.setParentState({
+      replyToAnnotationReplyId: null,
+      replyToAnnotationReplyUuid: comment.uuid,
+      annotationOpen: false,
+      annotationLinearLinkedListOpen: true,
+    }) /**Hide current annotation drawer and show text input */
+  }
+
+  replyReply = (comment) => {
     this.props.setParentState({
       replyToAnnotationReplyId: comment.pk,
       replyToAnnotationReplyUuid: comment.uuid,

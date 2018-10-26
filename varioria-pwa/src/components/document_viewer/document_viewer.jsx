@@ -288,45 +288,22 @@ class DocumentViewer extends React.Component {
     }
 
     this.postAnnotationReply = () => {
-
       var data = new FormData()
+      console.log(this.state.replyToAnnotationReplyId)
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       data.append('operation', 'reply_annotation')
       data.append('annotation_reply_content', this.state.newAnnotationReplyContent)
       data.append('reply_to_annotation_id', this.state.selectedAnnotation.pk)
-      data.append('reply_to_annotation_reply_id', this.state.replyToAnnotationReplyId)
+      this.state.replyToAnnotationReplyId && data.append('reply_to_annotation_reply_id', this.state.replyToAnnotationReplyId)
       data.append('document_id', this.state.document.pk)
       data.append('is_public', true)
       axios.post(window.location.pathname + '/', data).then(response => {
-        console.log(response)
-        var el = document.createElement('html')
-        el.innerHTML = response.data
-        var info = el.getElementsByClassName('annotation-reply-block')[0]
-        var content = el.getElementsByClassName('annotation-reply-content')[0].innerHTML
-        var dt = new Date(response.headers['date']);
-        info.getAttribute('reply_to_annotation_reply') //parent pk
-
         var annotations = this.state.annotations
-        var newAnnotationReply = {content: content,
-                                  edit_time: null,
-                                  pk: info.getAttribute('annotation_reply_id'), //pk
-                                  post_time: dt.toISOString(),
-                                  replier: {}, //TODO: fill up replier information
-                                  reply_to_annotation_reply_uuid: this.state.replyToAnnotationReplyUuid,
-                                  uuid: info.getAttribute('annotation_reply_uuid'), //uuid
-                                 }
-        annotations[this.state.replyToAnnotationReplyUuid].replies.push(newAnnotationReply)
-        this.setState({
-          annotations: annotations,
-          newAnnotationReplyContent: '',
-          annotationOpen: true, annotationLinearLinkedListOpen: false,
-        })
-        console.log(newAnnotationReply)
+        annotations[this.state.selectedAnnotation.uuid].replies.push(response.data['new_annotationreply_json'])
+        this.setState({annotations: annotations,
+                        newAnnotationReplyContent: '',
+                        annotationOpen: true, annotationLinearLinkedListOpen: false,})
       })
-
-      this.cancelCurrentAnnotationReply = () => {
-        this.setState({annotationOpen: true, annotationLinearLinkedListOpen: false,})
-      }
     }
 
     this.cancelCurrentAnnotationReply = () => {
