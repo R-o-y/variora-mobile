@@ -57,6 +57,7 @@ function reduce_comment(comment) {
     timeago: timeago,
     content: content,
     uuid: comment.uuid,
+    pk: comment.pk,
     numReplies: comment.replies ? comment.replies.length : 0,
   }
 }
@@ -104,17 +105,17 @@ class AnnotationThread extends React.Component {
                 </SmallButton>
               </Grid>}
               <Grid item>
-                <SmallButton color="primary" onClick={() => {this.replyComment(comment.uuid)}} >
+                <SmallButton color="primary" onClick={() => {this.replyComment(comment)}} >
                   <FontAwesomeIcon icon={faReply} />
                 </SmallButton>
               </Grid>
               <Grid item>
-                <SmallButton color="primary" onClick={() => {this.likeComment(comment.uuid)}} >
+                <SmallButton color="primary" onClick={() => {this.likeComment(comment.pk)}} >
                   <FontAwesomeIcon icon={faThumbsUp} />
                 </SmallButton>
               </Grid>
               <Grid item>
-                <SmallButton color="primary" onClick={event => this.openContextMenu(event, comment.uuid)}>
+                <SmallButton color="primary" onClick={event => this.openContextMenu(event, comment.uuid, comment.pk)}>
                   <FontAwesomeIcon icon={faEllipsisV} />
                 </SmallButton>
               </Grid>
@@ -130,10 +131,11 @@ class AnnotationThread extends React.Component {
     commentMenuUuid: null,
   };
 
-  openContextMenu = (event, uuid) => {
+  openContextMenu = (event, uuid, pk) => {
     this.setState({
       commentMenuElement: event.currentTarget,
       commentMenuUuid: uuid,
+      commentMenuPk: pk,
     });
   };
 
@@ -148,9 +150,10 @@ class AnnotationThread extends React.Component {
     element.scrollIntoView();
   }
 
-  replyComment = (uuid) => {
+  replyComment = (comment) => {
     this.props.setParentState({
-      replyToAnnotationReplyId: uuid,
+      replyToAnnotationReplyId: comment.pk,
+      replyToAnnotationReplyUuid: comment.uuid,
       annotationOpen: false,
       annotationLinearLinkedListOpen: true,
     }) /**Hide current annotation drawer and show text input */
@@ -163,6 +166,7 @@ class AnnotationThread extends React.Component {
     data.append('annotation_reply_id', uuid)
     axios.post(window.location.pathname + '/', data).then(response => {
       console.log(response)
+      console.log(response.data)
     })
   }
 
@@ -183,7 +187,7 @@ class AnnotationThread extends React.Component {
     var data = new FormData()
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
     data.append('operation', 'delete_annotation_reply')
-    data.append('annotation_reply_id', this.state.commentMenuUuid)
+    data.append('annotation_reply_id', this.state.commentMenuPk)
     data.append('document_id', this.state.document.pk)
     axios.post(window.location.pathname + '/', data).then(response => {
       console.log(response)
