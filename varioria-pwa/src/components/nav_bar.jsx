@@ -40,6 +40,13 @@ class Navbar extends Component {
     });
   }
 
+  getRandomColor(uuid){
+    if (!uuid) return '#1BA39C';
+    var firstNumberMatch = parseInt(uuid.match(/\d+/)[0]);
+    const colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c'];
+    return colors[firstNumberMatch%8];
+  }
+
   goToGroup(uuid) {
     let currentTab = this.props.history.location.pathname.split('/').pop();
     this.props.history.push(`/groups/${uuid}/${currentTab}`);
@@ -104,7 +111,8 @@ class Navbar extends Component {
               color="primary"
               classes={{ badge: this.props.classes.badge }}
               badgeContent={
-                <Avatar className={this.props.classes.avatar}>
+                <Avatar className={this.props.classes.avatar}
+                  style={{backgroundColor: this.getRandomColor(this.props.match.params.groupUuid)}}>
                   <span style={{fontSize: '80%'}}>
                     {this.props.match.params.groupUuid ?
                       this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0) :
@@ -212,7 +220,6 @@ const styles = theme => ({
   avatar: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'orange'
   },
 });
 export default connect(mapStateToProps, actions)(withStyles(styles)(Navbar));
