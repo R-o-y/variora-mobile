@@ -385,8 +385,8 @@ class DocumentViewer extends React.Component {
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
                     creatingAnnotationAtPageIndex: pageIndex,
-                    newAnnotationX: bottom_right_relative_x,
-                    newAnnotationY: bottom_right_relative_y,
+                    originalAnnotationX: bottom_right_relative_x,
+                    originalAnnotationY: bottom_right_relative_y,
                     newAnnotationWidth: 0,
                     newAnnotationHeight: 0,
                   })
@@ -397,13 +397,28 @@ class DocumentViewer extends React.Component {
                   if (!this.annotationFirstTouch) return
 
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
-                  this.setState({
-                    newAnnotationWidth: Math.abs(bottom_right_relative_x - this.state.newAnnotationX),
-                    newAnnotationHeight: Math.abs(bottom_right_relative_y - this.state.newAnnotationY),
-                  })
-                  this.rnd.updatePosition({ x: bottom_right_relative_x < this.state.newAnnotationX ? bottom_right_relative_x : this.state.newAnnotationX,
-                                            y: bottom_right_relative_y < this.state.newAnnotationY ? bottom_right_relative_y : this.state.newAnnotationY })
+                  var newAnnotationX = bottom_right_relative_x > this.state.originalAnnotationX ? this.state.originalAnnotationX : bottom_right_relative_x
+                  newAnnotationX = Math.max(0.01, newAnnotationX)
+                  var newAnnotationY = bottom_right_relative_y > this.state.originalAnnotationY ? this.state.originalAnnotationY : bottom_right_relative_y
+                  newAnnotationY = Math.max(0.01, newAnnotationY)
 
+                  var newAnnotationWidth = Math.abs(bottom_right_relative_x - this.state.originalAnnotationX)
+                  if (bottom_right_relative_x < this.state.originalAnnotationX)
+                    newAnnotationWidth = Math.min(newAnnotationWidth, this.state.originalAnnotationX)
+                  else
+                    newAnnotationWidth = Math.min(newAnnotationWidth, this.state.sampleWidth - newAnnotationX)
+
+                  var newAnnotationHeight = Math.abs(bottom_right_relative_y - this.state.originalAnnotationY)
+                  if (bottom_right_relative_y < this.state.originalAnnotationY)
+                    newAnnotationHeight = Math.min(newAnnotationHeight, this.state.originalAnnotationY)
+                  else
+                    newAnnotationHeight = Math.min(newAnnotationHeight, this.state.sampleHeight - newAnnotationY)
+
+                  this.setState({
+                    newAnnotationWidth: newAnnotationWidth,
+                    newAnnotationHeight: newAnnotationHeight,
+                  })
+                  this.rnd.updatePosition({ x: newAnnotationX, y: newAnnotationY })
                 }}
                 onTouchEnd={(e) => {
                   if (this.state.mode === 'view') return
