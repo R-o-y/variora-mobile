@@ -121,7 +121,7 @@ class Explore extends Component {
     const readlists = this.props.explore.readlists;
     return (
       <div>
-        {this.renderReadlistsSublist(readlists.newestReadlists, "Trending Lists")}
+        {this.renderReadlistsSublist(readlists.mostCollectorsReadlists, "Trending Lists")}
         {this.renderReadlistsSublist(readlists.newestReadlists, "Recent Lists")}
       </div>
     )
