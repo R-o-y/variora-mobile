@@ -1,6 +1,7 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Explore from './explore';
+import GroupExplore from './group_explore';
 import Uploads from './uploads';
 import Readlists from './readlists';
 import Notifications from './notifications';
@@ -22,7 +23,7 @@ const Main = () => (
 const Groups = ({match}) => {
   return(
     <Switch>
-      <Route path={`${match.url}/:groupUuid?/explore`} component={Explore}/>
+      <Route path={`${match.url}/:groupUuid?/explore`} component={GroupExplore}/>
       <Route path={`${match.url}/:groupUuid?/uploads`} component={Uploads}/>
       <Route path={`${match.url}/:groupUuid?/readlists`} component={Readlists}/>
       <Route path={`${match.url}/:groupUuid?/notifications`} component={Notifications}/>
