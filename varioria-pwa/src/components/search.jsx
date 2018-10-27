@@ -24,10 +24,15 @@ class Search extends React.Component {
   onChange = (e) => {
     e.preventDefault();
     const searchTerm = e.target.value;
+    const groupUuid = this.props.match.params.groupUuid;
     console.log(searchTerm, "onChange")
     this.setState({searchTerm: searchTerm})
     if (searchTerm !== '') {
-      // TODO: search within group api call
+      if (groupUuid) {
+        console.log("Doing a coterie search");
+        this.props.getCoterieSearchResults(searchTerm, groupUuid);
+        return;
+      }
       this.props.getSearchResults(searchTerm);
     }
   };
