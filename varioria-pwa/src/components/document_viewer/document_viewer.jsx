@@ -647,7 +647,8 @@ class DocumentViewer extends React.Component {
           onClose={() => this.reopenAnnotationThread()}
           variant='persistent'
         >
-          <Grid container justify="space-between" alignItems="center">
+          {/* <Grid container justify="space-between" alignItems="center"> */}
+          <div style={{textAlign: 'center'}}>
             <Avatar
               alt="User Portrait"
               style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
@@ -677,7 +678,8 @@ class DocumentViewer extends React.Component {
               ? <FontAwesomeIcon icon={['fas', 'times-circle']} className='cancel-comment-btn' onClick={this.cancelCurrentAnnotationReply} />
               : <FontAwesomeIcon icon={['fas', 'paper-plane']} className='commit-comment-btn' onClick={this.postAnnotationReply} />
             }
-          </Grid>
+          </div>
+          {/* </Grid> */}
         </Drawer>
 
         <Drawer
@@ -686,7 +688,8 @@ class DocumentViewer extends React.Component {
           onClose={() => this.reopenAnnotationThread()}
           variant='persistent'
         >
-          <Grid container justify="space-between" alignItems="center">
+          {/* <Grid container justify="space-between" alignItems="center"> */}
+          <div style={{textAlign: 'center'}}>
             <Avatar
               alt="User Portrait"
               style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
@@ -716,7 +719,8 @@ class DocumentViewer extends React.Component {
               ? <FontAwesomeIcon icon={['fas', 'times-circle']} className='cancel-comment-btn' onClick={this.cancelEdit} />
               : <FontAwesomeIcon icon={['fas', 'paper-plane']} className='commit-comment-btn' onClick={this.postEdit} />
             }
-          </Grid>
+          </div>
+          {/* </Grid> */}
         </Drawer>
 
         { this.state.mode === 'view'
