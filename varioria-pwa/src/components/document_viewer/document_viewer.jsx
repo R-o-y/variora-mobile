@@ -387,6 +387,8 @@ class DocumentViewer extends React.Component {
                     creatingAnnotationAtPageIndex: pageIndex,
                     originalAnnotationX: bottom_right_relative_x,
                     originalAnnotationY: bottom_right_relative_y,
+                    newAnnotationX: bottom_right_relative_x,
+                    newAnnotationY: bottom_right_relative_y,
                     newAnnotationWidth: 0,
                     newAnnotationHeight: 0,
                   })
@@ -414,10 +416,7 @@ class DocumentViewer extends React.Component {
                   else
                     newAnnotationHeight = Math.min(newAnnotationHeight, this.state.sampleHeight - newAnnotationY)
 
-                  this.setState({
-                    newAnnotationWidth: newAnnotationWidth,
-                    newAnnotationHeight: newAnnotationHeight,
-                  })
+                  this.setState({ newAnnotationWidth: newAnnotationWidth, newAnnotationHeight: newAnnotationHeight })
                   this.rnd.updatePosition({ x: newAnnotationX, y: newAnnotationY })
                 }}
                 onTouchEnd={(e) => {
