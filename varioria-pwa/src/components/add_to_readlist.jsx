@@ -140,7 +140,7 @@ class AddToReadlist extends React.Component {
           </span>
         </NavBar>
         <StickyContainer>
-
+        <WhiteSpace />
         <div style={{ justifyContent: 'center', height: '100%'}}>
           {this.renderOwnedReadlists(this.props.user.createdReadlists)}
         </div>
