@@ -11,6 +11,12 @@ export const DOCUMENT_UNCOLLECT_SUCCESS = 'document_uncollect_success';
 export const READLIST_GET_MY = 'readlist_get_my';
 export const READLIST_GET_EXPLORE = 'readlist_get_explore';
 export const READLIST_GET = 'readlist_get';
+export const READLIST_CREATE = 'readlist_create';
+export const READLIST_EDIT = 'readlist_edit';
+export const READLIST_DELETE_SUCCESS = 'readlist_delete_success';
+export const READLIST_COLLECT_SUCCESS = 'readlist_collect_success';
+export const READLIST_UNCOLLECT_SUCCESS = 'readlist_uncollect_success';
+export const READLIST_REMOVE_DOCUMENT_SUCCESS = 'readlist_remove_document_success';
 
 export const NOTIFICATION_GET_COMBINED = 'notification_get_combined';
 export const NOTIFICATION_READ = 'notification_read';

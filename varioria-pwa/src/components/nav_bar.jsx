@@ -23,8 +23,7 @@ class Navbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      coterieModal: false,
-      searchMode: false
+      coterieModal: false
     };
   }
 
@@ -39,6 +38,11 @@ class Navbar extends Component {
     this.setState({
       [key]: false,
     });
+  }
+
+  getRandomColor(uuid){
+    const colors = ['#1BA39C', '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c'];
+    return colors[uuid.charCodeAt(0)%8];
   }
 
   goToGroup(uuid) {
@@ -98,21 +102,32 @@ class Navbar extends Component {
               key="0"
               type="search"
               style={{ marginRight: '16px' }}
-              onClick={(e) => {this.props.history.push('/search')}}
+              onClick={(e) => {this.props.match.params.groupUuid ? this.props.history.push('/search/' + this.props.match.params.groupUuid) : this.props.history.push('/search')}}
             />,
             <div key = "1">
-            <Badge
-              color="primary"
-              classes={{ badge: this.props.classes.badge }}
-              badgeContent={
-                <Avatar className={this.props.classes.avatar}>
-                  <span style={{fontSize: '80%'}}>
-                    {this.props.match.params.groupUuid ?
-                      this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0) :
-                      "P"}
-                  </span>
-                </Avatar>}
-            >
+            {
+              this.props.match.params.groupUuid
+              ?
+              <Badge
+                color="primary"
+                classes={{ badge: this.props.classes.badge }}
+                badgeContent={
+                  <Avatar className={this.props.classes.avatar}
+                    style={{backgroundColor: this.getRandomColor(this.props.match.params.groupUuid)}}>
+                    <span style={{fontSize: '80%'}}>
+                        {this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0)}
+                    </span>
+                  </Avatar>}
+              >
+                <PeopleOutlineIcon
+                  style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
+                  onClick={(e) => {
+                    this.props.getMyCoteries();
+                    this.showModal('coterieModal', e);
+                  }}
+                />
+              </Badge>
+              :
               <PeopleOutlineIcon
                 style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
                 onClick={(e) => {
@@ -120,7 +135,8 @@ class Navbar extends Component {
                   this.showModal('coterieModal', e);
                 }}
               />
-            </Badge>
+            }
+
             <Modal
               popup
               visible={this.state.coterieModal}
@@ -213,7 +229,6 @@ const styles = theme => ({
   avatar: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'orange'
   },
 });
 export default connect(mapStateToProps, actions)(withStyles(styles)(Navbar));
