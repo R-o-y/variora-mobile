@@ -115,7 +115,7 @@ class AnnotationThread extends React.Component {
                 </SmallButton>
               </Grid>
               <Grid item>
-                <SmallButton color="primary" onClick={event => this.openContextMenu(event, comment.uuid, comment.pk)}>
+                <SmallButton color="primary" onClick={event => this.openContextMenu(event, comment, isHead)}>
                   <FontAwesomeIcon icon={faEllipsisV} />
                 </SmallButton>
               </Grid>
@@ -131,16 +131,19 @@ class AnnotationThread extends React.Component {
     commentMenuUuid: null,
   };
 
-  openContextMenu = (event, uuid, pk) => {
+  openContextMenu = (event, comment, isHead) => {
     this.setState({
       commentMenuElement: event.currentTarget,
-      commentMenuUuid: uuid,
-      commentMenuPk: pk,
+      selectedComment: comment,
+      selectedCommentIsReply: !isHead,
     });
   };
 
   closeContextMenu = value => {
-    this.setState({ commentMenuElement: null });
+    this.setState({
+      commentMenuElement: null,
+      selectedComment: null,
+    });
   };
 
   /** LOCATE REPLY LIKE EDIT SHARE DELETE */
@@ -152,7 +155,7 @@ class AnnotationThread extends React.Component {
   replyAnnotation = (comment) => {
     this.props.setParentState({
       replyToAnnotationReplyId: null,
-      replyToAnnotationReplyUuid: comment.uuid,
+      replyToAnnotationReplyUuid: null,
       annotationOpen: false,
       annotationLinearLinkedListOpen: true,
     }) /**Hide current annotation drawer and show text input */
@@ -174,7 +177,7 @@ class AnnotationThread extends React.Component {
     data.append('annotation_reply_id', uuid)
     axios.post(window.location.pathname + '/', data).then(response => {
       console.log(response)
-      console.log(response.data)
+      /** TODO: How to track likes? */
     })
   }
 
@@ -184,7 +187,7 @@ class AnnotationThread extends React.Component {
   }
 
   shareComment = () => {
-    let url = [window.location.protocol, '//', window.location.host, window.location.pathname].join('') + '?annotation=' + this.state.commentMenuUuid;
+    let url = [window.location.protocol, '//', window.location.host, window.location.pathname].join('') + '?annotation=' + this.state.selectedComment.uuid;
     copyToClipboard(url);
     /* TODO: Debug why not copying. Add toast to indicate copied to clipboard to util? or here. Change to share function in future?*/
     console.log(url)
@@ -192,15 +195,50 @@ class AnnotationThread extends React.Component {
   }
 
   deleteComment = () => {
+    var operation = this.state.selectedCommentIsReply ? 'delete_annotation_reply' : 'delete_annotation'
+    var idType = this.state.selectedCommentIsReply ? 'reply_id' : 'annotation_id'
+    var index = parseInt(this.state.selectedComment.page_index)
     var data = new FormData()
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
-    data.append('operation', 'delete_annotation_reply')
-    data.append('annotation_reply_id', this.state.commentMenuPk)
-    data.append('document_id', this.state.document.pk)
+    data.append('operation', operation)
+    data.append(idType, this.state.selectedComment.pk)
+    data.append('document_id', this.props.pdfDocument.pk)
+    console.log(this.state.selectedComment)
+    var selectedAnnotation = this.props.selectedAnnotation;
+    var annotations = this.props.annotations
+    var annotationsByPage = this.props.annotationsByPage
+    var selectedComment = this.state.selectedComment
     axios.post(window.location.pathname + '/', data).then(response => {
       console.log(response)
+      console.log(annotations)
+      console.log(annotationsByPage)
+      if (this.state.selectedCommentIsReply) {
+        var i = 0
+        selectedAnnotation.replies.map((reply) => {
+          if (reply.uuid == selectedComment.uuid) {
+            selectedAnnotation.replies.splice(i, 1)
+            annotations[selectedAnnotation.uuid] = selectedAnnotation
+            this.props.setParentState({annotations: annotations})
+          }
+          i++;
+        })
+      } else {
+        delete annotations[selectedAnnotation.uuid]
+        var i = 0
+        annotationsByPage[selectedAnnotation.page_index].map((annotation) => {
+          if (annotation.uuid == selectedAnnotation.uuid) {
+            annotationsByPage[selectedAnnotation.page_index].splice(i, 1)
+            this.props.setParentState({
+              annotations: annotations,
+              annotationsByPage: annotationsByPage,
+              annotationOpen: false,
+              selectedAnnotation: undefined,
+            })
+          }
+          i ++;
+        })
+      }
     })
-    /* TODO: Debug why not copying. Add toast to indicate copied to clipboard to util? or here. Change to share function in future?*/
     this.closeContextMenu();
   }
 

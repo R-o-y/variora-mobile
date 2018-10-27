@@ -534,7 +534,10 @@ class DocumentViewer extends React.Component {
                 <AnnotationThread
                   selectedAnnotation={selectedAnnotation}
                   annotationArea={this.annotationAreas[selectedAnnotation.uuid]}
+                  annotations={this.state.annotations}
+                  annotationsByPage={this.state.annotationsByPage}
                   setParentState={this.setState.bind(this)}
+                  pdfDocument={this.state.document}
                 />
               ) : null
             }
