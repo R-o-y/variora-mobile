@@ -146,7 +146,7 @@ class Readlists extends Component {
           <Tabs
             tabs={[{ title: "Created"}, { title: "Collected"}]}
             initalPage={'t2'}
-            renderTabBar={this.renderReactSticky}
+            _renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
               {this.renderCreatedReadlists()}
