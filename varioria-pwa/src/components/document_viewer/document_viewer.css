@@ -65,3 +65,17 @@
   z-index: 1;
   background-color: rgba(0, 170, 0, 0.18);
 }
+
+.cancel-comment-btn {
+  height: 24px;
+  width: 24px !important;
+  padding-right: 8px;
+  color: #7f8c8d;
+}
+
+.commit-comment-btn {
+  height: 24px;
+  width: 24px !important;
+  padding-right: 8px;
+  color: #108ee9;
+}

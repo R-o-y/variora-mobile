@@ -25,6 +25,7 @@ import React from 'react'
 import { Rnd } from 'react-rnd'
 import Tappable from 'react-tappable';
 import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import { getCookie } from '../../utilities/helper';
@@ -46,7 +47,6 @@ const ANNOTATION_HEIGHT_THRESHOLD = 8
 class DocumentViewer extends React.Component {
   constructor(props) {
     super(props)
-
     this.pdfDoc = undefined
     this.taskList = []
     this.finishList = []
@@ -647,7 +647,7 @@ class DocumentViewer extends React.Component {
           onClose={() => this.reopenAnnotationThread()}
           variant='persistent'
         >
-          <grid container>
+          <Grid container justify="space-between" alignItems="center">
             <Avatar
               alt="User Portrait"
               style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
@@ -674,10 +674,10 @@ class DocumentViewer extends React.Component {
             </MuiThemeProvider>
             {
               this.state.newAnnotationReplyContent.length === 0
-              ? <FontAwesomeIcon icon={['fas', 'times-circle']} id='cancel-annotation-btn' onClick={this.cancelCurrentAnnotationReply} />
-              : <FontAwesomeIcon icon={['fas', 'paper-plane']} id='post-annotation-btn' onClick={this.postAnnotationReply} />
+              ? <FontAwesomeIcon icon={['fas', 'times-circle']} className='cancel-comment-btn' onClick={this.cancelCurrentAnnotationReply} />
+              : <FontAwesomeIcon icon={['fas', 'paper-plane']} className='commit-comment-btn' onClick={this.postAnnotationReply} />
             }
-          </grid>
+          </Grid>
         </Drawer>
 
         <Drawer
@@ -686,7 +686,7 @@ class DocumentViewer extends React.Component {
           onClose={() => this.reopenAnnotationThread()}
           variant='persistent'
         >
-          <grid container>
+          <Grid container justify="space-between" alignItems="center">
             <Avatar
               alt="User Portrait"
               style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
@@ -713,10 +713,10 @@ class DocumentViewer extends React.Component {
             </MuiThemeProvider>
             {
               this.state.editTextContent.length === 0
-              ? <FontAwesomeIcon icon={['fas', 'times-circle']} id='cancel-annotation-btn' onClick={this.cancelEdit} />
-              : <FontAwesomeIcon icon={['fas', 'paper-plane']} id='post-annotation-btn' onClick={this.postEdit} />
+              ? <FontAwesomeIcon icon={['fas', 'times-circle']} className='cancel-comment-btn' onClick={this.cancelEdit} />
+              : <FontAwesomeIcon icon={['fas', 'paper-plane']} className='commit-comment-btn' onClick={this.postEdit} />
             }
-          </grid>
+          </Grid>
         </Drawer>
 
         { this.state.mode === 'view'
