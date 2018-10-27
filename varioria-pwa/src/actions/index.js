@@ -361,6 +361,12 @@ export function getSearchResults(term) {
   return {type: SEARCHRESULT_GET, payload: request};
 }
 
+export function getCoterieSearchResults(term, coterieUuid) {
+  const url = '/coterie/api/coteries/' + coterieUuid + '/search?key=' + term;
+  const request = axios.get(url);
+  return {type: SEARCHRESULT_GET, payload: request};
+}
+
 export function inviteToCoterie(data) {
   const request = axios({
     method: 'post',

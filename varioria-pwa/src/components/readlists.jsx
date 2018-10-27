@@ -50,6 +50,14 @@ class Readlists extends Component {
   }
 
   renderAddReadlist() {
+    // ================ TODO: TEMP CODE UNTIL GROUP-BASED READLISTS ========================
+    let groupUuid = this.props.match.params.groupUuid;
+    if (groupUuid) {
+      return (
+        <div></div>
+      )
+    }
+    // =====================================================================================
     return (
       <List.Item
         thumb={<AddIcon style={{color:'grey'}} />}

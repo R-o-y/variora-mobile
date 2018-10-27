@@ -24,10 +24,13 @@ class Search extends React.Component {
   onChange = (e) => {
     e.preventDefault();
     const searchTerm = e.target.value;
-    console.log(searchTerm, "onChange")
+    const groupUuid = this.props.match.params.groupUuid;
     this.setState({searchTerm: searchTerm})
     if (searchTerm !== '') {
-      // TODO: search within group api call
+      if (groupUuid) {
+        this.props.getCoterieSearchResults(searchTerm, groupUuid);
+        return;
+      }
       this.props.getSearchResults(searchTerm);
     }
   };
@@ -41,44 +44,75 @@ class Search extends React.Component {
     let data = [];
     if (results.documents) {
       const documents = results.documents.map(element => {
-        return (
-          <List.Item
-            key={element.slug}
-            arrow="horizontal"
-            thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
-            multipleLine
-            onClick={() => {this.props.history.push(`/documents/${element.slug}`)}}
-          >
-            {element.title}
-            <List.Item.Brief>
-              Uploaded by {element.uploader_name}, <TimeAgo date={element.upload_time} />
-            </List.Item.Brief>
-          </List.Item>
-        )
+        return ({
+          sortKey: element.title,
+          jsx: (
+            <List.Item
+              key={element.slug}
+              arrow="horizontal"
+              thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
+              multipleLine
+              onClick={() => {this.props.history.push(`/documents/${element.slug}`)}}
+            >
+              {element.title}
+              <List.Item.Brief>
+                Uploaded by {element.uploader_name}, <TimeAgo date={element.upload_time} />
+              </List.Item.Brief>
+            </List.Item>
+          )
+        })
       })
       data = data.concat(documents);
     }
     if (results.readlists) {
       const readlists = results.readlists.map(element => {
-        return (
-          <List.Item
-            key={element.slug}
-            arrow="horizontal"
-            thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
-            multipleLine
-            onClick={() => {this.props.history.push(`readlists/${element.slug}`)}}
-          >
-            {element.name}
-            <List.Item.Brief>
-              Created by {element.owner.nickname}, <TimeAgo date={element.create_time} />
-            </List.Item.Brief>
-          </List.Item>
-        )
+        return ({
+          sortKey: element.name,
+          jsx: (
+            <List.Item
+              key={element.slug}
+              arrow="horizontal"
+              thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
+              multipleLine
+              onClick={() => {this.props.history.push(`readlists/${element.slug}`)}}
+            >
+              {element.name}
+              <List.Item.Brief>
+                Created by {element.owner.nickname}, <TimeAgo date={element.create_time} />
+              </List.Item.Brief>
+            </List.Item>
+          )
+        })
       })
       data = data.concat(readlists);
     }
-    
-    console.log(data);
+    if (results.users) {
+      const users = results.users.map(element => {
+        return ({
+          sortKey: element.nickname,
+          jsx: (
+            <List.Item
+              key={element.pk}
+              arrow="horizontal"
+              thumb={element.portrait_url}
+              multipleLine
+              onClick={() => {console.log("user with pk " + element.pk + " clicked")}}
+            >
+              {element.nickname}
+              <List.Item.Brief>
+                {element.email_address}
+              </List.Item.Brief>
+            </List.Item>
+          )
+        })
+      })
+      data = data.concat(users);
+    }
+
+    data = data
+      .sort((a, b) => ('' + a.sortKey).localeCompare(b.sortKey))
+      .map(element => element.jsx);
+
     return (
       <div>
         <List>
