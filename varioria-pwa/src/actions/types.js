@@ -22,6 +22,7 @@ export const NOTIFICATION_GET_COMBINED = 'notification_get_combined';
 export const NOTIFICATION_READ = 'notification_read';
 
 export const SEARCHRESULT_GET = 'search_result_get';
+export const SEARCH_ERROR = 'search_error';
 
 export const COTERIE_GET_MY = 'coterie_get_my';
 export const COTERIE_CREATE = 'coterie_create';
