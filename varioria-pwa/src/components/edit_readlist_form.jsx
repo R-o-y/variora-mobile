@@ -27,10 +27,9 @@ class EditReadlistForm extends Component {
     data.append('new_desc', readlist_description);
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
-    this.props.editReadlist(this.props.readlists.readlist.rename_url, data);
-    // TODO: bugged if change both at once. Why is there a different url to change the desc?
-    this.props.editReadlist(this.props.readlists.readlist.change_desc_url, data);
-    this.props.history.goBack();
+    this.props.editReadlist(this.props.readlists.readlist.rename_url, data)
+      .then(() => {this.props.editReadlist(this.props.readlists.readlist.change_desc_url, data)})
+      .then(() => {this.props.history.goBack()})
   }
 
   handleDelete() {
