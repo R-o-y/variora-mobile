@@ -67,8 +67,7 @@ const MENU_ITEM_HEIGHT = 48;
 class AnnotationThread extends React.Component {
   constructor (props) {
     super(props);
-    //this.openContextMenuOpen = this.openContextMenuOpen.bind(this);
-    //how come I don't need this?
+    this.state.likeSet = new Set();
   }
 
   commentBlock (comment, isHead=false) {
@@ -110,8 +109,8 @@ class AnnotationThread extends React.Component {
                 </SmallButton>
               </Grid>
               <Grid item>
-                <SmallButton color="primary" onClick={() => {this.likeComment(comment.pk)}} >
-                  <FontAwesomeIcon icon={faThumbsUp} />
+                <SmallButton color="primary" style={{color: '#1BA39C'}} disabled={this.state.likeSet.has(comment.uuid)} onClick={() => {isHead ? this.likeAnnotation(comment) : this.likeReply(comment)}} >
+                  <FontAwesomeIcon icon={this.state.likeSet.has(comment.uuid) ? faThumbsUped : faThumbsUp} />
                 </SmallButton>
               </Grid>
               <Grid item>
@@ -170,14 +169,23 @@ class AnnotationThread extends React.Component {
     }) /**Hide current annotation drawer and show text input */
   }
 
-  likeComment = (uuid) => {
+  likeAnnotation = (comment) => {
+    var data = new FormData()
+    data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+    data.append('operation', 'like_annotation')
+    data.append('annotation_id', comment.pk)
+    axios.post(window.location.pathname + '/', data).then(response => {
+      this.setState({likeSet: this.state.likeSet.add(comment.uuid)})
+    })
+  }
+
+  likeReply = (comment) => {
     var data = new FormData()
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
     data.append('operation', 'like_annotation_reply')
-    data.append('annotation_reply_id', uuid)
+    data.append('annotation_reply_id', comment.pk)
     axios.post(window.location.pathname + '/', data).then(response => {
-      console.log(response)
-      /** TODO: How to track likes? */
+      this.setState({likeSet: this.state.likeSet.add(comment.uuid)})
     })
   }
 
