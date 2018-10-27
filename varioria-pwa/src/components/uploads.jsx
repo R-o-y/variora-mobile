@@ -113,7 +113,12 @@ class Uploads extends Component {
         <List.Item
           thumb={<img src='https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png' alt='pdf-icon' style={{height: 28, width: 28}} />}
           multipleLine
-          onClick={() => {this.props.history.push(`/documents/${item.slug}`)}}
+          onClick={() => {
+            if (this.props.match.params.groupUuid)
+              this.props.history.push(`/group-documents/${item.slug}`)
+            else
+              this.props.history.push(`/documents/${item.slug}`)
+          }}
         >
           <div style={{width: '88%', overflow: 'hidden', textOverflow: 'ellipsis'}}>
             {item.title}

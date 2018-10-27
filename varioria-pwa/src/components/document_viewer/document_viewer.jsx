@@ -171,7 +171,7 @@ class DocumentViewer extends React.Component {
     }
 
     this.renderAnnotationAreas = (numPages) => {
-      axios.get(constructGetAnnotationsQueryUrl(this.props.match.params.slug )).then(response => {
+      axios.get(constructGetAnnotationsQueryUrl(this.props.match.params.slug, this.props.isGroupDocument)).then(response => {
         var data = response.data
 
         var annotationsByPage = {}
@@ -312,7 +312,7 @@ class DocumentViewer extends React.Component {
   }
 
   componentDidMount() {
-    axios.get(constructGetDocumentQueryUrl(this.props.match.params.slug)).then(response => {
+    axios.get(constructGetDocumentQueryUrl(this.props.match.params.slug, this.props.isGroupDocument)).then(response => {
       this.setState({
         document: response.data
       })
@@ -461,6 +461,7 @@ class DocumentViewer extends React.Component {
                   this.state.annotationsByPage[pageIndex] !== undefined ?
                     this.state.annotationsByPage[pageIndex].map(annotation =>
                       <Tappable
+                        key={annotation.pk}
                         moveThreshold={10}
                         onTap={() => {
                           if (this.state.mode === 'comment') return
@@ -469,7 +470,6 @@ class DocumentViewer extends React.Component {
                       >
                         <div
                           className='annotation-area'
-                          key={annotation.pk}
                           style={{
                             background: annotation.frame_color,
                             position: 'absolute',

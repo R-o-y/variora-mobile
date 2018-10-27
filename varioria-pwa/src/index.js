@@ -48,6 +48,23 @@ const store = createStore(
   )
 );
 
+const renderDocumentViewer = (match, location, history) => {
+  return <DocumentViewer
+    isGroupDocument={false}
+    match={match}
+    location={location}
+    history={history}
+  />
+}
+
+const renderGroupDocumentViewer = (match, location, history) => {
+  return <DocumentViewer
+    isGroupDocument={true}
+    match={match}
+    location={location}
+    history={history}
+  />
+}
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
@@ -56,7 +73,8 @@ ReactDOM.render(
     <Provider store={store}>
         <BrowserRouter>
           <Switch>
-            <Route path="/documents/:slug" component={DocumentViewer} />
+            <Route path="/documents/:slug" render={({match, location, history}) => renderDocumentViewer(match, location, history)} />
+            <Route path="/group-documents/:slug" render={({match, location, history}) => renderGroupDocumentViewer(match, location, history)} />
             <Route path='/readlists/:slug' component={Readlist}/>
             <Route path="/search/:groupUuid" component={Search} />
             <Route path="/search" component={Search} />
