@@ -37,7 +37,8 @@ const SmallButton = withStyles({
 
 function reduce_comment(comment) {
   var nickname, portrait_url, prefix, timeago, content
-  var author = comment.annotator ? comment.annotator : comment.replier
+  var isAnnotation = comment.annotator ? true : false
+  var author = isAnnotation ? comment.annotator : comment.replier
   nickname = author.nickname ? author.nickname : 'Anonymous'
   portrait_url = author.portrait_url ? (
     author.portrait_url
@@ -59,6 +60,7 @@ function reduce_comment(comment) {
     uuid: comment.uuid,
     pk: comment.pk,
     numReplies: comment.replies ? comment.replies.length : 0,
+    isAnnotation: isAnnotation
   }
 }
 
@@ -190,8 +192,13 @@ class AnnotationThread extends React.Component {
   }
 
   editComment = () => {
-    /** TODO: How to display edit */
     this.closeContextMenu();
+    this.props.setParentState({
+      annotationOpen: false,
+      editCommentOpen: true,
+      editTextContent: this.state.selectedComment.content,
+      selectedComment: this.state.selectedComment,
+    })
   }
 
   shareComment = () => {
