@@ -1,22 +1,27 @@
+import * as actions from '../../actions';
+
+import { copyToClipboard, getCookie } from '../../utilities/helper';
+import { faEllipsisV, faLink, faLocationArrow, faPencilAlt, faReply, faThumbsUp as faThumbsUped, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Grid from '@material-ui/core/Grid';
+import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import React from 'react'
 import ReactDOM from 'react-dom';
 import TimeAgo from 'react-timeago';
-import axios from 'axios'
-import { getCookie, copyToClipboard } from '../../utilities/helper';
-import * as actions from '../../actions';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
-import Chip from '@material-ui/core/Chip';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLocationArrow, faReply, faThumbsUp as faThumbsUped, faEllipsisV, faTrashAlt, faPencilAlt, faLink } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios'
+import { connect } from 'react-redux';
 import { faThumbsUp } from '@fortawesome/fontawesome-free-regular'
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import {
+  renderMathJax,
+} from './document_viewer_helper'
+import { withStyles } from '@material-ui/core/styles';
 
 const SmallChip = withStyles({
   root: {
@@ -255,6 +260,10 @@ class AnnotationThread extends React.Component {
       }
     })
     this.closeContextMenu();
+  }
+
+  componentDidMount() {
+    renderMathJax()
   }
 
   render() {
