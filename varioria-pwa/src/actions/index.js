@@ -18,6 +18,7 @@ import {
   COTERIE_DELETE,
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
+  SEARCH_ERROR,
   READLIST_GET,
   READLIST_CREATE,
   READLIST_EDIT,
@@ -357,14 +358,28 @@ export function deleteCoterie(data, pk, uuid) {
 
 export function getSearchResults(term) {
   const url = '/api/search?key=' + term;
-  const request = axios.get(url);
-  return {type: SEARCHRESULT_GET, payload: request};
+  return function(dispatch) {
+    axios.get(url)
+    .then((response) => {
+      dispatch({type: SEARCHRESULT_GET, payload: response})
+    })
+    .catch((error) => {
+      dispatch({type: SEARCH_ERROR})
+    })
+  }
 }
 
 export function getCoterieSearchResults(term, coterieUuid) {
   const url = '/coterie/api/coteries/' + coterieUuid + '/search?key=' + term;
-  const request = axios.get(url);
-  return {type: SEARCHRESULT_GET, payload: request};
+  return function(dispatch) {
+    axios.get(url)
+    .then((response) => {
+      dispatch({type: SEARCHRESULT_GET, payload: response})
+    })
+    .catch((error) => {
+      dispatch({type: SEARCH_ERROR})
+    })
+  }
 }
 
 export function inviteToCoterie(data) {
