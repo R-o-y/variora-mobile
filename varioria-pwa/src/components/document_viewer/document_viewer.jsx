@@ -71,6 +71,7 @@ class DocumentViewer extends React.Component {
       annotationsByPage: {},
       annotationOpen: false,
       annotationLinearLinkedListOpen: false,
+      editCommentOpen: false,
       newAnnotationInputOpen: false,
       selectedAnnotation: undefined,
       mode: 'view',  // view or comment
@@ -78,6 +79,7 @@ class DocumentViewer extends React.Component {
       creatingAnnotationAtPageIndex: undefined,
       newAnnotationContent: '',
       newAnnotationReplyContent: '',
+      editTextContent: '',
       // pageCanvasWidth: 660,
     }
 
@@ -225,7 +227,7 @@ class DocumentViewer extends React.Component {
 
       if (!this.state.annotationOpen) {
         this.styleDrawer()
-        this.setState({ annotationOpen: true , annotationLinearLinkedListOpen: false });
+        this.setState({ annotationOpen: true, annotationLinearLinkedListOpen: false, editCommentOpen: false });
       }
     }
 
@@ -308,6 +310,38 @@ class DocumentViewer extends React.Component {
 
     this.cancelCurrentAnnotationReply = () => {
       this.setState({annotationOpen: true, annotationLinearLinkedListOpen: false,})
+    }
+
+    this.postEdit = () => {
+      var appName = window.location.pathname.split('/')[1]
+      var api = this.state.selectedComment.isAnnotation ? '/api/annotations/' : '/api/annotationreplies/'
+      var path = '/' + appName + api + this.state.selectedComment.pk + '/edit'
+      console.log(path)
+      var data = new FormData()
+      data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+      data.append('new_content', this.state.editTextContent)
+      axios.post(path, data).then(response => {
+        var annotations = this.state.annotations
+        if (this.state.selectedComment.isAnnotation) {
+          annotations[this.state.selectedAnnotation.uuid].content = this.state.editTextContent
+        } else {
+          for (var i=0; i < annotations[this.state.selectedAnnotation.uuid].replies.length; i++) {
+            if (annotations[this.state.selectedAnnotation.uuid].replies[i].uuid == this.state.selectedComment.uuid) {
+              annotations[this.state.selectedAnnotation.uuid].replies[i].content = this.state.editTextContent
+              break
+            }
+          }
+        }
+        this.setState({
+          annotationOpen: true,
+          editCommentOpen: false,
+          annotations: annotations,
+        })
+      })
+    }
+
+    this.cancelEdit = () => {
+      this.setState({annotationOpen: true, editCommentOpen: false,})
     }
   }
 
@@ -549,7 +583,10 @@ class DocumentViewer extends React.Component {
                   document={this.state.document}
                   selectedAnnotation={selectedAnnotation}
                   annotationArea={this.annotationAreas[selectedAnnotation.uuid]}
+                  annotations={this.state.annotations}
+                  annotationsByPage={this.state.annotationsByPage}
                   setParentState={this.setState.bind(this)}
+                  pdfDocument={this.state.document}
                 />
               ) : null
             }
@@ -610,7 +647,7 @@ class DocumentViewer extends React.Component {
           onClose={() => this.reopenAnnotationThread()}
           variant='persistent'
         >
-          <div style={{textAlign: 'center'}}>
+          <grid container>
             <Avatar
               alt="User Portrait"
               style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
@@ -640,7 +677,46 @@ class DocumentViewer extends React.Component {
               ? <FontAwesomeIcon icon={['fas', 'times-circle']} id='cancel-annotation-btn' onClick={this.cancelCurrentAnnotationReply} />
               : <FontAwesomeIcon icon={['fas', 'paper-plane']} id='post-annotation-btn' onClick={this.postAnnotationReply} />
             }
-          </div>
+          </grid>
+        </Drawer>
+
+        <Drawer
+          anchor="bottom"
+          open={this.state.editCommentOpen}
+          onClose={() => this.reopenAnnotationThread()}
+          variant='persistent'
+        >
+          <grid container>
+            <Avatar
+              alt="User Portrait"
+              style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
+              src={this.props.user.portrait_url}
+            />
+            <MuiThemeProvider theme={createMuiTheme({
+                palette: {
+                  primary: {
+                    main: '#3498db',
+                  }
+                },
+              })}
+            >
+              <TextField
+                ref={ele => this.editText = ele}
+                // className={classes.textField}
+                // defaultValue="Bare"
+                placeholder="Type in your edit..." margin="normal" style={{width: '66vw', top: -2}}
+                multiline fullWidth value={this.state.editTextContent}
+                onChange={event => {
+                  this.setState({editTextContent: event.target.value})
+                }}
+              />
+            </MuiThemeProvider>
+            {
+              this.state.editTextContent.length === 0
+              ? <FontAwesomeIcon icon={['fas', 'times-circle']} id='cancel-annotation-btn' onClick={this.cancelEdit} />
+              : <FontAwesomeIcon icon={['fas', 'paper-plane']} id='post-annotation-btn' onClick={this.postEdit} />
+            }
+          </grid>
         </Drawer>
 
         { this.state.mode === 'view'

@@ -37,7 +37,8 @@ const SmallButton = withStyles({
 
 function reduce_comment(comment) {
   var nickname, portrait_url, prefix, timeago, content
-  var author = comment.annotator ? comment.annotator : comment.replier
+  var isAnnotation = comment.annotator ? true : false
+  var author = isAnnotation ? comment.annotator : comment.replier
   nickname = author.nickname ? author.nickname : 'Anonymous'
   portrait_url = author.portrait_url ? (
     author.portrait_url
@@ -59,6 +60,7 @@ function reduce_comment(comment) {
     uuid: comment.uuid,
     pk: comment.pk,
     numReplies: comment.replies ? comment.replies.length : 0,
+    isAnnotation: isAnnotation
   }
 }
 
@@ -67,9 +69,7 @@ const MENU_ITEM_HEIGHT = 48;
 class AnnotationThread extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props.document)
-    //this.openContextMenuOpen = this.openContextMenuOpen.bind(this);
-    //how come I don't need this?
+    this.state.likeSet = new Set();
   }
 
   commentBlock (comment, isHead=false) {
@@ -111,12 +111,12 @@ class AnnotationThread extends React.Component {
                 </SmallButton>
               </Grid>
               <Grid item>
-                <SmallButton color="primary" onClick={() => {this.likeComment(comment.pk)}} >
-                  <FontAwesomeIcon icon={faThumbsUp} />
+                <SmallButton color="primary" style={{color: '#1BA39C'}} disabled={this.state.likeSet.has(comment.uuid)} onClick={() => {isHead ? this.likeAnnotation(comment) : this.likeReply(comment)}} >
+                  <FontAwesomeIcon icon={this.state.likeSet.has(comment.uuid) ? faThumbsUped : faThumbsUp} />
                 </SmallButton>
               </Grid>
               <Grid item>
-                <SmallButton color="primary" onClick={event => this.openContextMenu(event, comment.uuid, comment.pk)}>
+                <SmallButton color="primary" onClick={event => this.openContextMenu(event, comment, isHead)}>
                   <FontAwesomeIcon icon={faEllipsisV} />
                 </SmallButton>
               </Grid>
@@ -132,16 +132,19 @@ class AnnotationThread extends React.Component {
     commentMenuUuid: null,
   };
 
-  openContextMenu = (event, uuid, pk) => {
+  openContextMenu = (event, comment, isHead) => {
     this.setState({
       commentMenuElement: event.currentTarget,
-      commentMenuUuid: uuid,
-      commentMenuPk: pk,
+      selectedComment: comment,
+      selectedCommentIsReply: !isHead,
     });
   };
 
   closeContextMenu = value => {
-    this.setState({ commentMenuElement: null });
+    this.setState({
+      commentMenuElement: null,
+      selectedComment: null,
+    });
   };
 
   /** LOCATE REPLY LIKE EDIT SHARE DELETE */
@@ -153,7 +156,7 @@ class AnnotationThread extends React.Component {
   replyAnnotation = (comment) => {
     this.props.setParentState({
       replyToAnnotationReplyId: null,
-      replyToAnnotationReplyUuid: comment.uuid,
+      replyToAnnotationReplyUuid: null,
       annotationOpen: false,
       annotationLinearLinkedListOpen: true,
     }) /**Hide current annotation drawer and show text input */
@@ -168,40 +171,89 @@ class AnnotationThread extends React.Component {
     }) /**Hide current annotation drawer and show text input */
   }
 
-  likeComment = (uuid) => {
+  likeAnnotation = (comment) => {
+    var data = new FormData()
+    data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+    data.append('operation', 'like_annotation')
+    data.append('annotation_id', comment.pk)
+    axios.post(window.location.pathname + '/', data).then(response => {
+      this.setState({likeSet: this.state.likeSet.add(comment.uuid)})
+    })
+  }
+
+  likeReply = (comment) => {
     var data = new FormData()
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
     data.append('operation', 'like_annotation_reply')
-    data.append('annotation_reply_id', uuid)
+    data.append('annotation_reply_id', comment.pk)
     axios.post(window.location.pathname + '/', data).then(response => {
-      console.log(response)
-      console.log(response.data)
+      this.setState({likeSet: this.state.likeSet.add(comment.uuid)})
     })
   }
 
   editComment = () => {
-    /** TODO: How to display edit */
     this.closeContextMenu();
+    this.props.setParentState({
+      annotationOpen: false,
+      editCommentOpen: true,
+      editTextContent: this.state.selectedComment.content,
+      selectedComment: this.state.selectedComment,
+    })
   }
 
   shareComment = () => {
-    let url = [window.location.protocol, '//', window.location.host, window.location.pathname].join('') + '?annotation=' + this.state.commentMenuUuid;
+    let url = [window.location.protocol, '//', window.location.host, window.location.pathname].join('') + '?annotation=' + this.state.selectedComment.uuid;
     copyToClipboard(url);
     /* TODO: Debug why not copying. Add toast to indicate copied to clipboard to util? or here. Change to share function in future?*/
     console.log(url)
     this.closeContextMenu();
   }
 
-  deleteAnnotationReply = () => {
+  deleteComment = () => {
+    var operation = this.state.selectedCommentIsReply ? 'delete_annotation_reply' : 'delete_annotation'
+    var idType = this.state.selectedCommentIsReply ? 'reply_id' : 'annotation_id'
+    var index = parseInt(this.state.selectedComment.page_index)
     var data = new FormData()
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
-    data.append('operation', 'delete_annotation_reply')
-    data.append('annotation_reply_id', this.state.commentMenuPk)
-    data.append('document_id', this.props.document.pk)
+    data.append('operation', operation)
+    data.append(idType, this.state.selectedComment.pk)
+    data.append('document_id', this.props.pdfDocument.pk)
+    console.log(this.state.selectedComment)
+    var selectedAnnotation = this.props.selectedAnnotation;
+    var annotations = this.props.annotations
+    var annotationsByPage = this.props.annotationsByPage
+    var selectedComment = this.state.selectedComment
     axios.post(window.location.pathname + '/', data).then(response => {
       console.log(response)
+      console.log(annotations)
+      console.log(annotationsByPage)
+      if (this.state.selectedCommentIsReply) {
+        var i = 0
+        selectedAnnotation.replies.map((reply) => {
+          if (reply.uuid == selectedComment.uuid) {
+            selectedAnnotation.replies.splice(i, 1)
+            annotations[selectedAnnotation.uuid] = selectedAnnotation
+            this.props.setParentState({annotations: annotations})
+          }
+          i++;
+        })
+      } else {
+        delete annotations[selectedAnnotation.uuid]
+        var i = 0
+        annotationsByPage[selectedAnnotation.page_index].map((annotation) => {
+          if (annotation.uuid == selectedAnnotation.uuid) {
+            annotationsByPage[selectedAnnotation.page_index].splice(i, 1)
+            this.props.setParentState({
+              annotations: annotations,
+              annotationsByPage: annotationsByPage,
+              annotationOpen: false,
+              selectedAnnotation: undefined,
+            })
+          }
+          i ++;
+        })
+      }
     })
-    /* TODO: Debug why not copying. Add toast to indicate copied to clipboard to util? or here. Change to share function in future?*/
     this.closeContextMenu();
   }
 
