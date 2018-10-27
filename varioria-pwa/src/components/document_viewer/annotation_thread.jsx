@@ -65,8 +65,9 @@ function reduce_comment(comment) {
 const MENU_ITEM_HEIGHT = 48;
 
 class AnnotationThread extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
+    console.log(props.document)
     //this.openContextMenuOpen = this.openContextMenuOpen.bind(this);
     //how come I don't need this?
   }
@@ -94,7 +95,7 @@ class AnnotationThread extends React.Component {
           <Grid container justify="space-between" alignItems="center" wrap="nowrap">
             {/* BOTTOM ROW LEFT SIDE --- Contains: portrait, name, post/edit time */}
             <Grid container justify="flex-start" alignItems="center" wrap="nowrap">
-              {isHead && <SmallChip icon={<KeyboardArrowDown/>} label={comment.numReplies + ((comment.numReplies==1) ? ' reply' : ' replies')} variant='outlined'></SmallChip>}
+              {isHead && <SmallChip icon={<KeyboardArrowDown/>} label={comment.numReplies + ((comment.numReplies === 1) ? ' reply' : ' replies')} variant='outlined'></SmallChip>}
             </Grid>
             {/* BOTTOM ROW RIGHT SIDE --- Contains: Locate, Reply, Like, More options */}
             <Grid container justify="flex-end" alignItems="center" wrap="nowrap">
@@ -191,12 +192,12 @@ class AnnotationThread extends React.Component {
     this.closeContextMenu();
   }
 
-  deleteComment = () => {
+  deleteAnnotationReply = () => {
     var data = new FormData()
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
     data.append('operation', 'delete_annotation_reply')
     data.append('annotation_reply_id', this.state.commentMenuPk)
-    data.append('document_id', this.state.document.pk)
+    data.append('document_id', this.props.document.pk)
     axios.post(window.location.pathname + '/', data).then(response => {
       console.log(response)
     })
@@ -235,7 +236,7 @@ class AnnotationThread extends React.Component {
               <FontAwesomeIcon icon={faLink} />
             </SmallButton><Typography>Share link</Typography>
           </MenuItem>
-          <MenuItem onClick={this.deleteComment}>
+          <MenuItem onClick={this.deleteAnnotationReply}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faTrashAlt} />
             </SmallButton><Typography>Delete</Typography>
@@ -250,7 +251,7 @@ function mapStateToProps(state) {
   return {
     user: state.user,
     coteries: state.coteries,
-    document: state.document,
+    // document: state.document,
   };
 }
 

@@ -546,6 +546,7 @@ class DocumentViewer extends React.Component {
             {
               selectedAnnotation !== undefined ? (
                 <AnnotationThread
+                  document={this.state.document}
                   selectedAnnotation={selectedAnnotation}
                   annotationArea={this.annotationAreas[selectedAnnotation.uuid]}
                   setParentState={this.setState.bind(this)}
