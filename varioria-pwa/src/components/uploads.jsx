@@ -115,7 +115,7 @@ class Uploads extends Component {
           multipleLine
           onClick={() => {
             if (this.props.match.params.groupUuid)
-              this.props.history.push(`/group-documents/${item.slug}`)
+              this.props.history.push(`/coteries/documents/${item.slug}`)
             else
               this.props.history.push(`/documents/${item.slug}`)
           }}

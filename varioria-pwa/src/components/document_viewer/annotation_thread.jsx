@@ -288,7 +288,7 @@ class AnnotationThread extends React.Component {
               <FontAwesomeIcon icon={faLink} />
             </SmallButton><Typography>Share link</Typography>
           </MenuItem>
-          <MenuItem onClick={this.deleteAnnotationReply}>
+          <MenuItem onClick={this.deleteComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faTrashAlt} />
             </SmallButton><Typography>Delete</Typography>
