@@ -242,16 +242,19 @@ class Uploads extends Component {
             <AddIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
             Add To Readlist
           </List.Item>
-          <List.Item
-            onClick={() => {
-              const location = window.location;
-              const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
-              copyToClipboard(url);
-              Toast.success('Copied to clipboard!', 1);}}
-          >
-            <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
-            Share
-          </List.Item>
+          {
+            this.props.match.params.groupUuid ? null :
+            <List.Item
+              onClick={() => {
+                const location = window.location;
+                const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
+                copyToClipboard(url);
+                Toast.success('Copied to clipboard!', 1);}}
+            >
+              <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+              Share
+            </List.Item>
+          }
           <List.Item
             onClick={() => {
               Modal.alert('Uncollect ' + currDocument.title + '?', '', [
@@ -296,16 +299,19 @@ class Uploads extends Component {
             <AddIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
             Add To Readlist
           </List.Item>
-          <List.Item
-            onClick={() => {
-              const location = window.location;
-              const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
-              copyToClipboard(url);
-              Toast.success('Copied to clipboard!', 1);}}
-          >
-            <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
-            Share
-          </List.Item>
+          {
+            this.props.match.params.groupUuid ? null :
+            <List.Item
+              onClick={() => {
+                const location = window.location;
+                const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
+                copyToClipboard(url);
+                Toast.success('Copied to clipboard!', 1);}}
+            >
+              <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+              Share
+            </List.Item>
+          }
           <List.Item
             onClick={() => {this.renderRenameModal(currDocument)}}
           >
