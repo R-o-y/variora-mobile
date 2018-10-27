@@ -44,6 +44,8 @@ class Uploads extends Component {
         this.props.uploadDocument(data).then(() => {
           Toast.success('Upload success!', 1);
           this.setState({ uploading: false })
+        }).catch((error) => {
+          Toast.fail('Upload failed!', 1);
         })
       } else {
         const coterie_pk = this.props.coteries[this.props.match.params.groupUuid].pk;
@@ -51,6 +53,8 @@ class Uploads extends Component {
         this.props.uploadCoterieDocument(data).then(() => {
           Toast.success('Upload success!', 1);
           this.setState({ uploading: false })
+        }).catch((error) => {
+          Toast.fail('Upload failed!', 1);
         })
       }
 

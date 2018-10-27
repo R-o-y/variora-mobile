@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import {
-  SEARCHRESULT_GET
+  SEARCHRESULT_GET,
+  SEARCH_ERROR
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -14,6 +15,8 @@ export default function (state = [], action) {
         documents: documents,
         users: users,
       });
+    case SEARCH_ERROR:
+      return {};
     default:
       return state;
   }
