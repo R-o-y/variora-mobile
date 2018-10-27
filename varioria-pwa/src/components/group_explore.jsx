@@ -82,7 +82,7 @@ class GroupExplore extends Component {
             tabs={[{ title: "Documents"}, { title: "Readlists"}]}
             initalPage={'t2'}
             swipeable={false}
-            renderTabBar={this.renderReactSticky}
+            _renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%'}}>
               {this.renderCoterieDocuments()}

@@ -4,7 +4,7 @@ import 'typeface-roboto'
 
 import * as serviceWorker from './serviceWorker';
 
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { applyMiddleware, compose, createStore } from 'redux';
 
 import App from './App';
@@ -49,21 +49,25 @@ const store = createStore(
 );
 
 const renderDocumentViewer = (match, location, history) => {
-  return <DocumentViewer
-    isGroupDocument={false}
-    match={match}
-    location={location}
-    history={history}
-  />
+  return (
+    <DocumentViewer
+      isGroupDocument={false}
+      match={match}
+      location={location}
+      history={history}
+    />
+)
 }
 
 const renderGroupDocumentViewer = (match, location, history) => {
-  return <DocumentViewer
-    isGroupDocument={true}
-    match={match}
-    location={location}
-    history={history}
-  />
+  return (
+    <DocumentViewer
+      isGroupDocument={true}
+      match={match}
+      location={location}
+      history={history}
+    />
+  )
 }
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
@@ -83,6 +87,7 @@ ReactDOM.render(
             <Route path="/create-readlist-form" component={CreateReadlistForm} />
             <Route path="/edit-readlist-form/:slug" component={EditReadlistForm} />
             <Route path="/sign-in" component={Login} />
+            <Route exact path="/"render={() => <Redirect to="/uploads" />} />
             <Route path="/" component={App} />
           </Switch>
         </BrowserRouter>
