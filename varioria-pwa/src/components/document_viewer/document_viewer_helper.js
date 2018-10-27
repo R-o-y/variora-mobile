@@ -3,13 +3,19 @@ function range(end) {
 }
 
 
-function constructGetAnnotationsQueryUrl(slug) {
-  return '/file_viewer/api/documents/byslug/' + slug + '/annotations'
+function constructGetAnnotationsQueryUrl(slug, isGroupDocument) {
+  if (!isGroupDocument)
+    return '/file_viewer/api/documents/byslug/' + slug + '/annotations'
+  else
+    return '/coteries/api/coteriedocuments/byslug/' + slug + '/annotations'
 }
 
 
-function constructGetDocumentQueryUrl(slug) {
-  return '/file_viewer/api/documents/byslug/' + slug
+function constructGetDocumentQueryUrl(slug, isGroupDocument) {
+  if (!isGroupDocument)
+    return '/file_viewer/api/documents/byslug/' + slug
+  else
+    return '/coteries/api/coteriedocuments/byslug/' + slug
 }
 
 

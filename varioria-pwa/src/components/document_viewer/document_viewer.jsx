@@ -171,7 +171,7 @@ class DocumentViewer extends React.Component {
     }
 
     this.renderAnnotationAreas = (numPages) => {
-      axios.get(constructGetAnnotationsQueryUrl(this.props.match.params.slug )).then(response => {
+      axios.get(constructGetAnnotationsQueryUrl(this.props.match.params.slug, this.props.isGroupDocument)).then(response => {
         var data = response.data
 
         var annotationsByPage = {}
@@ -312,7 +312,7 @@ class DocumentViewer extends React.Component {
   }
 
   componentDidMount() {
-    axios.get(constructGetDocumentQueryUrl(this.props.match.params.slug)).then(response => {
+    axios.get(constructGetDocumentQueryUrl(this.props.match.params.slug, this.props.isGroupDocument)).then(response => {
       this.setState({
         document: response.data
       })
@@ -385,6 +385,8 @@ class DocumentViewer extends React.Component {
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
                   this.setState({
                     creatingAnnotationAtPageIndex: pageIndex,
+                    originalAnnotationX: bottom_right_relative_x,
+                    originalAnnotationY: bottom_right_relative_y,
                     newAnnotationX: bottom_right_relative_x,
                     newAnnotationY: bottom_right_relative_y,
                     newAnnotationWidth: 0,
@@ -397,13 +399,25 @@ class DocumentViewer extends React.Component {
                   if (!this.annotationFirstTouch) return
 
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
-                  this.setState({
-                    newAnnotationWidth: Math.abs(bottom_right_relative_x - this.state.newAnnotationX),
-                    newAnnotationHeight: Math.abs(bottom_right_relative_y - this.state.newAnnotationY),
-                  })
-                  this.rnd.updatePosition({ x: bottom_right_relative_x < this.state.newAnnotationX ? bottom_right_relative_x : this.state.newAnnotationX,
-                                            y: bottom_right_relative_y < this.state.newAnnotationY ? bottom_right_relative_y : this.state.newAnnotationY })
+                  var newAnnotationX = bottom_right_relative_x > this.state.originalAnnotationX ? this.state.originalAnnotationX : bottom_right_relative_x
+                  newAnnotationX = Math.max(0.01, newAnnotationX)
+                  var newAnnotationY = bottom_right_relative_y > this.state.originalAnnotationY ? this.state.originalAnnotationY : bottom_right_relative_y
+                  newAnnotationY = Math.max(0.01, newAnnotationY)
 
+                  var newAnnotationWidth = Math.abs(bottom_right_relative_x - this.state.originalAnnotationX)
+                  if (bottom_right_relative_x < this.state.originalAnnotationX)
+                    newAnnotationWidth = Math.min(newAnnotationWidth, this.state.originalAnnotationX)
+                  else
+                    newAnnotationWidth = Math.min(newAnnotationWidth, this.state.sampleWidth - newAnnotationX)
+
+                  var newAnnotationHeight = Math.abs(bottom_right_relative_y - this.state.originalAnnotationY)
+                  if (bottom_right_relative_y < this.state.originalAnnotationY)
+                    newAnnotationHeight = Math.min(newAnnotationHeight, this.state.originalAnnotationY)
+                  else
+                    newAnnotationHeight = Math.min(newAnnotationHeight, this.state.sampleHeight - newAnnotationY)
+
+                  this.setState({ newAnnotationWidth: newAnnotationWidth, newAnnotationHeight: newAnnotationHeight })
+                  this.rnd.updatePosition({ x: newAnnotationX, y: newAnnotationY })
                 }}
                 onTouchEnd={(e) => {
                   if (this.state.mode === 'view') return
@@ -447,6 +461,7 @@ class DocumentViewer extends React.Component {
                   this.state.annotationsByPage[pageIndex] !== undefined ?
                     this.state.annotationsByPage[pageIndex].map(annotation =>
                       <Tappable
+                        key={annotation.pk}
                         moveThreshold={10}
                         onTap={() => {
                           if (this.state.mode === 'comment') return
@@ -455,7 +470,6 @@ class DocumentViewer extends React.Component {
                       >
                         <div
                           className='annotation-area'
-                          key={annotation.pk}
                           style={{
                             background: annotation.frame_color,
                             position: 'absolute',

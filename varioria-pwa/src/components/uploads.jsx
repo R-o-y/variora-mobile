@@ -113,7 +113,12 @@ class Uploads extends Component {
         <List.Item
           thumb={<img src='https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png' alt='pdf-icon' style={{height: 28, width: 28}} />}
           multipleLine
-          onClick={() => {this.props.history.push(`/documents/${item.slug}`)}}
+          onClick={() => {
+            if (this.props.match.params.groupUuid)
+              this.props.history.push(`/group-documents/${item.slug}`)
+            else
+              this.props.history.push(`/documents/${item.slug}`)
+          }}
         >
           <div style={{width: '88%', overflow: 'hidden', textOverflow: 'ellipsis'}}>
             {item.title}
@@ -232,6 +237,13 @@ class Uploads extends Component {
         >
           <List.Item
             onClick={() => {
+              this.props.history.push('/add-to-readlists')
+            }}>
+            <AddIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+            Add To Readlist
+          </List.Item>
+          <List.Item
+            onClick={() => {
               const location = window.location;
               const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
               copyToClipboard(url);
@@ -264,7 +276,6 @@ class Uploads extends Component {
 
   renderUploadedActionModal() {
     let currDocument = this.props.documents[this.state.selectedDocument];
-
     return (
       <Modal
         popup
@@ -278,6 +289,13 @@ class Uploads extends Component {
           }
           className="popup-list"
         >
+          <List.Item
+            onClick={() => {
+              this.props.history.push('/add-to-readlists/' + currDocument.slug)
+            }}>
+            <AddIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+            Add To Readlist
+          </List.Item>
           <List.Item
             onClick={() => {
               const location = window.location;

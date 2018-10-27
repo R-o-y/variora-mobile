@@ -5,6 +5,7 @@ import {
   DOCUMENT_UPLOAD,
   DOCUMENT_DELETE_SUCCESS,
   DOCUMENT_UNCOLLECT_SUCCESS,
+  READLIST_GET_MY,
   COTERIE_GET_MY,
   COTERIE_GET_MY_DOCUMENTS,
   COTERIE_DOCUMENT_UPLOAD,
@@ -57,6 +58,13 @@ export default function (state = [], action) {
     case COTERIE_DELETE:
       const administratedCoteriesAfterDelete = _.filter(state.administratedCoteries, (uuid) => {return uuid !== action.uuid});
       return _.extend({}, state, { administratedCoteries: administratedCoteriesAfterDelete});
+    case READLIST_GET_MY:
+      const createdReadlists = action.payload.data.created_readlists;
+      const collectedReadlists = action.payload.data.collected_readlists;
+      return _.extend({}, state,
+        { createdReadlists: _.map(createdReadlists, 'slug'),
+          collectedReadlists: _.map(collectedReadlists, 'slug')
+        });
     default:
       return state;
   }
