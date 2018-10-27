@@ -8,9 +8,11 @@ export default function (state = [], action) {
     case SEARCHRESULT_GET:
       const readlists = action.payload.data.resultReadlists;
       const documents = action.payload.data.resultDocuments;
+      const users = action.payload.data.resultUsers;
       return _.extend({}, state, {
         readlists: readlists,
-        documents: documents
+        documents: documents,
+        users: users,
       });
     default:
       return state;
