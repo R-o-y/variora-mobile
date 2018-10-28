@@ -127,7 +127,7 @@ class Readlist extends Component {
             <Typography variant="h5" component="h5">
               {readlist.name}
             </Typography>
-            <Typography variant="subtitle1">
+            <Typography variant="subtitle1" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', hyphens: 'auto', fontSize: 12, marginTop: 12 }}>
               {readlist.description}
             </Typography>
             <br />
@@ -141,8 +141,8 @@ class Readlist extends Component {
         </CardContent>
         <CardActions>
           <IconButton aria-label="Add to favorites">
-            {this.state.collected? 
-              <FavoriteIcon onClick={this.onCollectIconClick}/> : 
+            {this.state.collected?
+              <FavoriteIcon onClick={this.onCollectIconClick}/> :
               <Favorite onClick={this.onCollectIconClick}/>
             }
           </IconButton>
