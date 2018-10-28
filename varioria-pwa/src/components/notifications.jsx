@@ -25,7 +25,7 @@ class Notifications extends Component {
   }
 
   getActionDescription(action) {
-    if (action === 'reply to annotation') {
+    if (action === 'reply to annotation' || action === 'reply to annotation reply') {
       return 'replied'
     }
     else if (action === 'post annotation') {
@@ -110,7 +110,7 @@ class Notifications extends Component {
 
   renderNotificationsList(notifications) {
     const items = notifications.map((notification) => {
-      let isAnnotationRelated = ( notification.verb ==='reply to annotation' || notification.verb === 'post annotation')
+      let isAnnotationRelated = ['reply to annotation', 'post annotation', 'reply to annotation reply'].includes(notification.verb);
       return (
         <List.Item
           key={notification.slug}
