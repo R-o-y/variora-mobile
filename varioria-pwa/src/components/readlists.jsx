@@ -90,7 +90,7 @@ class Readlists extends Component {
         <List>
           <List.Item>
             <div style={{color: 'grey', textAlign:'center' }}>
-              You haven't created any readlists.
+              You haven't {isCreated ? 'created' : 'collected'} any readlists.
             </div>
           </List.Item>
         </List>
