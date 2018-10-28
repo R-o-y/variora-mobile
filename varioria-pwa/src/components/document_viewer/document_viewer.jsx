@@ -413,7 +413,7 @@ class DocumentViewer extends React.Component {
                 onTouchStart={(e) => {
                   if (this.state.mode === 'view') return
                   if (gestureOnRND(e)) return
-                  if (this.state.creatingAnnotationAtPageIndex !== undefined && this.state.creatingAnnotationAtPageIndex === pageIndex) return
+                  if (this.state.creatingAnnotationAtPageIndex !== undefined) return  // && this.state.creatingAnnotationAtPageIndex === pageIndex
 
                   this.annotationFirstTouch = true
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
@@ -531,7 +531,9 @@ class DocumentViewer extends React.Component {
       <div>
         <NavBar
           mode="light"
-          icon={<Icon type="left" onClick={() => this.props.history.goBack()}/>}
+          icon={<Icon type="left" onClick={() => {
+            this.props.history.goBack()
+          }}/>}
           rightContent={[
             <Icon key="1" type="ellipsis" />,
           ]}
