@@ -12,6 +12,12 @@
   padding: 5px;
 }
 
+.comment-text img {
+  border-radius: 1.8px;
+  max-width: 88vw;
+  height: auto;
+}
+
 .comment-head {
   box-shadow: 0 4px 2px #eee;
   padding-right: 4px;

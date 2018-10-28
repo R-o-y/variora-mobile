@@ -55,7 +55,7 @@ function reduce_comment(comment) {
     prefix = 'edited'
     timeago = comment.edit_time
   }
-  var content = comment.content
+  content = comment.content
   return {
     nickname: nickname,
     portrait_url: portrait_url,
