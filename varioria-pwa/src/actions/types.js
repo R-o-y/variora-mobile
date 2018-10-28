@@ -29,6 +29,7 @@ export const COTERIE_CREATE = 'coterie_create';
 export const COTERIE_UPDATE = 'coterie_update';
 export const COTERIE_UPDATE_SUCCESS = 'coterie_update_success';
 export const COTERIE_INVITE = 'coterie_invite';
+export const COTERIE_MEMBER_REMOVE = 'coterie_member_delete';
 export const COTERIE_DOCUMENT_UPLOAD = 'coterie_document_upload';
 export const COTERIE_LEAVE = 'coterie_leave';
 export const COTERIE_DELETE = 'coterie_delete';

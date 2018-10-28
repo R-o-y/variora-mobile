@@ -11,6 +11,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import ExitIcon from '@material-ui/icons/ExitToApp';
 import KeyIcon from '@material-ui/icons/VpnKey';
+import ClearIcon from '@material-ui/icons/Clear';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -64,7 +65,7 @@ class Settings extends Component {
     var data = new FormData();
     data.append('coterie_id', this.props.coteries[this.props.match.params.groupUuid].pk);
     data.append('invitee_emails', this.state.emails);
-    data.append('invitation_message', this.state.message);
+    data.append('invitation_message', this.state.message ? this.state.message : 'No message');
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
     this.props.inviteToCoterie(data);
   }
@@ -86,11 +87,41 @@ class Settings extends Component {
     })
   }
 
-  renderMember(member) {
+  renderMember(member, currentCoterie) {
+    let isAdmin = this.props.user.administratedCoteries.includes(currentCoterie.uuid);
     return (
       <List.Item
         key={member.pk}
-        thumb={member.portrait_url}
+        thumb={<img src={member.portrait_url} style={{borderRadius: '50%'}} />}
+        align='middle'
+        extra={
+          isAdmin &&
+            <ClearIcon style={{color: 'red'}}
+              onClick={() => {
+                Modal.alert('Remove member ' + member.nickname + '?', '', [
+                  { text: 'Cancel' },
+                  { text: 'Remove', style:{color:'#FF0000'},
+                    onPress: () => {
+                      let data = new FormData();
+                      data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                      data.append('member_email_address', member.email_address);
+                      this.props.removeMember(currentCoterie.remove_member_url, data, currentCoterie.uuid, member.email_address);
+                  }},
+                ])
+              }}
+            />
+        }
+      >
+        {member.nickname}
+      </List.Item>
+    )
+  }
+
+  renderAdmin(member) {
+    return (
+      <List.Item
+        key={member.pk}
+        thumb={<img src={member.portrait_url} style={{borderRadius: '50%'}} />}
       >
         {member.nickname}
       </List.Item>
@@ -135,7 +166,7 @@ class Settings extends Component {
           className="popup-list"
         >
           {currentCoterie.members.map((member) => {
-            return this.renderMember(member);
+            return this.renderMember(member, currentCoterie);
           })}
         </List>
       </Modal>
@@ -158,7 +189,7 @@ class Settings extends Component {
           className="popup-list"
         >
           {currentCoterie.administrators.map((admin) => {
-            return this.renderMember(admin);
+            return this.renderAdmin(admin);
           })}
         </List>
       </Modal>
@@ -203,7 +234,8 @@ class Settings extends Component {
             <Button onClick={() => this.onClose('inviteDialog')} color="primary">
               Cancel
             </Button>
-            <Button onClick={() => {this.onClose('inviteDialog'); this.handleFormSubmit();}} color="primary">
+            <Button disabled={_.isEmpty(this.state.emails)}
+              onClick={() => {this.onClose('inviteDialog'); this.handleFormSubmit();}} color="primary">
               Send
             </Button>
           </DialogActions>
@@ -278,7 +310,6 @@ class Settings extends Component {
 
     const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
     let isAdmin = this.props.user.administratedCoteries.includes(currentCoterie.uuid);
-    console.log(this.props.user);
     return (
       <div>
         <Navbar title="Settings" history={this.props.history} match={this.props.match}/>

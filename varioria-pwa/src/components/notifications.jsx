@@ -87,7 +87,7 @@ class Notifications extends Component {
           style={{backgroundColor: '#edf9f6'}}
           onClick={() => {}}
         >
-          <b>{invitation.invitee_nickname + " invited you to join " + invitation.coterie_name}</b>
+          <b>{invitation.inviter_nickname + " invited you to join " + invitation.coterie_name}</b>
           <List.Item.Brief>
             { invitation.invitation_message }
           </List.Item.Brief>
