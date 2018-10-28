@@ -637,6 +637,9 @@ class DocumentViewer extends React.Component {
                 id="standard-bare"
                 // className={classes.textField}
                 // defaultValue="Bare"
+                // onFocus={() => {
+                //   window.scrollTo(0, document.getElementById('annotation-being-created').getBoundingClientRect().top + window.scrollY)
+                // }}
                 placeholder="Type in your comment..." margin="normal" style={{width: '66vw', top: -2}}
                 multiline fullWidth value={this.state.newAnnotationContent}
                 onChange={event => {
