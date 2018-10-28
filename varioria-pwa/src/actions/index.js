@@ -13,6 +13,7 @@ import {
   COTERIE_UPDATE,
   COTERIE_UPDATE_SUCCESS,
   COTERIE_INVITE,
+  COTERIE_MEMBER_REMOVE,
   COTERIE_DOCUMENT_UPLOAD,
   COTERIE_LEAVE,
   COTERIE_DELETE,
@@ -390,6 +391,21 @@ export function inviteToCoterie(data) {
   });
 
   return {type: COTERIE_INVITE, payload: request};
+}
+
+export function removeMember(url, data, uuid, email) {
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then((response) => {
+      dispatch({type: COTERIE_MEMBER_REMOVE, payload: {uuid, email}})
+    }).catch(error => {
+      throw(error);
+    })
+  }
 }
 
 export function getInvitations() {

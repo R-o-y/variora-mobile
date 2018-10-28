@@ -10,6 +10,7 @@ import Avatar from '@material-ui/core/Avatar';
 import MailIcon from '@material-ui/icons/Mail';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
+import MailReadIcon from '@material-ui/icons/DraftsOutlined';
 import { getCookie } from '../utilities/helper';
 
 class Notifications extends Component {
@@ -86,7 +87,7 @@ class Notifications extends Component {
           style={{backgroundColor: '#edf9f6'}}
           onClick={() => {}}
         >
-          <b>{invitation.invitee_nickname + " invited you to join " + invitation.coterie_name}</b>
+          <b>{invitation.inviter_nickname + " invited you to join " + invitation.coterie_name}</b>
           <List.Item.Brief>
             { invitation.invitation_message }
           </List.Item.Brief>
@@ -114,9 +115,22 @@ class Notifications extends Component {
         <List.Item
           key={notification.slug}
           thumb={(isAnnotationRelated && notification.data) ?
-            <img src={notification.data.image_url} style={{height:50, width:50}} /> :
+            <img src={notification.data.image_url} style={{height:50, width:50, borderRadius:'50%'}} /> :
             <Avatar style={{height:50, width:50, backgroundColor:'#1BA39C'}}><MailIcon style={{height:40}}/></Avatar>}
-          extra={this.formatNotificationTime(notification.timestamp)}
+          extra={
+            <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', float: 'right'}}>
+              <span style={{marginBottom: 10}}>{this.formatNotificationTime(notification.timestamp)}</span>
+              { notification.unread ?
+                <span style={{textAlign: 'right', zIndex: 1000}}
+                  onClick={(e) => {
+                    this.props.markNotificationAsRead(notification.mark_read_url, notification.slug)
+                    e.stopPropagation()}}>
+                  <MailIcon/>
+                </span> :
+                <span style={{textAlign: 'right', zIndex: 1}}><MailReadIcon/></span>
+              }
+            </div>
+          }
           align="top"
           multipleLine
           style={{backgroundColor: notification.unread ? '#edf9f6' : ''}}
