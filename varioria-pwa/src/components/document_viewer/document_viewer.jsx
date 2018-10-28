@@ -2,7 +2,7 @@ import './document_viewer.css'
 
 import * as actions from '../../actions';
 
-import { ActivityIndicator, Icon, NavBar, TextareaItem } from 'antd-mobile';
+import { ActivityIndicator, Icon, NavBar, TextareaItem, Modal } from 'antd-mobile';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {
   constructGetAnnotationsQueryUrl,
@@ -25,6 +25,7 @@ import React from 'react'
 import { Rnd } from 'react-rnd'
 import Tappable from 'react-tappable';
 import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import { getCookie } from '../../utilities/helper';
@@ -41,12 +42,12 @@ library.add(faPaperPlane, faTimesCircle)
 const RENDERING = 'RENDERING'
 const ANNOTATION_WIDTH_THRESHOLD = 8
 const ANNOTATION_HEIGHT_THRESHOLD = 8
+const alert = Modal.alert;
 
 
 class DocumentViewer extends React.Component {
   constructor(props) {
     super(props)
-
     this.pdfDoc = undefined
     this.taskList = []
     this.finishList = []
@@ -257,6 +258,14 @@ class DocumentViewer extends React.Component {
       if (this.state.newAnnotationWidth < ANNOTATION_WIDTH_THRESHOLD || this.state.newAnnotationHeight < ANNOTATION_HEIGHT_THRESHOLD)
         return
 
+      if (this.props.user === undefined || !this.props.user.isAuthenticated) {
+        alert('', 'You need to login to post', [
+          { text: 'Cancel', onPress: () => {} },
+          { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
+        ])
+        return
+      }
+
       var data = new FormData()
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       data.append('operation', 'annotate')
@@ -413,7 +422,7 @@ class DocumentViewer extends React.Component {
                 onTouchStart={(e) => {
                   if (this.state.mode === 'view') return
                   if (gestureOnRND(e)) return
-                  if (this.state.creatingAnnotationAtPageIndex !== undefined && this.state.creatingAnnotationAtPageIndex === pageIndex) return
+                  if (this.state.creatingAnnotationAtPageIndex !== undefined) return  // && this.state.creatingAnnotationAtPageIndex === pageIndex
 
                   this.annotationFirstTouch = true
                   const [bottom_right_relative_x, bottom_right_relative_y] = getPositionRelativeToPageTopLeft(e, pageIndex)
@@ -531,7 +540,9 @@ class DocumentViewer extends React.Component {
       <div>
         <NavBar
           mode="light"
-          icon={<Icon type="left" onClick={() => this.props.history.goBack()}/>}
+          icon={<Icon type="left" onClick={() => {
+            this.props.history.goBack()
+          }}/>}
           rightContent={[
             <Icon key="1" type="ellipsis" />,
           ]}
@@ -647,7 +658,8 @@ class DocumentViewer extends React.Component {
           onClose={() => this.reopenAnnotationThread()}
           variant='persistent'
         >
-          <grid container>
+          {/* <Grid container justify="space-between" alignItems="center"> */}
+          <div style={{textAlign: 'center'}}>
             <Avatar
               alt="User Portrait"
               style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
@@ -674,10 +686,11 @@ class DocumentViewer extends React.Component {
             </MuiThemeProvider>
             {
               this.state.newAnnotationReplyContent.length === 0
-              ? <FontAwesomeIcon icon={['fas', 'times-circle']} id='cancel-annotation-btn' onClick={this.cancelCurrentAnnotationReply} />
-              : <FontAwesomeIcon icon={['fas', 'paper-plane']} id='post-annotation-btn' onClick={this.postAnnotationReply} />
+              ? <FontAwesomeIcon icon={['fas', 'times-circle']} className='cancel-comment-btn' onClick={this.cancelCurrentAnnotationReply} />
+              : <FontAwesomeIcon icon={['fas', 'paper-plane']} className='commit-comment-btn' onClick={this.postAnnotationReply} />
             }
-          </grid>
+          </div>
+          {/* </Grid> */}
         </Drawer>
 
         <Drawer
@@ -686,7 +699,8 @@ class DocumentViewer extends React.Component {
           onClose={() => this.reopenAnnotationThread()}
           variant='persistent'
         >
-          <grid container>
+          {/* <Grid container justify="space-between" alignItems="center"> */}
+          <div style={{textAlign: 'center'}}>
             <Avatar
               alt="User Portrait"
               style={{ float: 'left', marginTop: '2%', marginLeft: '2%'}}
@@ -713,10 +727,11 @@ class DocumentViewer extends React.Component {
             </MuiThemeProvider>
             {
               this.state.editTextContent.length === 0
-              ? <FontAwesomeIcon icon={['fas', 'times-circle']} id='cancel-annotation-btn' onClick={this.cancelEdit} />
-              : <FontAwesomeIcon icon={['fas', 'paper-plane']} id='post-annotation-btn' onClick={this.postEdit} />
+              ? <FontAwesomeIcon icon={['fas', 'times-circle']} className='cancel-comment-btn' onClick={this.cancelEdit} />
+              : <FontAwesomeIcon icon={['fas', 'paper-plane']} className='commit-comment-btn' onClick={this.postEdit} />
             }
-          </grid>
+          </div>
+          {/* </Grid> */}
         </Drawer>
 
         { this.state.mode === 'view'

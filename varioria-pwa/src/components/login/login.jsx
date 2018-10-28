@@ -3,7 +3,7 @@ import 'regenerator-runtime/runtime'
 import 'antd-mobile/dist/antd-mobile.css'
 import './login.css'
 
-import { Icon, WhiteSpace } from 'antd-mobile';
+import { Icon, WhiteSpace, Toast } from 'antd-mobile';
 import {
   faFacebook,
   faGoogle
@@ -55,16 +55,19 @@ class Login extends React.Component {
         .catch(function (error) {
           console.log(error)
           self.setState({ errorMessage: true })
+          Toast.offline('Email or password incorrect', 1.8);
         });
     }
 
     this.facebookLogin = () => {
       FB.login(function (response) {
-        const payload = response.authResponse
-        axios.post('/api/signin/facebook', payload).then((response) => {
+        var data = new FormData()
+        data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+        data.append('auth_response', JSON.stringify(response.authResponse))
+        axios.post('/api/signin/facebook', data).then((response) => {
           window.location.href = '/'
         }).catch(e => {
-          // TODO: notification
+          Toast.offline('Facebook login unsuccessful', 1.8);
         })
       }, { scope: 'email' })  // TODO: get user' friends also
     }
@@ -102,23 +105,26 @@ class Login extends React.Component {
     var auth2 = undefined
     function attachSignin(element) {
       auth2.attachClickHandler(element, {},
-        function (googleUser) {
-          axios.post('/api/signin/google', {
-            id_token: googleUser.getAuthResponse().id_token
-          }).then((response) => {
+        function(googleUser) {
+          var data = new FormData()
+          data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+          data.append('id_token', googleUser.getAuthResponse().id_token)
+          axios.post('/api/signin/google', data).then((response) => {
             window.location.href = '/'
           }).catch(e => {
             console.log(e.response)
+            Toast.offline('Google login unsuccessful', 1.8)
           })
-        }, function (error) {
+        }, function(error) {
           console.log(JSON.stringify(error, undefined, 2))
+          Toast.offline('Google login unsuccessful', 1.8)
         }
       )
     }
-    gapi.load('auth2', function () {
+    gapi.load('auth2', function(){
       auth2 = gapi.auth2.init({
-        clientID: 'c9e686e3-bae8-4a0d-bcf1-26de09761807',
-        graphScopes: ['User.ReadBasic.All', 'User.Read', 'user.read', 'user.readbasic.all']
+        client_id: '887521980338-fj0n0r7ui5cn313f4vh6paqm411upf3o.apps.googleusercontent.com',
+        cookiepolicy: 'single_host_origin',
       })
       attachSignin(document.getElementById('google-button'))
     })
@@ -196,8 +202,8 @@ class Login extends React.Component {
               variant="outlined" color="primary" size="small"
               className="social-button"
             >
-              <Icon type={'check-circle-o'} id="submit-icon" style={{ color: '0060c0', marginRight: 8 }} />
-              <span className="social-text" style={{ color: '#0060c0' }}>Log in</span>
+              <Icon type={'check-circle-o'} id="submit-icon" style={{ color: '#1BA39C', marginRight: 8 }} />
+              <span className="login-text" style={{ color: '#1BA39C' }}>Log in</span>
             </MButton>
           </div>
 
@@ -207,10 +213,10 @@ class Login extends React.Component {
             <MButton
               // onClick={(event) => window.location.href='/register'}
               color="primary" size="small"
-              className='social-button'
+              className='social-butto'
             >
               {/*<FontAwesomeIcon icon='user-plus' id="submit-icon" style={{ color: '0060c0', marginRight: 8 }} />*/}
-              <span className="social-text" style={{ color: '#0060c0' }}>Create an Account <br />(Coming soon)</span>
+              <span className="login-text" style={{ color: '#1BA39C' }}>Create an Account <br />(Coming soon)</span>
             </MButton>
           </div>
         </Card>

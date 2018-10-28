@@ -39,7 +39,8 @@
   color: white;
   height: 28px;
   width: 28px !important;
-  margin-right: 28px;
+  position: absolute;
+  left: 8%;
 }
 
 #submit-icon {
@@ -53,7 +54,16 @@
   color: white;
   font-size: 13px;
   font-weight: 400;
-  text-transform: none
+  text-transform: none;
+  position: absolute;
+  left: 28%;
+}
+
+.login-text {
+  color: white;
+  font-size: 13px;
+  font-weight: 400;
+  text-transform: none;
 }
 
 .input-width {

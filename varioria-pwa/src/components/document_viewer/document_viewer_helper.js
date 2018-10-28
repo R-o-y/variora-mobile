@@ -19,8 +19,16 @@ function constructGetDocumentQueryUrl(slug, isGroupDocument) {
 }
 
 
+/*eslint no-undef: "off"*/
+function renderMathJax() {
+  if (window.hasOwnProperty('MathJax'))
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub])
+}
+
+
 export {
   range,
   constructGetAnnotationsQueryUrl,
   constructGetDocumentQueryUrl,
+  renderMathJax,
 }

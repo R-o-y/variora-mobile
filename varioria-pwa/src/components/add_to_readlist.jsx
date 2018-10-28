@@ -55,7 +55,7 @@ class AddToReadlist extends React.Component {
     readlists[index].checked ? readlists[index].count++ : readlists[index].count--;
     this.setState({
       readlists
-    });    
+    });
   }
 
   handleSubmit = () => {
@@ -84,10 +84,13 @@ class AddToReadlist extends React.Component {
       return (
         <div key={readlist.uuid}>
           <List.Item
-            thumb={<Checkbox
-              checked={readlist.checked}
-              onChange={this.handleChange(index)}
-            />}
+            thumb={
+              <Checkbox
+                color="primary"
+                checked={readlist.checked}
+                onChange={this.handleChange(index)}
+              />
+            }
             multipleLine
           >
             {readlist.name}

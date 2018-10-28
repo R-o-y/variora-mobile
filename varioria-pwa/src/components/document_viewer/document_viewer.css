@@ -12,6 +12,12 @@
   padding: 5px;
 }
 
+.comment-text img {
+  border-radius: 1.8px;
+  max-width: 88vw;
+  height: auto;
+}
+
 .comment-head {
   box-shadow: 0 4px 2px #eee;
   padding-right: 4px;
@@ -64,4 +70,22 @@
 #annotation-being-created {
   z-index: 1;
   background-color: rgba(0, 170, 0, 0.18);
+}
+
+.cancel-comment-btn {
+  height: 24px;
+  width: 24px !important;
+  vertical-align: bottom;
+  margin-bottom: 16px;
+  margin-left: 24px;
+  color: #7f8c8d;
+}
+
+.commit-comment-btn {
+  height: 24px;
+  width: 24px !important;
+  vertical-align: bottom;
+  margin-bottom: 16px;
+  margin-left: 24px;
+  color: #108ee9;
 }

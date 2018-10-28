@@ -25,6 +25,18 @@
     <script src="/static/pdfjs/compatibility.js"></script>
     <script src="/static/pdfjs/pdf.js"></script>
     <script src="/static/pdfjs/pdf.worker.js"></script>
+
+    <!--MathJax-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [['$$','$$']],
+          displayMath: []
+        }
+      })
+    </script>
+
     <script src="https://apis.google.com/js/api:client.js"></script>
 
   </head>

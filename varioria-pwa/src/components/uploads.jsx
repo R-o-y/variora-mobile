@@ -118,9 +118,12 @@ class Uploads extends Component {
           thumb={<img src='https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png' alt='pdf-icon' style={{height: 28, width: 28}} />}
           multipleLine
           onClick={() => {
-            if (this.props.match.params.groupUuid)
-              this.props.history.push(`/group-documents/${item.slug}`)
-            else
+            const groupUuid = this.props.match.params.groupUuid
+            if (groupUuid) {
+              const coterie = this.props.coteries[groupUuid]
+              const coterieId = coterie.pk
+              this.props.history.push(`/coteries/${coterieId}/documents/${item.slug}`)
+            } else
               this.props.history.push(`/documents/${item.slug}`)
           }}
         >
