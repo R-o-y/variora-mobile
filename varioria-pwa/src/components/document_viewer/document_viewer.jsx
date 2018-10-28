@@ -2,7 +2,7 @@ import './document_viewer.css'
 
 import * as actions from '../../actions';
 
-import { ActivityIndicator, Icon, NavBar, TextareaItem } from 'antd-mobile';
+import { ActivityIndicator, Icon, NavBar, TextareaItem, Modal } from 'antd-mobile';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {
   constructGetAnnotationsQueryUrl,
@@ -42,6 +42,7 @@ library.add(faPaperPlane, faTimesCircle)
 const RENDERING = 'RENDERING'
 const ANNOTATION_WIDTH_THRESHOLD = 8
 const ANNOTATION_HEIGHT_THRESHOLD = 8
+const alert = Modal.alert;
 
 
 class DocumentViewer extends React.Component {
@@ -256,6 +257,14 @@ class DocumentViewer extends React.Component {
     this.postAnnotation = () => {
       if (this.state.newAnnotationWidth < ANNOTATION_WIDTH_THRESHOLD || this.state.newAnnotationHeight < ANNOTATION_HEIGHT_THRESHOLD)
         return
+
+      if (this.props.user === undefined || !this.props.user.isAuthenticated) {
+        alert('', 'You need to login to post', [
+          { text: 'Cancel', onPress: () => {} },
+          { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
+        ])
+        return
+      }
 
       var data = new FormData()
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
