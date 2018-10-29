@@ -94,7 +94,10 @@ class Navbar extends Component {
               alt="avatar"
               style={{width: 28, height: 28}}
               src={this.props.user.portrait_url}
-              onClick={(e) => {console.log("User avatar clicked")}}
+              onClick={(e) => {
+                console.log("User avatar clicked")
+                this.props.history.push('/profile')
+              }}
             />
           }
           rightContent={[
