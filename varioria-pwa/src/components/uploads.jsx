@@ -27,14 +27,24 @@ class Uploads extends Component {
     this.handleFiles = () => {
       const file = this.finput.files[0]
       // console.log(file)
+      if (file.type !== 'application/pdf') {
+        Toast.fail('File type is not PDF', 1.8)
+        return
+      }
 
       const user = this.props.user;
       if ((user === undefined || !user.is_superuser) && !validateDocumentSize(file))
         return false
 
+      const filenameWithoutExtension = file.name.split('.').slice(0, -1).join('.')
+      if (filenameWithoutExtension.includes('.')) {
+        Toast.fail('Special characters are not allowed in file name', 2.8)
+        return
+      }
+
       var data = new FormData()
-      // REPLACE WITH USER INPUT NAME
-      data.append('title', file.name)
+      // TODO: REPLACE WITH USER INPUT NAME
+      data.append('title', filenameWithoutExtension)
       data.append('file_upload', file)
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       this.setState({ uploading: true })
