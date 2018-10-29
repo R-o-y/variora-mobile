@@ -283,7 +283,7 @@ class DocumentViewer extends React.Component {
           mode: 'view', creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false
         })
         document.getElementsByTagName("BODY")[0].removeEventListener('touchmove', this.lockScroll)
-      }).error(err => {
+      }).catch(err => {
         alert('', 'You need to login to post', [
           { text: 'Cancel', onPress: () => {} },
           { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
