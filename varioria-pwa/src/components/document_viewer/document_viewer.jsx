@@ -592,13 +592,34 @@ class DocumentViewer extends React.Component {
             <div
               // style={{borderBottom: 'solid #ddd 1px', marginBottom: 8}}
             >
-              <IconButton component="span" style={{left: 8, padding: 6}}>
+              <IconButton component="span" style={{left: 8, padding: 6}}
+                onClick={e => {
+                  const thisPage = selectedAnnotation.page_index
+                  const thisPageAnnotations = this.state.annotationsByPage[thisPage]
+                  const indexInPage = thisPageAnnotations.indexOf(selectedAnnotation)
+                  if (indexInPage >= 1) {
+                    this.selectAnnotation(thisPageAnnotations[indexInPage - 1].uuid)
+                    // this.setState({selectedAnnotation: thisPageAnnotations[indexInPage - 1]})
+                    // scroll the annotation into view
+                  }
+                }}
+              >
                 <KeyboardArrowLeft />
               </IconButton>
               <IconButton component="span" style={{position: 'absolute', right: '12vw', padding: 6}}>
                 <FormatListBulletedRounded />
               </IconButton>
-              <IconButton component="span" style={{position: 'absolute', right: 8, padding: 6}}>
+              <IconButton component="span" style={{position: 'absolute', right: 8, padding: 6}}
+                onClick={e => {
+                  const thisPage = selectedAnnotation.page_index
+                  const thisPageAnnotations = this.state.annotationsByPage[thisPage]
+                  const indexInPage = thisPageAnnotations.indexOf(selectedAnnotation)
+                  if (indexInPage < thisPageAnnotations.length - 1) {
+                    this.selectAnnotation(thisPageAnnotations[indexInPage + 1].uuid)
+                    // this.setState({selectedAnnotation: thisPageAnnotations[indexInPage - 1]})
+                  }
+                }}
+              >
                 <KeyboardArrowRight />
               </IconButton>
             </div>
