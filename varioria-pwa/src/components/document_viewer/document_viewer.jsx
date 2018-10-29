@@ -2,7 +2,7 @@ import './document_viewer.css'
 
 import * as actions from '../../actions';
 
-import { ActivityIndicator, Icon, NavBar, TextareaItem, Modal } from 'antd-mobile';
+import { ActivityIndicator, Icon, Modal, NavBar, TextareaItem } from 'antd-mobile';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {
   constructGetAnnotationsQueryUrl,
@@ -21,15 +21,19 @@ import DoneAll from '@material-ui/icons/DoneAll';
 import Drawer from '@material-ui/core/Drawer';
 import FloatButton from './float_button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Grid from '@material-ui/core/Grid';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import FormatListBulletedRounded from '@material-ui/icons/FormatListBulletedRounded';
 import React from 'react'
 import { Rnd } from 'react-rnd'
 import Tappable from 'react-tappable';
 import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import { getCookie } from '../../utilities/helper';
 import { library } from '@fortawesome/fontawesome-svg-core'
+import IconButton from '@material-ui/core/IconButton';
 
 library.add(faPaperPlane, faTimesCircle)
 
@@ -584,20 +588,36 @@ class DocumentViewer extends React.Component {
           // ModalProps={{BackdropProps: {invisible: true}}}
           variant='persistent'
         >
-          <div ref={ele => this.annotationWrapper = ele}>
-            {
-              selectedAnnotation !== undefined ? (
-                <AnnotationThread
-                  document={this.state.document}
-                  selectedAnnotation={selectedAnnotation}
-                  annotationArea={this.annotationAreas[selectedAnnotation.uuid]}
-                  annotations={this.state.annotations}
-                  annotationsByPage={this.state.annotationsByPage}
-                  setParentState={this.setState.bind(this)}
-                  pdfDocument={this.state.document}
-                />
-              ) : null
-            }
+          <div>
+            <div
+              // style={{borderBottom: 'solid #ddd 1px', marginBottom: 8}}
+            >
+              <IconButton component="span" style={{left: 8, padding: 6}}>
+                <KeyboardArrowLeft />
+              </IconButton>
+              <IconButton component="span" style={{position: 'absolute', right: '12vw', padding: 6}}>
+                <FormatListBulletedRounded />
+              </IconButton>
+              <IconButton component="span" style={{position: 'absolute', right: 8, padding: 6}}>
+                <KeyboardArrowRight />
+              </IconButton>
+            </div>
+
+            <div ref={ele => this.annotationWrapper = ele}>
+              {
+                selectedAnnotation !== undefined ? (
+                  <AnnotationThread
+                    document={this.state.document}
+                    selectedAnnotation={selectedAnnotation}
+                    annotationArea={this.annotationAreas[selectedAnnotation.uuid]}
+                    annotations={this.state.annotations}
+                    annotationsByPage={this.state.annotationsByPage}
+                    setParentState={this.setState.bind(this)}
+                    pdfDocument={this.state.document}
+                  />
+                ) : null
+              }
+            </div>
           </div>
         </Drawer>
 
