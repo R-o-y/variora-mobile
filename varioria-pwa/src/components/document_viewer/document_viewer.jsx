@@ -8,6 +8,8 @@ import {
   constructGetAnnotationsQueryUrl,
   constructGetDocumentQueryUrl,
   range,
+  getNextPageIndexWithAnnotations,
+  getPreviousPageIndexWithAnnotations,
 } from './document_viewer_helper'
 import {
   faPaperPlane,
@@ -597,11 +599,20 @@ class DocumentViewer extends React.Component {
                   const thisPage = selectedAnnotation.page_index
                   const thisPageAnnotations = this.state.annotationsByPage[thisPage]
                   const indexInPage = thisPageAnnotations.indexOf(selectedAnnotation)
-                  if (indexInPage >= 1) {
-                    this.selectAnnotation(thisPageAnnotations[indexInPage - 1].uuid)
-                    // this.setState({selectedAnnotation: thisPageAnnotations[indexInPage - 1]})
-                    // scroll the annotation into view
+
+                  var prevAnnotation = undefined
+                  if (indexInPage > 0) {
+                    prevAnnotation = thisPageAnnotations[indexInPage - 1]
+                  } else {
+                    const annotationsByPage = this.state.annotationsByPage
+                    const prevPageWithAnnotations = getPreviousPageIndexWithAnnotations(thisPage, annotationsByPage)
+                    if (prevPageWithAnnotations === undefined) return
+                    const annotations = annotationsByPage[prevPageWithAnnotations]
+                    prevAnnotation = annotations[annotations.length - 1]
                   }
+
+                  this.selectAnnotation(prevAnnotation.uuid)
+                  this.annotationAreas[prevAnnotation.uuid].scrollIntoView({block: "start", behavior: "smooth"})
                 }}
               >
                 <KeyboardArrowLeft />
@@ -614,10 +625,20 @@ class DocumentViewer extends React.Component {
                   const thisPage = selectedAnnotation.page_index
                   const thisPageAnnotations = this.state.annotationsByPage[thisPage]
                   const indexInPage = thisPageAnnotations.indexOf(selectedAnnotation)
+
+                  var nextAnnotation = undefined
                   if (indexInPage < thisPageAnnotations.length - 1) {
-                    this.selectAnnotation(thisPageAnnotations[indexInPage + 1].uuid)
-                    // this.setState({selectedAnnotation: thisPageAnnotations[indexInPage - 1]})
+                    nextAnnotation = thisPageAnnotations[indexInPage + 1]
+                  } else {
+                    const annotationsByPage = this.state.annotationsByPage
+                    const nextPageWithAnnotations = getNextPageIndexWithAnnotations(thisPage, annotationsByPage, this.state.numPages)
+                    if (nextPageWithAnnotations === undefined) return
+                    const annotations = annotationsByPage[nextPageWithAnnotations]
+                    nextAnnotation = annotations[0]
                   }
+
+                  this.selectAnnotation(nextAnnotation.uuid)
+                  this.annotationAreas[nextAnnotation.uuid].scrollIntoView({block: "start", behavior: "smooth"})
                 }}
               >
                 <KeyboardArrowRight />

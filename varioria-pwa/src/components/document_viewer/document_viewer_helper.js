@@ -26,9 +26,33 @@ function renderMathJax() {
 }
 
 
+function getNextPageIndexWithAnnotations(currentPageIndex, annotationsByPage, numPages) {
+  var i = currentPageIndex + 1
+  while (true) {
+    if (i > numPages) return undefined  // index starts from 1
+
+    if (annotationsByPage[i].length > 0) return i
+    else i += 1
+  }
+}
+
+
+function getPreviousPageIndexWithAnnotations(currentPageIndex, annotationsByPage) {
+  var i = currentPageIndex - 1
+  while (true) {
+    if (i < 1) return undefined
+
+    if (annotationsByPage[i].length > 0) return i
+    else i -= 1
+  }
+}
+
+
 export {
   range,
   constructGetAnnotationsQueryUrl,
   constructGetDocumentQueryUrl,
   renderMathJax,
+  getNextPageIndexWithAnnotations,
+  getPreviousPageIndexWithAnnotations,
 }
