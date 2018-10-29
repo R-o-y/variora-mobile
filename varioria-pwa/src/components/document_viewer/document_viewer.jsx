@@ -258,14 +258,6 @@ class DocumentViewer extends React.Component {
       if (this.state.newAnnotationWidth < ANNOTATION_WIDTH_THRESHOLD || this.state.newAnnotationHeight < ANNOTATION_HEIGHT_THRESHOLD)
         return
 
-      if (this.props.user === undefined || !this.props.user.isAuthenticated) {
-        alert('', 'You need to login to post', [
-          { text: 'Cancel', onPress: () => {} },
-          { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
-        ])
-        return
-      }
-
       var data = new FormData()
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       data.append('operation', 'annotate')
@@ -291,6 +283,11 @@ class DocumentViewer extends React.Component {
           mode: 'view', creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false
         })
         document.getElementsByTagName("BODY")[0].removeEventListener('touchmove', this.lockScroll)
+      }).error(err => {
+        alert('', 'You need to login to post', [
+          { text: 'Cancel', onPress: () => {} },
+          { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
+        ])
       })
     }
 
