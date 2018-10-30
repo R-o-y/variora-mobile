@@ -6,13 +6,23 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
 import moment from 'moment';
 import Avatar from '@material-ui/core/Avatar';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Button from '@material-ui/core/Button';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import TextField from '@material-ui/core/TextField';
+import ConfirmationDialog from './confirmation_dialog';
 import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import CreateIcon from '@material-ui/icons/Create';
 import ShareIcon from '@material-ui/icons/Share';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
-import { Button, Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
+import { Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
 import { getCookie, copyToClipboard, validateDocumentSize } from '../utilities/helper';
+import pdfIcon from '../utilities/pdf.png';
 
 class Uploads extends Component {
   constructor(props) {
@@ -20,13 +30,28 @@ class Uploads extends Component {
     this.state = {
       uploadedActionModal: false,
       collectedActionModal: false,
+      uploadDialog: false,
+      chooseReadlistRadio: false,
+      uploadedFile: null,
       selectedDocument: null,
-      loading: true
+      loading: true,
     };
 
-    this.handleFiles = () => {
-      const file = this.finput.files[0]
-      // console.log(file)
+    this.handleFileDialog = () => {
+      const file = this.finput.files[0];
+      this.setState({uploadDialog: true, uploadedFile: file});
+    }
+
+    this.handleConfirmationDialogClose = value => {
+      this.setState({ value, chooseReadlistRadio: false });
+    };
+
+    this.handleFileSubmit = () => {
+      const file = this.state.uploadedFile;
+      const filenameWithoutExtension = file.name.split('.').slice(0, -1).join('.');
+      const filename = this.state.name ? this.state.name : filenameWithoutExtension;
+      const readlist = this.state.value ? this.props.readlists[this.state.value].uuid : undefined;
+
       if (file.type !== 'application/pdf') {
         Toast.fail('File type is not PDF', 1.8)
         return
@@ -36,31 +61,45 @@ class Uploads extends Component {
       if ((user === undefined || !user.is_superuser) && !validateDocumentSize(file))
         return false
 
-      const filenameWithoutExtension = file.name.split('.').slice(0, -1).join('.')
-      if (filenameWithoutExtension.includes('.')) {
+      if (filename.includes('.')) {
         Toast.fail('Special characters are not allowed in file name', 2.8)
         return
       }
 
       var data = new FormData()
       // TODO: REPLACE WITH USER INPUT NAME
-      data.append('title', filenameWithoutExtension)
+      data.append('title', filename)
       data.append('file_upload', file)
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       this.setState({ uploading: true })
       Toast.loading('Loading...')
 
       if (!this.props.match.params.groupUuid) {
-        this.props.uploadDocument(data).then(() => {
+        this.props.uploadDocument(data)
+        .then((response) => {
+          let pk = response.payload.data.pk;
+          if (readlist) {
+            let readlistData = new FormData();
+            readlistData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+            readlistData.append('add_readlists[]', readlist);
+            this.props.documentChangeReadlists(pk, readlistData)
+            .catch((error) => {
+              Toast.fail('Add to readlist failed!', 2);
+            })
+          }
+        })
+        .then(() => {
           Toast.success('Upload success!', 1);
           this.setState({ uploading: false })
-        }).catch((error) => {
-          Toast.fail('Upload failed!', 1);
+        })
+        .catch((error) => {
+          Toast.fail('Upload failed!', 2);
         })
       } else {
         const coterie_pk = this.props.coteries[this.props.match.params.groupUuid].pk;
         data.append('coterie_pk', coterie_pk);
         this.props.uploadCoterieDocument(data).then(() => {
+          // TODO: NEED TO ADD READLIST FOR GROUP ALSO
           Toast.success('Upload success!', 1);
           this.setState({ uploading: false })
         }).catch((error) => {
@@ -125,7 +164,7 @@ class Uploads extends Component {
     return (
       <div key={item.slug}>
         <List.Item
-          thumb={<img src='https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png' alt='pdf-icon' style={{height: 28, width: 28}} />}
+          thumb={<img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />}
           multipleLine
           onClick={() => {
             const groupUuid = this.props.match.params.groupUuid
@@ -357,6 +396,96 @@ class Uploads extends Component {
     )
   }
 
+  renderFileItem(file) {
+    console.log(file);
+
+    if (!file) return (<div>File upload failed!</div>)
+    console.log(moment(file.lastModified).format('MMM D YYYY, HH:mm'));
+    return (
+      <ListItem>
+        <img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />
+        <ListItemText primary={file.name} secondary={"Modified " + moment(file.lastModified).format('MMM D, HH:mm')} />
+      </ListItem>
+    )
+  }
+
+  renderFileNameTextField(file) {
+    if (!file) return (<div></div>)
+    return (
+      <TextField
+        multiline
+        margin="dense"
+        id="name"
+        label="Name"
+        defaultValue={file.name.split('.').slice(0, -1).join('.')}
+        fullWidth
+        onChange={(e) => this.setState({name: e.target.value})}
+      />
+    )
+  }
+
+  renderReadlistSelect(){
+    return (
+      <div>
+        <ListItem
+          style={{padding: 0}}
+          button
+          divider
+          aria-haspopup="true"
+          onClick={(e) => {this.showModal('chooseReadlistRadio', e)}}
+        >
+          <ListItemText primary="Readlist"
+            secondary={this.state.value ?
+              this.props.readlists[this.state.value].name :
+              'Click to select... (optional)'
+            }
+          />
+        </ListItem>
+        <ConfirmationDialog
+          open={this.state.chooseReadlistRadio}
+          onClose={this.handleConfirmationDialogClose}
+          value={this.state.value}
+        />
+      </div>
+    )
+  }
+
+  renderUploadDialog() {
+    let file = this.state.uploadedFile;
+    return (
+      <Dialog
+        onClose={() => {this.onClose('uploadDialog'); this.finput.value = ''}}
+        open={this.state.uploadDialog}
+        aria-labelledby="simple-dialog-title">
+        <DialogTitle id="simple-dialog-title">Upload</DialogTitle>
+        <DialogContent>
+          {this.renderFileItem(file)}
+          {this.renderFileNameTextField(file)}
+          {!this.props.match.params.groupUuid && this.renderReadlistSelect()}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              this.onClose('uploadDialog');
+              this.finput.value = '';
+            }}
+            color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              this.onClose('uploadDialog');
+              this.handleFileSubmit();
+              this.finput.value = '';
+            }}
+            color="primary">
+            Upload
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
+
   render() {
     if (this.state.loading) {
       return (
@@ -373,12 +502,13 @@ class Uploads extends Component {
         {this.renderStickyTab()}
         {this.renderUploadedActionModal()}
         {this.renderCollectedActionModal()}
+        {this.renderUploadDialog()}
         <input
           ref={item => this.finput = item}
           style={{ visibility: 'hidden' }}
           type={'file'}
           accept="application/pdf"
-          onChange={async () => this.handleFiles()}>
+          onChange={async () => this.handleFileDialog()}>
         </input>
       </div>
     );
@@ -390,6 +520,7 @@ function mapStateToProps(state) {
     user: state.user,
     documents: state.documents,
     coteries: state.coteries,
+    readlists: state.readlists,
   };
 }
 
