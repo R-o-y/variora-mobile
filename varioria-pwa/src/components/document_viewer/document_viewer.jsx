@@ -8,8 +8,8 @@ import {
   constructGetAnnotationsQueryUrl,
   constructGetDocumentQueryUrl,
   range,
-  getNextPageIndexWithAnnotations,
-  getPreviousPageIndexWithAnnotations,
+  getNextAnnotation,
+  getPrevAnnotation,
 } from './document_viewer_helper'
 import {
   faPaperPlane,
@@ -595,22 +595,9 @@ class DocumentViewer extends React.Component {
               // style={{borderBottom: 'solid #ddd 1px', marginBottom: 8}}
             >
               <IconButton component="span" style={{left: 8, padding: 6}}
+                disabled={getPrevAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage) === undefined}
                 onClick={e => {
-                  const thisPage = selectedAnnotation.page_index
-                  const thisPageAnnotations = this.state.annotationsByPage[thisPage]
-                  const indexInPage = thisPageAnnotations.indexOf(selectedAnnotation)
-
-                  var prevAnnotation = undefined
-                  if (indexInPage > 0) {
-                    prevAnnotation = thisPageAnnotations[indexInPage - 1]
-                  } else {
-                    const annotationsByPage = this.state.annotationsByPage
-                    const prevPageWithAnnotations = getPreviousPageIndexWithAnnotations(thisPage, annotationsByPage)
-                    if (prevPageWithAnnotations === undefined) return
-                    const annotations = annotationsByPage[prevPageWithAnnotations]
-                    prevAnnotation = annotations[annotations.length - 1]
-                  }
-
+                  const prevAnnotation = getPrevAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage)
                   this.selectAnnotation(prevAnnotation.uuid)
                   this.annotationAreas[prevAnnotation.uuid].scrollIntoView({block: "start", behavior: "smooth"})
                 }}
@@ -621,22 +608,9 @@ class DocumentViewer extends React.Component {
                 <FormatListBulletedRounded />
               </IconButton>
               <IconButton component="span" style={{position: 'absolute', right: 8, padding: 6}}
+                disabled={getNextAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage, this.state.numPages) === undefined}
                 onClick={e => {
-                  const thisPage = selectedAnnotation.page_index
-                  const thisPageAnnotations = this.state.annotationsByPage[thisPage]
-                  const indexInPage = thisPageAnnotations.indexOf(selectedAnnotation)
-
-                  var nextAnnotation = undefined
-                  if (indexInPage < thisPageAnnotations.length - 1) {
-                    nextAnnotation = thisPageAnnotations[indexInPage + 1]
-                  } else {
-                    const annotationsByPage = this.state.annotationsByPage
-                    const nextPageWithAnnotations = getNextPageIndexWithAnnotations(thisPage, annotationsByPage, this.state.numPages)
-                    if (nextPageWithAnnotations === undefined) return
-                    const annotations = annotationsByPage[nextPageWithAnnotations]
-                    nextAnnotation = annotations[0]
-                  }
-
+                  const nextAnnotation = getNextAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage, this.state.numPages)
                   this.selectAnnotation(nextAnnotation.uuid)
                   this.annotationAreas[nextAnnotation.uuid].scrollIntoView({block: "start", behavior: "smooth"})
                 }}
