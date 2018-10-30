@@ -18,21 +18,9 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.props.getUser();
     this.props.getMyCoteries().then(() => {
       this.setState({loading: false})
     });
-
-    // axios.get('/file_viewer/api/documents').then(response => {
-    //   this.setState({
-    //     data: response.data['uploadedDocuments'].sort((a, b) => a.title > b.title)
-    //   })
-    //   console.log(this.state)
-    // })
-
-    // axios.get('/file_viewer/api/readlists').then(response => {
-    //   console.log(response.data)
-    // })
   }
 
   render() {
