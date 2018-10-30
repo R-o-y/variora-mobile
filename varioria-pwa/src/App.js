@@ -21,6 +21,8 @@ class App extends Component {
     this.props.getMyCoteries().then(() => {
       this.setState({loading: false})
     });
+    this.props.getCombinedNotifications();
+    this.props.getInvitations();
   }
 
   render() {

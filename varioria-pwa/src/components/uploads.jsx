@@ -358,8 +358,6 @@ class Uploads extends Component {
   }
 
   render() {
-    console.log(this.props.documents);
-
     if (this.state.loading) {
       return (
         <div>
