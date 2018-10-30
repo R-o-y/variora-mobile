@@ -8,6 +8,7 @@ import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { applyMiddleware, compose, createStore } from 'redux';
 
 import App from './App';
+import AuthContainer from './components/auth_container';
 import CreateCoterieForm from './components/create_coterie_form';
 import CreateReadlistForm from './components/create_readlist_form';
 import EditReadlistForm from './components/edit_readlist_form';
@@ -15,7 +16,6 @@ import DocumentViewer from './components/document_viewer/document_viewer';
 import Readlist from './components/readlist';
 import AddToReadlist from './components/add_to_readlist';
 import Profile from './components/profile/profile'
-
 import Search from './components/search';
 
 import { Login } from './components/login/login'
@@ -76,6 +76,7 @@ const renderGroupDocumentViewer = (match, location, history) => {
 ReactDOM.render(
   <MuiThemeProvider theme={theme}>
     <Provider store={store}>
+      <AuthContainer>
         <BrowserRouter>
           <Switch>
             <Route path="/documents/:slug" render={({match, location, history}) => renderDocumentViewer(match, location, history)} />
@@ -93,6 +94,7 @@ ReactDOM.render(
             <Route path="/" component={App} />
           </Switch>
         </BrowserRouter>
+      </AuthContainer>
     </Provider>
   </MuiThemeProvider>
   , document.getElementById('root'));

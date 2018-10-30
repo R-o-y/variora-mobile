@@ -77,7 +77,6 @@ class Navbar extends Component {
   render() {
     const hasAdministratedCoteries = !_.isEmpty(this.props.user.administratedCoteries);
     const hasJoinedCoteries = !_.isEmpty(this.props.user.joinedCoteries);
-    console.log(this.props)
 
     return (
       <div>

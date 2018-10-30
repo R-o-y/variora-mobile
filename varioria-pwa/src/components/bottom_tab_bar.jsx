@@ -1,5 +1,7 @@
+import _ from 'lodash';
 import React from 'react';
-import { TabBar } from 'antd-mobile';
+import { connect } from 'react-redux';
+import { TabBar, Badge } from 'antd-mobile';
 import ExploreIcon from '@material-ui/icons/Explore';
 import UploadIcon from '@material-ui/icons/CloudUpload';
 import ReadlistIcon from '@material-ui/icons/ViewList';
@@ -24,7 +26,21 @@ class BottomTabBar extends React.Component {
     return ''
   }
 
+  renderNotificationTabWithBadge() {
+    const unread = _.filter(this.props.notifications, 'unread');
+    if (_.isEmpty(unread) && _.isEmpty(this.props.invitations)) {
+      return (
+        <NotificationsIcon />
+      )
+    } else {
+      return (
+        <Badge dot><NotificationsIcon /></Badge>
+      )
+    }
+  }
+
   render() {
+    this.renderNotificationTabWithBadge();
     return (
       <div style={{ position: 'fixed', height: '100%', width: '100%', top: 0 }}>
         <TabBar
@@ -79,7 +95,7 @@ class BottomTabBar extends React.Component {
             {this.state.selectedTab === 'readlists' && this.props.content}
           </TabBar.Item>
           <TabBar.Item
-            icon={<NotificationsIcon />}
+            icon={this.renderNotificationTabWithBadge()}
             selectedIcon={<NotificationsActiveIcon />}
             title={this.state.selectedTab === 'notifications' ? 'notifications' : ''}
             key="Notifications"
@@ -114,4 +130,11 @@ class BottomTabBar extends React.Component {
   }
 }
 
-export default BottomTabBar;
+function mapStateToProps(state) {
+  return {
+    notifications: state.notifications,
+    invitations: state.invitations
+  };
+}
+
+export default connect(mapStateToProps)(BottomTabBar);

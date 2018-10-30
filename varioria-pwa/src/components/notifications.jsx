@@ -191,7 +191,6 @@ class Notifications extends Component {
     const notifications = _.orderBy(this.props.notifications, 'timestamp', 'desc');
     const invitations = _.orderBy(this.props.invitations, 'pk', 'desc');
 
-    console.log(this.props);
     return (
       <div>
         <Navbar title="Notifications" history={this.props.history} match={this.props.match}/>
