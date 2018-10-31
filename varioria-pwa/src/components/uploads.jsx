@@ -397,10 +397,7 @@ class Uploads extends Component {
   }
 
   renderFileItem(file) {
-    console.log(file);
-
     if (!file) return (<div>File upload failed!</div>)
-    console.log(moment(file.lastModified).format('MMM D YYYY, HH:mm'));
     return (
       <ListItem>
         <img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />

@@ -2,9 +2,10 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
+import validator from 'email-validator';
 import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { List, WingBlank, WhiteSpace, Card, Modal } from 'antd-mobile';
+import { List, WingBlank, WhiteSpace, Card, Modal, Toast } from 'antd-mobile';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import PeopleIcon from '@material-ui/icons/People';
@@ -62,12 +63,45 @@ class Settings extends Component {
   };
 
   handleFormSubmit() {
+    var [isValid, emailList] = this.preprocessEmailsString(this.state.emails)
+    if (!isValid) {
+      Toast.fail('Email input is not valid! Try emails separated by commas', 2.8)
+      return
+    }
     var data = new FormData();
     data.append('coterie_id', this.props.coteries[this.props.match.params.groupUuid].pk);
-    data.append('invitee_emails', this.state.emails);
+    data.append('invitee_emails', emailList);
     data.append('invitation_message', this.state.message ? this.state.message : 'No message');
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-    this.props.inviteToCoterie(data);
+    this.props.inviteToCoterie(data).then((response) => {
+      var successful_applications = response.payload.data['successful_invitations']
+      var unregistered_emails = response.payload.data['unregistered_emails']
+      if (successful_applications.length > 0)
+        Toast.success('Invitations successfully sent', 1)
+      if (unregistered_emails.length > 0)
+        Toast.fail('Following emails are not registered yet: ' + unregistered_emails.join("\n"), 5)
+    })
+  }
+
+  _emailsStringToArray(emailsString) {
+    var rows = emailsString.trim().split(/\n| /)
+    var emailsArray = []
+    for (var row of rows){
+      emailsArray = emailsArray.concat(row.trim().split(',').filter(element => element !== ''))
+    }
+    return emailsArray
+  }
+
+  preprocessEmailsString(emailsString) {
+    var emailArray = this._emailsStringToArray(emailsString)
+    var returnedEmailArray = []
+    for (var email of emailArray) {
+      email = email.trim()
+      if (!validator.validate(email))
+        return (false, [])
+      returnedEmailArray.push(email)
+    }
+    return [true, returnedEmailArray.join(',')]
   }
 
   handleGroupEdit() {
@@ -221,7 +255,6 @@ class Settings extends Component {
               onChange={this.handleChange('emails')}
             />
             <TextField
-              required
               multiline
               margin="dense"
               id="message"
