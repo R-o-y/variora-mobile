@@ -213,6 +213,8 @@ class DocumentViewer extends React.Component {
         })
         self.pushNewPageRenderingTask(1)
         self.pushNewPageRenderingTask(2)
+        self.pushNewPageRenderingTask(3)
+        self.pushNewPageRenderingTask(4)
         self.renderTaskList()
       })
     }
