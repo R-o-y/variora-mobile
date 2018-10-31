@@ -399,9 +399,12 @@ class Uploads extends Component {
   renderFileItem(file) {
     if (!file) return (<div>File upload failed!</div>)
     return (
-      <ListItem>
+      <ListItem style={{paddingLeft: 0, paddingRight: 0}}>
         <img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />
-        <ListItemText primary={file.name} secondary={"Modified " + moment(file.lastModified).format('MMM D, HH:mm')} />
+        <ListItemText
+          primary={<div style={{textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden'}}>{file.name}</div>}
+          secondary={"Modified " + moment(file.lastModified).format('MMM D, HH:mm')}
+        />
       </ListItem>
     )
   }

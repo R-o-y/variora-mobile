@@ -44,6 +44,7 @@ function reduce_comment(comment) {
   var nickname, portrait_url, prefix, timeago, content
   var isAnnotation = comment.annotator ? true : false
   var author = isAnnotation ? comment.annotator : comment.replier
+  var authorpk = author.pk
   nickname = author.nickname ? author.nickname : 'Anonymous'
   portrait_url = author.portrait_url ? (
     author.portrait_url
@@ -65,7 +66,8 @@ function reduce_comment(comment) {
     uuid: comment.uuid,
     pk: comment.pk,
     numReplies: comment.replies ? comment.replies.length : 0,
-    isAnnotation: isAnnotation
+    isAnnotation: isAnnotation,
+    authorpk: authorpk,
   }
 }
 
@@ -287,21 +289,21 @@ class AnnotationThread extends React.Component {
             },
           }}
         >
-          <MenuItem onClick={this.editComment}>
+          { this.state.selectedComment && this.props.user.pk == this.state.selectedComment.authorpk && <MenuItem onClick={this.editComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faPencilAlt} />
             </SmallButton><Typography>Edit</Typography>
-          </MenuItem>
+          </MenuItem> }
           <MenuItem onClick={this.shareComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faLink} />
             </SmallButton><Typography>Share link</Typography>
           </MenuItem>
-          <MenuItem onClick={this.deleteComment}>
+          { this.state.selectedComment && this.props.user.pk == this.state.selectedComment.authorpk && <MenuItem onClick={this.deleteComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faTrashAlt} />
             </SmallButton><Typography>Delete</Typography>
-          </MenuItem>
+          </MenuItem> }
         </Menu>
       </div>
     )

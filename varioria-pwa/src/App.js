@@ -10,6 +10,7 @@ import BottomTabBar from './components/bottom_tab_bar';
 import Main from './components/main';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import logo from './logo.svg'
+import Grid from '@material-ui/core/Grid';
 
 
 class App extends Component {
@@ -28,7 +29,9 @@ class App extends Component {
   render() {
     if (_.isEmpty(this.props.user) || this.state.loading) {
       return (
-        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
+        <Grid container justify="center" alignItems="center" wrap="nowrap" style={{height: '95vh'}}>
+            <CircularProgress style={{color:"#1BA39C"}} size='10vw' thickness={5} />
+        </Grid>
       )
     }
 

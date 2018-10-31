@@ -48,11 +48,51 @@ function getPreviousPageIndexWithAnnotations(currentPageIndex, annotationsByPage
 }
 
 
+function getPrevAnnotation(selectedAnnotation, annotationsByPage) {
+  if (selectedAnnotation === undefined || annotationsByPage === undefined) return undefined
+
+  const thisPage = selectedAnnotation.page_index
+  const thisPageAnnotations = annotationsByPage[thisPage]
+  const indexInPage = thisPageAnnotations.indexOf(selectedAnnotation)
+
+  if (indexInPage > 0)
+    return thisPageAnnotations[indexInPage - 1]
+  else {
+    const prevPageWithAnnotations = getPreviousPageIndexWithAnnotations(thisPage, annotationsByPage)
+    if (prevPageWithAnnotations === undefined)
+      return undefined
+
+    const annotations = annotationsByPage[prevPageWithAnnotations]
+    return annotations[annotations.length - 1]
+  }
+}
+
+
+function getNextAnnotation(selectedAnnotation, annotationsByPage, numPages) {
+  if (selectedAnnotation === undefined || annotationsByPage === undefined || numPages === undefined) return undefined
+
+  const thisPage = selectedAnnotation.page_index
+  const thisPageAnnotations = annotationsByPage[thisPage]
+  const indexInPage = thisPageAnnotations.indexOf(selectedAnnotation)
+
+  if (indexInPage < thisPageAnnotations.length - 1)
+    return thisPageAnnotations[indexInPage + 1]
+  else {
+    const nextPageWithAnnotations = getNextPageIndexWithAnnotations(thisPage, annotationsByPage, numPages)
+    if (nextPageWithAnnotations === undefined)
+      return undefined
+
+    const annotations = annotationsByPage[nextPageWithAnnotations]
+    return annotations[0]
+  }
+}
+
+
 export {
   range,
   constructGetAnnotationsQueryUrl,
   constructGetDocumentQueryUrl,
   renderMathJax,
-  getNextPageIndexWithAnnotations,
-  getPreviousPageIndexWithAnnotations,
+  getNextAnnotation,
+  getPrevAnnotation,
 }
