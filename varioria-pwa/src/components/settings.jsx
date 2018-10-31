@@ -65,7 +65,10 @@ class Settings extends Component {
   handleFormSubmit() {
     var [isValid, emailList] = this.preprocessEmailsString(this.state.emails)
     if (!isValid) {
-      Toast.fail('Email input is not valid! Try emails separated by commas', 2.8)
+      if (emailList)
+        Toast.fail(emailList + ' is not valid! Verify and try again', 2.8)
+      else
+        Toast.fail('Email input is not valid! Try emails separated by commas', 2.8)
       return
     }
     var data = new FormData();
@@ -98,7 +101,7 @@ class Settings extends Component {
     for (var email of emailArray) {
       email = email.trim()
       if (!validator.validate(email))
-        return (false, [])
+        return [false, [email]]
       returnedEmailArray.push(email)
     }
     return [true, returnedEmailArray.join(',')]
