@@ -107,8 +107,7 @@ class Settings extends Component {
     return [true, returnedEmailArray.join(',')]
   }
 
-  handleGroupEdit() {
-    let currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+  handleGroupEdit(currentCoterie) {
 
     let data = new FormData();
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
@@ -280,8 +279,7 @@ class Settings extends Component {
     )
   }
 
-  renderEditDialog() {
-    let currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+  renderEditDialog(currentCoterie) {
 
     return (
       <div>
@@ -316,7 +314,7 @@ class Settings extends Component {
             <Button onClick={() => this.onClose('editDialog')} color="primary">
               Cancel
             </Button>
-            <Button onClick={() => {this.onClose('editDialog'); this.handleGroupEdit();}} color="primary">
+            <Button onClick={() => {this.onClose('editDialog'); this.handleGroupEdit(currentCoterie);}} color="primary">
               Send
             </Button>
           </DialogActions>
@@ -335,7 +333,9 @@ class Settings extends Component {
       );
     }
 
-    if (!this.props.match.params.groupUuid) {
+    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+
+    if (!currentCoterie) {
       return (
         <div>
           <Navbar title="Settings" history={this.props.history} match={this.props.match} />
@@ -343,8 +343,7 @@ class Settings extends Component {
         </div>
       )
     }
-
-    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+    
     let isAdmin = this.props.user.administratedCoteries.includes(currentCoterie.uuid);
     return (
       <div>
@@ -427,7 +426,7 @@ class Settings extends Component {
         {this.renderAdminModal(currentCoterie)}
         {this.renderMemberModal(currentCoterie)}
         {this.renderInviteDialog()}
-        {this.renderEditDialog()}
+        {this.renderEditDialog(currentCoterie)}
 
       </div>
     );

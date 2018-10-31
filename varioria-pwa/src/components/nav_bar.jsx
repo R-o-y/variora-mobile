@@ -77,6 +77,7 @@ class Navbar extends Component {
   render() {
     const hasAdministratedCoteries = !_.isEmpty(this.props.user.administratedCoteries);
     const hasJoinedCoteries = !_.isEmpty(this.props.user.joinedCoteries);
+    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
 
     return (
       <div>
@@ -108,7 +109,7 @@ class Navbar extends Component {
             />,
             <div key = "1">
             {
-              this.props.match.params.groupUuid
+              currentCoterie
               ?
               <Badge
                 color="primary"
@@ -117,7 +118,7 @@ class Navbar extends Component {
                   <Avatar className={this.props.classes.avatar}
                     style={{backgroundColor: this.getRandomColor(this.props.match.params.groupUuid)}}>
                     <span style={{fontSize: '80%'}}>
-                        {this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0)}
+                        {currentCoterie.name.charAt(0)}
                     </span>
                   </Avatar>}
               >

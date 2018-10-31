@@ -19,8 +19,9 @@ class CreateCoterieForm extends Component {
     data.append('coterie_description', coterie_description);
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
-    this.props.createCoterie(data);
-    this.props.history.goBack();
+    this.props.createCoterie(data).then(response => {
+      this.props.history.push(`groups/${response.payload.data.uuid}/settings`)
+    })
   }
 
   render() {
