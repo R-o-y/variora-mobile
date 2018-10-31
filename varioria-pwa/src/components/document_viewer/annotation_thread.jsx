@@ -40,43 +40,48 @@ const SmallButton = withStyles({
   }
 })(Button);
 
-function reduce_comment(comment) {
-  var nickname, portrait_url, prefix, timeago, content
-  var isAnnotation = comment.annotator ? true : false
-  var author = isAnnotation ? comment.annotator : comment.replier
-  var authorpk = author.pk
-  nickname = author.nickname ? author.nickname : 'Anonymous'
-  portrait_url = author.portrait_url ? (
-    author.portrait_url
-    ) : ('/media/portrait/anonymous_portrait.png')
-  if (comment.edit_time === null) {
-    prefix = 'posted'
-    timeago = comment.post_time
-  } else {
-    prefix = 'edited'
-    timeago = comment.edit_time
-  }
-  content = comment.content
-  return {
-    nickname: nickname,
-    portrait_url: portrait_url,
-    prefix: prefix,
-    timeago: timeago,
-    content: content,
-    uuid: comment.uuid,
-    pk: comment.pk,
-    numReplies: comment.replies ? comment.replies.length : 0,
-    isAnnotation: isAnnotation,
-    authorpk: authorpk,
-  }
-}
-
 const MENU_ITEM_HEIGHT = 48;
 
 class AnnotationThread extends React.Component {
   constructor(props) {
     super(props);
     this.state.likeSet = new Set();
+    this.state.uuidToName = {[this.props.selectedAnnotation.uuid]: this.props.selectedAnnotation.annotator.nickname}
+    this.props.selectedAnnotation.replies.map(reply => {
+      this.state.uuidToName[reply.uuid] = reply.replier.nickname
+    })
+  }
+
+  reduce_comment(comment) {
+    var nickname, portrait_url, prefix, timeago, content
+    var isAnnotation = comment.annotator ? true : false
+    var author = isAnnotation ? comment.annotator : comment.replier
+    var authorPk = author.pk
+    nickname = author.nickname ? author.nickname : 'Anonymous'
+    portrait_url = author.portrait_url ? (
+      author.portrait_url
+      ) : ('/media/portrait/anonymous_portrait.png')
+    if (comment.edit_time === null) {
+      prefix = 'posted'
+      timeago = comment.post_time
+    } else {
+      prefix = 'edited'
+      timeago = comment.edit_time
+    }
+    content = comment.content
+    return {
+      nickname: nickname,
+      portrait_url: portrait_url,
+      prefix: prefix,
+      timeago: timeago,
+      content: content,
+      uuid: comment.uuid,
+      pk: comment.pk,
+      numReplies: comment.replies ? comment.replies.length : 0,
+      isAnnotation: isAnnotation,
+      authorPk: authorPk,
+      parentUuid: comment.reply_to_annotation_reply_uuid || this.props.selectedAnnotation.uuid,
+    }
   }
 
   commentBlock (comment, isHead=false) {
@@ -102,7 +107,11 @@ class AnnotationThread extends React.Component {
           <Grid container justify="space-between" alignItems="center" wrap="nowrap">
             {/* BOTTOM ROW LEFT SIDE --- Contains: portrait, name, post/edit time */}
             <Grid container justify="flex-start" alignItems="center" wrap="nowrap">
-              {isHead && <SmallChip icon={<KeyboardArrowDown/>} label={comment.numReplies + ((comment.numReplies === 1) ? ' reply' : ' replies')} variant='outlined'></SmallChip>}
+              { isHead ?
+                <SmallChip icon={<KeyboardArrowDown/>} label={comment.numReplies + ((comment.numReplies === 1) ? ' reply' : ' replies')} variant='outlined'></SmallChip>
+              :
+                <Typography variant='caption'>Reply to {this.state.uuidToName[comment.parentUuid]}</Typography>
+              }
             </Grid>
             {/* BOTTOM ROW RIGHT SIDE --- Contains: Locate, Reply, Like, More options */}
             <Grid container justify="flex-end" alignItems="center" wrap="nowrap">
@@ -274,9 +283,9 @@ class AnnotationThread extends React.Component {
     var selectedAnnotation = this.props.selectedAnnotation;
     return (
       <div>
-        {this.commentBlock(reduce_comment(selectedAnnotation), true)}
+        {this.commentBlock(this.reduce_comment(selectedAnnotation), true)}
         {selectedAnnotation.replies.map(reply =>
-          this.commentBlock(reduce_comment(reply))
+          this.commentBlock(this.reduce_comment(reply))
         )}
         <Menu
           className='menu'
@@ -289,7 +298,7 @@ class AnnotationThread extends React.Component {
             },
           }}
         >
-          { this.state.selectedComment && this.props.user.pk == this.state.selectedComment.authorpk && <MenuItem onClick={this.editComment}>
+          { this.state.selectedComment && this.props.user.pk == this.state.selectedComment.authorPk && <MenuItem onClick={this.editComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faPencilAlt} />
             </SmallButton><Typography>Edit</Typography>
@@ -299,7 +308,7 @@ class AnnotationThread extends React.Component {
               <FontAwesomeIcon icon={faLink} />
             </SmallButton><Typography>Share link</Typography>
           </MenuItem>
-          { this.state.selectedComment && this.props.user.pk == this.state.selectedComment.authorpk && <MenuItem onClick={this.deleteComment}>
+          { this.state.selectedComment && this.props.user.pk == this.state.selectedComment.authorPk && <MenuItem onClick={this.deleteComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faTrashAlt} />
             </SmallButton><Typography>Delete</Typography>
