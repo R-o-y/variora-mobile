@@ -45,7 +45,12 @@ class GroupExplore extends Component {
           extra={<TimeAgo date={element.upload_time} />}
           thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
           multipleLine
-          onClick={() => {this.props.history.push(`/group-documents/${element.slug}`)}}
+          onClick={() => {
+            const groupUuid = this.props.match.params.groupUuid
+            const coterie = this.props.coteries[groupUuid]
+            const coterieId = coterie.pk
+            this.props.history.push(`/coteries/${coterieId}/documents/${element.slug}`)
+          }}
         >
           {element.title}
           <List.Item.Brief>{element.uploader_name}</List.Item.Brief>
