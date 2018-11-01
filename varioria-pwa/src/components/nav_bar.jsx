@@ -124,6 +124,14 @@ class Navbar extends Component {
                 <PeopleOutlineIcon
                   style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
                   onClick={(e) => {
+                    if (!this.props.user || !this.props.user.is_authenticated) {
+                      return (
+                        Modal.alert('', 'You need to sign in to view and switch groups', [
+                          { text: 'Cancel', onPress: () => {} },
+                          { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
+                        ])
+                      )
+                    }
                     this.props.getMyCoteries();
                     this.showModal('coterieModal', e);
                   }}
@@ -133,6 +141,14 @@ class Navbar extends Component {
               <PeopleOutlineIcon
                 style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
                 onClick={(e) => {
+                  if (!this.props.user || !this.props.user.is_authenticated) {
+                    return (
+                      Modal.alert('', 'You need to sign in to view and switch groups', [
+                        { text: 'Cancel', onPress: () => {} },
+                        { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
+                      ])
+                    )
+                  }
                   this.props.getMyCoteries();
                   this.showModal('coterieModal', e);
                 }}
