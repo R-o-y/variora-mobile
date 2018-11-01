@@ -57,6 +57,7 @@ class Navbar extends Component {
         key={coterie.pk}
         extra={coterie.members.length + " members"}
         align="top"
+        style={{backgroundColor: this.props.match.params.groupUuid === coterie.uuid ? '#edf9f6' : ''}}
         onClick={() => {
           this.goToGroup(coterie.uuid);
           this.onClose('coterieModal');
@@ -163,6 +164,7 @@ class Navbar extends Component {
                 className="popup-list"
               >
                 <List.Item
+                  style={{backgroundColor: this.props.match.params.groupUuid ? '' : '#edf9f6'}}
                   onClick={() => {
                     let currentTab = this.props.history.location.pathname.split('/').pop();
                     this.props.history.push(`/${currentTab}`);
