@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Button, Icon, InputItem, List, NavBar, TextareaItem, WhiteSpace } from 'antd-mobile';
+import { Button, Icon, InputItem, List, NavBar, TextareaItem, WhiteSpace, Toast } from 'antd-mobile';
 import { getCookie } from '../utilities/helper';
 
 class CreateCoterieForm extends Component {
@@ -19,8 +19,11 @@ class CreateCoterieForm extends Component {
     data.append('coterie_description', coterie_description);
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
-    this.props.createCoterie(data);
-    this.props.history.goBack();
+    this.props.createCoterie(data).then((response) => {
+      let coterie = response.payload.data;
+      this.props.history.push(`/groups/${coterie.uuid}/uploads`);
+      Toast.success('You are now in the group ' + coterie.name, 2);
+    })
   }
 
   render() {
