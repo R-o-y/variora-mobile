@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React from 'react';
 import {connect} from 'react-redux'
 import * as actions from '../actions';
@@ -6,7 +5,7 @@ import * as actions from '../actions';
 class AuthContainer extends React.Component {
 
   componentDidMount() {
-    if (_.isEmpty(this.props.user)) {
+    if (!this.props.user || !this.props.user.isAuthenticated) {
       this.props.getUser();
     }
   }

@@ -57,16 +57,10 @@ class Navbar extends Component {
         key={coterie.pk}
         extra={coterie.members.length + " members"}
         align="top"
-        onClick={() =>
-          Modal.alert('Switch to group ' + coterie.name + '?', '', [
-            { text: 'Cancel' },
-            { text: 'OK', style:{color:'#1BA39C'},
-              onPress: () => {
-              this.goToGroup(coterie.uuid);
-              this.onClose('coterieModal');
-            }},
-          ])
-        }
+        onClick={() => {
+          this.goToGroup(coterie.uuid);
+          this.onClose('coterieModal');
+        }}
       >
         {coterie.name}
         <List.Item.Brief>{coterie.description}</List.Item.Brief>
@@ -117,7 +111,7 @@ class Navbar extends Component {
                   <Avatar className={this.props.classes.avatar}
                     style={{backgroundColor: this.getRandomColor(this.props.match.params.groupUuid)}}>
                     <span style={{fontSize: '80%'}}>
-                        {this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0)}
+                        {this.props.coteries[this.props.match.params.groupUuid] ? this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0) : ''}
                     </span>
                   </Avatar>}
               >
@@ -171,14 +165,8 @@ class Navbar extends Component {
                 <List.Item
                   onClick={() => {
                     let currentTab = this.props.history.location.pathname.split('/').pop();
-                    Modal.alert('Switch to public?', 'This is where everyone is in.', [
-                      { text: 'Cancel' },
-                      { text: 'OK', style: {color: '#1BA39C'},
-                        onPress: () => {
-                        this.props.history.push(`/${currentTab}`);
-                        this.onClose('coterieModal');
-                      }},
-                    ])
+                    this.props.history.push(`/${currentTab}`);
+                    this.onClose('coterieModal');
                   }}
                 >
                   Public

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Badge, List, WhiteSpace, Modal } from 'antd-mobile';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
-import NotSignedIn from './not_signed_in';
+import NotSignedIn from './error_page/not_signed_in';
 import moment from 'moment';
 import Avatar from '@material-ui/core/Avatar';
 import MailIcon from '@material-ui/icons/Mail';

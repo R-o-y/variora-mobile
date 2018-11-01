@@ -23,7 +23,8 @@ import { Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
 import { getCookie, copyToClipboard, validateDocumentSize } from '../../utilities/helper';
 import pdfIcon from '../../utilities/pdf.png';
-import NotSignedIn from '../not_signed_in';
+import NotSignedIn from '../error_page/not_signed_in';
+import NoPermission from '../error_page/no_permission';
 
 class Uploads extends Component {
   constructor(props) {
@@ -117,9 +118,13 @@ class Uploads extends Component {
     if (groupUuid) {
       this.props.getMyCoteriesDocument(groupUuid).then(() => {
         this.setState({loading: false})
+      }).catch((error) => {
+        this.setState({loading: false})
       })
     } else {
       this.props.getMyDocuments().then(() => {
+        this.setState({loading: false})
+      }).catch((error) => {
         this.setState({loading: false})
       })
     }
@@ -488,7 +493,6 @@ class Uploads extends Component {
   }
 
   render() {
-    console.log(this.props);
     if (this.state.loading) {
       return (
         <div>
@@ -503,6 +507,17 @@ class Uploads extends Component {
         <div>
           <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
           <NotSignedIn history={this.props.history}/>
+        </div>
+      )
+    }
+
+    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+
+    if (this.props.match.params.groupUuid && !currentCoterie) {
+      return (
+        <div>
+          <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
+          <NoPermission />
         </div>
       )
     }

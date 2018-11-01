@@ -40,7 +40,6 @@ class BottomTabBar extends React.Component {
   }
 
   render() {
-    this.renderNotificationTabWithBadge();
     return (
       <div style={{ position: 'fixed', height: '100%', width: '100%', top: 0 }}>
         <TabBar
