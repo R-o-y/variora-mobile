@@ -23,6 +23,8 @@ import TextField from '@material-ui/core/TextField';
 import axios from 'axios'
 import { getCookie } from '../../utilities/helper';
 import { library } from '@fortawesome/fontawesome-svg-core'
+import * as actions from '../../actions';
+import { connect } from 'react-redux';
 
 // import { MySnackbarContentWrapper } from './components/alert_message.jsx'
 
@@ -50,6 +52,7 @@ class Login extends React.Component {
         .then(function(response) {
           if (response.status === 200) {
             self.props.history.push('/uploads')
+            self.props.getUser();
           }
         })
         .catch(function (error) {
@@ -65,6 +68,7 @@ class Login extends React.Component {
         data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
         data.append('auth_response', JSON.stringify(response.authResponse))
         axios.post('/api/signin/facebook', data).then((response) => {
+          self.props.getUser();
           window.location.href = '/'
         }).catch(e => {
           Toast.offline('Facebook login unsuccessful', 1.8);
@@ -110,6 +114,7 @@ class Login extends React.Component {
           data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
           data.append('id_token', googleUser.getAuthResponse().id_token)
           axios.post('/api/signin/google', data).then((response) => {
+            self.props.getUser();
             window.location.href = '/'
           }).catch(e => {
             console.log(e.response)
@@ -225,4 +230,10 @@ class Login extends React.Component {
   }
 }
 
-export { Login }
+function mapStateToProps(state) {
+  return {
+    user: state.user
+  };
+}
+
+export default connect(mapStateToProps, actions)(Login);

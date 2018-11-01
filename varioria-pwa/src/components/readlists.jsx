@@ -4,6 +4,7 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
+import NotSignedIn from './not_signed_in';
 import moment from 'moment';
 import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import ShareIcon from '@material-ui/icons/Share';
@@ -169,6 +170,15 @@ class Readlists extends Component {
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
+    }
+
+    if (!this.props.user || !this.props.user.is_authenticated) {
+      return (
+        <div>
+          <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
+          <NotSignedIn history={this.props.history}/>
+        </div>
+      )
     }
 
     return (
