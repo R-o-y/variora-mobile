@@ -297,13 +297,18 @@ class Uploads extends Component {
           }
           className="popup-list"
         >
-          <List.Item
-            onClick={() => {
-              this.props.history.push('/add-to-readlists')
-            }}>
-            <AddIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
-            Add To Readlist
-          </List.Item>
+          { 
+            // ===== temporarily disable add to list if in group =====
+            this.props.match.params.groupUuid ? null :
+            // =======================================================
+            <List.Item
+              onClick={() => {
+                this.props.history.push('/add-to-readlists')
+              }}>
+              <AddIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+              Add To Readlist
+            </List.Item>
+          }
           {
             this.props.match.params.groupUuid ? null :
             <List.Item
