@@ -15,6 +15,7 @@ import {
 
 import Card from '@material-ui/core/Card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUniversity} from '@fortawesome/free-solid-svg-icons'
 import Logo from '../../logo.svg'
 import MButton from '@material-ui/core/Button';
 import React from 'react'
@@ -28,7 +29,7 @@ import { connect } from 'react-redux';
 
 // import { MySnackbarContentWrapper } from './components/alert_message.jsx'
 
-library.add(faFacebook, faGoogle, faUsers, faUserPlus)
+library.add(faFacebook, faGoogle, faUsers, faUserPlus, faUniversity)
 
 /*eslint no-undef: "off"*/
 class Login extends React.Component {
@@ -186,6 +187,7 @@ class Login extends React.Component {
               className="social-button"
               onClick={this.nusLogin}
             >
+              <FontAwesomeIcon icon="university" className="social-icon" />
               <span className="social-text">Log in with NUS ID</span>
             </MButton>
           </div>
