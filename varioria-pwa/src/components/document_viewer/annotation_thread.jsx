@@ -12,7 +12,6 @@ import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import React from 'react'
-import ReactDOM from 'react-dom';
 import TimeAgo from 'react-timeago';
 import Typography from '@material-ui/core/Typography';
 import axios from 'axios'
@@ -48,7 +47,7 @@ class AnnotationThread extends React.Component {
     this.state.likeSet = new Set();
     this.state.uuidToName = {[this.props.selectedAnnotation.uuid]: this.props.selectedAnnotation.annotator.nickname}
     this.props.selectedAnnotation.replies.map(reply => {
-      this.state.uuidToName[reply.uuid] = reply.replier.nickname
+      this.state.uuidToName[reply.uuid] = reply.replier.nickname ? reply.replier.nickname : 'Anonymous'
     })
   }
 
@@ -81,6 +80,7 @@ class AnnotationThread extends React.Component {
       isAnnotation: isAnnotation,
       authorPk: authorPk,
       parentUuid: comment.reply_to_annotation_reply_uuid || this.props.selectedAnnotation.uuid,
+      num_like: comment.num_like
     }
   }
 
@@ -106,15 +106,15 @@ class AnnotationThread extends React.Component {
           {/* BOTTOM ROW OF COMMENT --- Contains: User info, 4 buttons to modify comment */}
           <Grid container justify="space-between" alignItems="center" wrap="nowrap">
             {/* BOTTOM ROW LEFT SIDE --- Contains: portrait, name, post/edit time */}
-            <Grid container justify="flex-start" alignItems="center" wrap="nowrap">
+            <Grid container justify="flex-start" alignItems="flex-start" wrap="nowrap">
               { isHead ?
                 <SmallChip icon={<KeyboardArrowDown/>} label={comment.numReplies + ((comment.numReplies === 1) ? ' reply' : ' replies')} variant='outlined'></SmallChip>
               :
-                <Typography variant='caption'>Reply to {this.state.uuidToName[comment.parentUuid]}</Typography>
+                <Typography variant='caption' className='comment-reply-to'><FontAwesomeIcon icon={faReply} /> replying {this.state.uuidToName[comment.parentUuid]}</Typography>
               }
             </Grid>
             {/* BOTTOM ROW RIGHT SIDE --- Contains: Locate, Reply, Like, More options */}
-            <Grid container justify="flex-end" alignItems="center" wrap="nowrap">
+            <Grid container justify="flex-end" alignItems="flex-start" wrap="nowrap" className={isHead && "comment-head-buttons"}>
               {isHead && //Locate Arrow only exists for header
               <Grid item>
                 <SmallButton color="primary" onClick={() => {this.locateComment(this.props.annotationArea)}} >
@@ -127,9 +127,12 @@ class AnnotationThread extends React.Component {
                 </SmallButton>
               </Grid>
               <Grid item>
-                <SmallButton color="primary" style={{color: '#1BA39C'}} disabled={this.state.likeSet.has(comment.uuid)} onClick={() => {isHead ? this.likeAnnotation(comment) : this.likeReply(comment)}} >
-                  <FontAwesomeIcon icon={this.state.likeSet.has(comment.uuid) ? faThumbsUped : faThumbsUp} />
-                </SmallButton>
+                <Grid container justify="space-around" alignItems="flex-start">
+                  <Grid item xs="12"><SmallButton color="primary" style={{color: '#1BA39C'}} disabled={this.state.likeSet.has(comment.uuid)} onClick={() => {isHead ? this.likeAnnotation(comment) : this.likeReply(comment)}} >
+                    <FontAwesomeIcon icon={this.state.likeSet.has(comment.uuid) ? faThumbsUped : faThumbsUp} />
+                  </SmallButton></Grid>
+                  <Grid item xs="12" className='comment-like'>{comment.num_like}</Grid>
+                </Grid>
               </Grid>
               <Grid item>
                 <SmallButton color="primary" onClick={event => this.openContextMenu(event, comment, isHead)}>
@@ -193,7 +196,10 @@ class AnnotationThread extends React.Component {
     data.append('operation', 'like_annotation')
     data.append('annotation_id', comment.pk)
     axios.post(window.location.pathname + '/', data).then(response => {
-      this.setState({likeSet: this.state.likeSet.add(comment.uuid)})
+      this.setState({
+        likeSet: this.state.likeSet.add(comment.uuid),
+        annotations: ++this.props.annotations[comment.uuid].num_like,
+      })
     })
   }
 
@@ -202,8 +208,20 @@ class AnnotationThread extends React.Component {
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
     data.append('operation', 'like_annotation_reply')
     data.append('annotation_reply_id', comment.pk)
+    var selectedAnnotation = this.props.selectedAnnotation;
+    var annotations = this.props.annotations
+    console.log(comment.uuid)
     axios.post(window.location.pathname + '/', data).then(response => {
-      this.setState({likeSet: this.state.likeSet.add(comment.uuid)})
+      for (let reply of annotations[selectedAnnotation.uuid].replies) {
+        if (reply.uuid == comment.uuid) {
+          reply.num_like++;
+          break;
+        }
+      }
+      this.props.setParentState({
+        likeSet: this.state.likeSet.add(comment.uuid),
+        annotations: annotations,
+      })
     })
   }
 
@@ -240,9 +258,6 @@ class AnnotationThread extends React.Component {
     var annotationsByPage = this.props.annotationsByPage
     var selectedComment = this.state.selectedComment
     axios.post(window.location.pathname + '/', data).then(response => {
-      console.log(response)
-      console.log(annotations)
-      console.log(annotationsByPage)
       if (this.state.selectedCommentIsReply) {
         var i = 0
         selectedAnnotation.replies.map((reply) => {
