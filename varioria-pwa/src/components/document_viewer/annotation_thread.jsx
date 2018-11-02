@@ -128,10 +128,9 @@ class AnnotationThread extends React.Component {
               </Grid>
               <Grid item>
                 <Grid container justify="space-around" alignItems="flex-start">
-                  <Grid item xs="12"><SmallButton color="primary" style={{color: '#1BA39C'}} disabled={this.state.likeSet.has(comment.uuid)} onClick={() => {isHead ? this.likeAnnotation(comment) : this.likeReply(comment)}} >
-                    <FontAwesomeIcon icon={this.state.likeSet.has(comment.uuid) ? faThumbsUped : faThumbsUp} />
-                  </SmallButton></Grid>
-                  <Grid item xs="12" className='comment-like'>{comment.num_like}</Grid>
+                  <SmallButton color="primary" style={{color: '#1BA39C'}} disabled={this.state.likeSet.has(comment.uuid)} onClick={() => {isHead ? this.likeAnnotation(comment) : this.likeReply(comment)}} >
+                    <FontAwesomeIcon icon={this.state.likeSet.has(comment.uuid) ? faThumbsUped : faThumbsUp} /> <span className='comment-like'>{comment.num_like}</span>
+                  </SmallButton>
                 </Grid>
               </Grid>
               <Grid item>
