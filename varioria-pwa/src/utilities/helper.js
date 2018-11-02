@@ -35,3 +35,15 @@ export function validateDocumentSize(file) {
   }
   return true
 }
+
+export function getValFromUrlParam(key) {
+  return new URL(window.location.href).searchParams.get(key)
+}
+
+export function uuidWithHyphen(uuid) {
+  return uuid.slice(0, 8) + "-"
+          + uuid.slice(8, 12) + "-"
+          + uuid.slice(12, 16) + "-"
+          + uuid.slice(16, 20) + "-"
+          + uuid.slice(20, 32);
+}

@@ -4,6 +4,8 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import validator from 'email-validator';
 import Navbar from './nav_bar';
+import NotSignedIn from './error_page/not_signed_in';
+import NoPermission from './error_page/no_permission';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { List, WingBlank, WhiteSpace, Card, Modal, Toast } from 'antd-mobile';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
@@ -95,14 +97,38 @@ class Settings extends Component {
     return emailsArray
   }
 
+  _handleCopyPasteEmailsFromEmailClient(emailsString) {
+    let resultArray = []
+    // use regex to extract everything between each "< >"
+    let matchesArray = emailsString.match(/<.+?>/g)
+    // validate each extracted term to ensure valid email
+    for (let index in matchesArray) {
+      let match = matchesArray[index]
+      let potentialEmailString = match.replace('<', '').replace('>', '')
+      if (validator.validate(potentialEmailString) && !(resultArray.includes(potentialEmailString))) {
+        resultArray.push(potentialEmailString)
+      }
+    }
+    return resultArray
+  }
+
   preprocessEmailsString(emailsString) {
+    // handle copy paste from email client first
+    var copyPasteEmailArray = this._handleCopyPasteEmailsFromEmailClient(emailsString)
+    if (copyPasteEmailArray.length != 0) {
+      return [true, copyPasteEmailArray.join(',')]
+    }
+
+    // do normal flow
     var emailArray = this._emailsStringToArray(emailsString)
     var returnedEmailArray = []
     for (var email of emailArray) {
       email = email.trim()
       if (!validator.validate(email))
         return [false, [email]]
-      returnedEmailArray.push(email)
+      if (!returnedEmailArray.includes(email)) {
+        returnedEmailArray.push(email)
+      }
     }
     return [true, returnedEmailArray.join(',')]
   }
@@ -128,7 +154,7 @@ class Settings extends Component {
     return (
       <List.Item
         key={member.pk}
-        thumb={<img src={member.portrait_url} style={{borderRadius: '50%'}} />}
+        thumb={<img src={member.portrait_url} alt='ortrait' style={{borderRadius: '50%'}} />}
         align='middle'
         extra={
           isAdmin &&
@@ -157,7 +183,7 @@ class Settings extends Component {
     return (
       <List.Item
         key={member.pk}
-        thumb={<img src={member.portrait_url} style={{borderRadius: '50%'}} />}
+        thumb={<img src={member.portrait_url} alt='ortrait' style={{borderRadius: '50%'}} />}
       >
         {member.nickname}
       </List.Item>
@@ -233,6 +259,7 @@ class Settings extends Component {
   }
 
   renderInviteDialog() {
+    const dialogMessage = "To invite new members to the group, enter their email addresses here, separated by commas. (Alternatively, you can copy paste the emails directly from your email client - we will detect emails within < >). We will send invitation messages."
     return (
       <div>
         <Dialog
@@ -243,7 +270,7 @@ class Settings extends Component {
           <DialogTitle id="form-dialog-title">Invite new members</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              To invite new member to the group, enter the email addresses here separated by commas. We will send invitation messages.
+              {dialogMessage}
             </DialogContentText>
             <TextField
               required
@@ -324,7 +351,7 @@ class Settings extends Component {
   }
 
   render() {
-    if (_.isEmpty(this.props.user) || this.state.isFetching) {
+    if (this.state.isFetching) {
       return (
         <div>
           <Navbar title="Settings" history={this.props.history} match={this.props.match} />
@@ -333,9 +360,27 @@ class Settings extends Component {
       );
     }
 
+    if (!this.props.user || !this.props.user.is_authenticated) {
+      return (
+        <div>
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
+          <NotSignedIn history={this.props.history}/>
+        </div>
+      )
+    }
+
     const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
 
-    if (!currentCoterie) {
+    if (this.props.match.params.groupUuid && !currentCoterie) {
+      return (
+        <div>
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
+          <NoPermission />
+        </div>
+      )
+    }
+
+    if (!this.props.match.params.groupUuid) {
       return (
         <div>
           <Navbar title="Settings" history={this.props.history} match={this.props.match} />
@@ -343,7 +388,7 @@ class Settings extends Component {
         </div>
       )
     }
-    
+
     let isAdmin = this.props.user.administratedCoteries.includes(currentCoterie.uuid);
     return (
       <div>

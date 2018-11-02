@@ -18,7 +18,7 @@ import AddToReadlist from './components/add_to_readlist';
 import Profile from './components/profile/profile'
 import Search from './components/search';
 
-import { Login } from './components/login/login'
+import Login from './components/login/login'
 import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';

@@ -20,7 +20,9 @@ import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios'
 import { getCookie } from '../../utilities/helper';
-import { library } from '@fortawesome/fontawesome-svg-core'
+import { library } from '@fortawesome/fontawesome-svg-core';
+import * as actions from '../../actions';
+import { connect } from 'react-redux';
 
 // import { MySnackbarContentWrapper } from './components/alert_message.jsx'
 
@@ -37,7 +39,8 @@ class Profile extends React.Component {
       var data = new FormData()
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
       axios.post('/api/signoff', data).then(response => {
-        window.location.href = '/sign-in'
+        this.props.getUser();
+        this.props.history.goBack()
       })
     }
   }
@@ -76,4 +79,10 @@ class Profile extends React.Component {
   }
 }
 
-export default Profile
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+  };
+}
+
+export default connect(mapStateToProps, actions)(Profile);

@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Explore from './explore';
 import GroupExplore from './group_explore';
-import Uploads from './uploads';
+import Uploads from './uploads/uploads';
 import Readlists from './readlists';
 import Notifications from './notifications';
 import Settings from './settings';

@@ -5,6 +5,8 @@ import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
 import Navbar from './nav_bar';
+import NotSignedIn from './error_page/not_signed_in';
+import NoPermission from './error_page/no_permission';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TimeAgo from 'react-timeago';
 import Grid from '@material-ui/core/Grid';
@@ -45,7 +47,12 @@ class GroupExplore extends Component {
           extra={<TimeAgo date={element.upload_time} />}
           thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
           multipleLine
-          onClick={() => {this.props.history.push(`/group-documents/${element.slug}`)}}
+          onClick={() => {
+            const groupUuid = this.props.match.params.groupUuid
+            const coterie = this.props.coteries[groupUuid]
+            const coterieId = coterie.pk
+            this.props.history.push(`/coteries/${coterieId}/documents/${element.slug}`)
+          }}
         >
           {element.title}
           <List.Item.Brief>{element.uploader_name}</List.Item.Brief>
@@ -106,10 +113,30 @@ class GroupExplore extends Component {
         </div>
       );
     }
-    const coterieName= this.props.coteries[this.props.match.params.groupUuid].name;
+
+    if (!this.props.user || !this.props.user.is_authenticated) {
+      return (
+        <div>
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
+          <NotSignedIn history={this.props.history}/>
+        </div>
+      )
+    }
+
+    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+
+    if (!currentCoterie) {
+      return (
+        <div>
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
+          <NoPermission />
+        </div>
+      )
+    }
+
     return (
       <div>
-        <Navbar title={coterieName} history={this.props.history} match={this.props.match}/>
+        <Navbar title={currentCoterie.name} history={this.props.history} match={this.props.match}/>
         {this.renderStickyTab()}
       </div>
     );

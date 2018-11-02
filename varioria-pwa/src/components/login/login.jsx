@@ -15,6 +15,7 @@ import {
 
 import Card from '@material-ui/core/Card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUniversity} from '@fortawesome/free-solid-svg-icons'
 import Logo from '../../logo.svg'
 import MButton from '@material-ui/core/Button';
 import React from 'react'
@@ -23,10 +24,12 @@ import TextField from '@material-ui/core/TextField';
 import axios from 'axios'
 import { getCookie } from '../../utilities/helper';
 import { library } from '@fortawesome/fontawesome-svg-core'
+import * as actions from '../../actions';
+import { connect } from 'react-redux';
 
 // import { MySnackbarContentWrapper } from './components/alert_message.jsx'
 
-library.add(faFacebook, faGoogle, faUsers, faUserPlus)
+library.add(faFacebook, faGoogle, faUsers, faUserPlus, faUniversity)
 
 /*eslint no-undef: "off"*/
 class Login extends React.Component {
@@ -50,6 +53,7 @@ class Login extends React.Component {
         .then(function(response) {
           if (response.status === 200) {
             self.props.history.push('/uploads')
+            self.props.getUser();
           }
         })
         .catch(function (error) {
@@ -65,11 +69,17 @@ class Login extends React.Component {
         data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
         data.append('auth_response', JSON.stringify(response.authResponse))
         axios.post('/api/signin/facebook', data).then((response) => {
+          self.props.getUser();
           window.location.href = '/'
         }).catch(e => {
           Toast.offline('Facebook login unsuccessful', 1.8);
         })
       }, { scope: 'email' })  // TODO: get user' friends also
+    }
+
+    this.nusLogin = () => {
+      var host = 'https://' + window.location.host  // TODO: do not hardcode protocol
+      window.location.href = 'https://ivle.nus.edu.sg/api/login/?apikey=Z6Q2MnpaPX8sDSOfHTAnN&url=' + host + '/api/signin/nus'
     }
 
     this.handleMessageClose = (event, reason) => {
@@ -110,6 +120,7 @@ class Login extends React.Component {
           data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
           data.append('id_token', googleUser.getAuthResponse().id_token)
           axios.post('/api/signin/google', data).then((response) => {
+            self.props.getUser();
             window.location.href = '/'
           }).catch(e => {
             console.log(e.response)
@@ -153,7 +164,6 @@ class Login extends React.Component {
 
 
           <WhiteSpace size="lg" />
-          <WhiteSpace size="lg" />
 
           <div className="social">
             <MButton
@@ -169,10 +179,21 @@ class Login extends React.Component {
           </div>
 
           <WhiteSpace size="lg" />
+
+          <div className="social">
+            <MButton
+              variant="contained" size="small"
+              id="nus-button"
+              className="social-button"
+              onClick={this.nusLogin}
+            >
+              <FontAwesomeIcon icon="university" className="social-icon" />
+              <span className="social-text">Log in with NUS ID</span>
+            </MButton>
+          </div>
+
           <WhiteSpace size="lg" />
-
-
-
+          <WhiteSpace size="lg" />
 
           <div style={{ textAlign: 'center' }}>
             <TextField
@@ -225,4 +246,10 @@ class Login extends React.Component {
   }
 }
 
-export { Login }
+function mapStateToProps(state) {
+  return {
+    user: state.user
+  };
+}
+
+export default connect(mapStateToProps, actions)(Login);

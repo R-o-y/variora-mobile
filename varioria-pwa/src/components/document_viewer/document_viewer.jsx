@@ -33,7 +33,7 @@ import Tappable from 'react-tappable';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios'
 import { connect } from 'react-redux';
-import { getCookie } from '../../utilities/helper';
+import { getCookie, getValFromUrlParam, uuidWithHyphen } from '../../utilities/helper';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import IconButton from '@material-ui/core/IconButton';
 
@@ -192,12 +192,10 @@ class DocumentViewer extends React.Component {
           annotations[annotation.uuid] = annotation
         }
 
-        this.setState({
-          annotations: annotations,
-          annotationsByPage: annotationsByPage
-        })
+        this.setState({ annotations: annotations, annotationsByPage: annotationsByPage })
         console.log(annotations)
         console.log(annotationsByPage)
+        this.scrollToTargetAnnotationIfInUrl()
       })
     }
 
@@ -293,7 +291,9 @@ class DocumentViewer extends React.Component {
         document.getElementsByTagName("BODY")[0].removeEventListener('touchmove', this.lockScroll)
       }).catch(err => {
         alert('', 'You need to login to post', [
-          { text: 'Cancel', onPress: () => {} },
+          { text: 'Cancel', onPress: () => {
+            this.setState({newAnnotationContent: '', mode: 'view', creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false})
+          } },
           { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
         ])
       })
@@ -316,9 +316,18 @@ class DocumentViewer extends React.Component {
       axios.post(window.location.pathname + '/', data).then(response => {
         var annotations = this.state.annotations
         annotations[this.state.selectedAnnotation.uuid].replies.push(response.data['new_annotationreply_json'])
-        this.setState({annotations: annotations,
-                        newAnnotationReplyContent: '',
-                        annotationOpen: true, annotationLinearLinkedListOpen: false,})
+        this.setState({
+          annotations: annotations,
+          newAnnotationReplyContent: '',
+          annotationOpen: true, annotationLinearLinkedListOpen: false,
+        })
+      }).catch(err => {
+        alert('', 'You need to login to post', [
+          { text: 'Cancel', onPress: () => {
+            this.setState({newAnnotationReplyContent: '', annotationOpen: true, annotationLinearLinkedListOpen: false})
+          } },
+          { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
+        ])
       })
     }
 
@@ -356,6 +365,16 @@ class DocumentViewer extends React.Component {
 
     this.cancelEdit = () => {
       this.setState({annotationOpen: true, editCommentOpen: false,})
+    }
+
+    this.scrollToTargetAnnotationIfInUrl = () => {
+      var annotation_uuid = getValFromUrlParam('annotation')
+      if (annotation_uuid != null) {
+        annotation_uuid = uuidWithHyphen(annotation_uuid)
+        if (this.annotationAreas[annotation_uuid] === undefined) return
+        this.selectAnnotation(annotation_uuid)
+        this.annotationAreas[annotation_uuid].scrollIntoView({block: "start", behavior: "smooth"})
+      }
     }
   }
 
@@ -546,7 +565,17 @@ class DocumentViewer extends React.Component {
         <NavBar
           mode="light"
           icon={<Icon type="left" onClick={() => {
-            this.props.history.goBack()
+            // handle case where user clicks on a document link that opens
+            // a new browser tab. in this case, history.goBack() will 
+            // do nothing since there is no previous page.
+            if (this.props.history && this.props.history.length < 2) {
+              // TODO: if this is a group's document, go to the group's explore instead
+
+              // else go to public explore
+              this.props.history.push('/explore')
+            } else {
+              this.props.history.goBack()
+            }
           }}/>}
           rightContent={[
             <Icon key="1" type="ellipsis" />,
