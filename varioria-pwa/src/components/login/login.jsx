@@ -77,7 +77,8 @@ class Login extends React.Component {
     }
 
     this.nusLogin = () => {
-      // TODO: implement nus login
+      var host = 'https://' + window.location.host  // TODO: do not hardcode protocol
+      window.location.href = 'https://ivle.nus.edu.sg/api/login/?apikey=Z6Q2MnpaPX8sDSOfHTAnN&url=' + host + '/api/signin/nus'
     }
 
     this.handleMessageClose = (event, reason) => {
