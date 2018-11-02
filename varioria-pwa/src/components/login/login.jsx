@@ -76,6 +76,10 @@ class Login extends React.Component {
       }, { scope: 'email' })  // TODO: get user' friends also
     }
 
+    this.nusLogin = () => {
+      // TODO: implement nus login
+    }
+
     this.handleMessageClose = (event, reason) => {
       if (reason === 'clickaway') {
         return
@@ -158,7 +162,6 @@ class Login extends React.Component {
 
 
           <WhiteSpace size="lg" />
-          <WhiteSpace size="lg" />
 
           <div className="social">
             <MButton
@@ -174,10 +177,20 @@ class Login extends React.Component {
           </div>
 
           <WhiteSpace size="lg" />
+
+          <div className="social">
+            <MButton
+              variant="contained" size="small"
+              id="nus-button"
+              className="social-button"
+              onClick={this.nusLogin}
+            >
+              <span className="social-text">Log in with NUS ID</span>
+            </MButton>
+          </div>
+
           <WhiteSpace size="lg" />
-
-
-
+          <WhiteSpace size="lg" />
 
           <div style={{ textAlign: 'center' }}>
             <TextField
