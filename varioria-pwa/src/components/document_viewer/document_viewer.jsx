@@ -565,7 +565,17 @@ class DocumentViewer extends React.Component {
         <NavBar
           mode="light"
           icon={<Icon type="left" onClick={() => {
-            this.props.history.goBack()
+            // handle case where user clicks on a document link that opens
+            // a new browser tab. in this case, history.goBack() will 
+            // do nothing since there is no previous page.
+            if (this.props.history && this.props.history.length < 2) {
+              // TODO: if this is a group's document, go to the group's explore instead
+
+              // else go to public explore
+              this.props.history.push('/explore')
+            } else {
+              this.props.history.goBack()
+            }
           }}/>}
           rightContent={[
             <Icon key="1" type="ellipsis" />,
