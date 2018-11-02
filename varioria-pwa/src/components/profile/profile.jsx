@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime'
 import 'antd-mobile/dist/antd-mobile.css'
 
-import { Icon, Toast, NavBar, Button } from 'antd-mobile';
+import { Icon, Toast, NavBar, Button, List, WhiteSpace } from 'antd-mobile';
 import {
   faFacebook,
   faGoogle
@@ -48,24 +48,56 @@ class Profile extends React.Component {
   componentDidMount() {
   }
 
+  renderNavBar() {
+    return (
+      <NavBar
+        mode="light"
+        icon={<Icon type="left" onClick={() => this.props.history.goBack()}/>}
+        style={{
+          boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
+          zIndex: 10000000,
+          position: 'relative',
+
+        }}
+      >
+        <span>
+          Profile
+        </span>
+      </NavBar>
+    )
+  }
+
   render() {
+
+    if (!this.props.user) {
+      return (
+        <div>
+          {this.renderNavBar()}
+          You are not signed in!
+        </div>
+      )
+    }
+
+    console.log(this.props.user);
     return (
       <div>
-        <NavBar
-          mode="light"
-          icon={<Icon type="left" onClick={() => this.props.history.goBack()}/>}
-          style={{
-            boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
-            zIndex: 10000000,
-            position: 'relative',
-            // borderBottom: '1px solid #c8c8c8',
-            // height: 38
-          }}
-        >
-          <span>
-            Profile
-          </span>
-        </NavBar>
+        {this.renderNavBar()}
+
+        <WhiteSpace />
+        <List>
+          <List.Item
+            extra={<img src={this.props.user.portrait_url} alt='img' style={{borderRadius:'50%'}} />} >
+            Portrait
+          </List.Item>
+          <List.Item
+            extra={this.props.user.nickname}>
+            Nickname
+          </List.Item>
+          <List.Item>
+            Email
+            <List.Item.Brief style={{textAlign:'right'}}>{this.props.user.email_address}</List.Item.Brief>
+          </List.Item>
+        </List>
 
         <Button
           type="primary"
