@@ -257,16 +257,24 @@ class AnnotationThread extends React.Component {
     var annotationsByPage = this.props.annotationsByPage
     var selectedComment = this.state.selectedComment
     axios.post(window.location.pathname + '/', data).then(response => {
+      console.log("test")
       if (this.state.selectedCommentIsReply) {
+        console.log("is reply")
+        var uuidsToRemove = new Set()
+        uuidsToRemove.add(selectedComment.uuid)
         var i = 0
-        selectedAnnotation.replies.map((reply) => {
-          if (reply.uuid == selectedComment.uuid) {
+        for (var i; i<selectedAnnotation.replies.length; i++) {
+          var reply = selectedAnnotation.replies[i]
+          console.log(reply, reply.uuid, uuidsToRemove)
+          if (uuidsToRemove.has(reply.uuid) || uuidsToRemove.has(reply.reply_to_annotation_reply_uuid)) {
+            uuidsToRemove.add(reply.uuid)
             selectedAnnotation.replies.splice(i, 1)
             annotations[selectedAnnotation.uuid] = selectedAnnotation
-            this.props.setParentState({annotations: annotations})
+            console.log("removed", reply)
+            i--
           }
-          i++;
-        })
+        }
+        this.props.setParentState({annotations: annotations})
       } else {
         delete annotations[selectedAnnotation.uuid]
         var i = 0
