@@ -21,7 +21,7 @@ class CreateCoterieForm extends Component {
 
     this.props.createCoterie(data).then((response) => {
       let coterie = response.payload.data;
-      this.props.history.push(`/groups/${coterie.uuid}/uploads`);
+      this.props.history.push(`/groups/${coterie.uuid}/settings`);
       Toast.success('You are now in the group ' + coterie.name, 2);
     })
   }

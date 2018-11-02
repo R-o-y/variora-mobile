@@ -72,6 +72,7 @@ class Navbar extends Component {
   render() {
     const hasAdministratedCoteries = !_.isEmpty(this.props.user.administratedCoteries);
     const hasJoinedCoteries = !_.isEmpty(this.props.user.joinedCoteries);
+    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
 
     return (
       <div>
@@ -103,7 +104,7 @@ class Navbar extends Component {
             />,
             <div key = "1">
             {
-              this.props.match.params.groupUuid
+              currentCoterie
               ?
               <Badge
                 color="primary"
