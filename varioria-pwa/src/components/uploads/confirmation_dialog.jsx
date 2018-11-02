@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';

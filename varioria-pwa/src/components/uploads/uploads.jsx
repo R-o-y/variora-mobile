@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Navbar from './nav_bar';
+import Navbar from '../nav_bar';
 import moment from 'moment';
 import Avatar from '@material-ui/core/Avatar';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -21,8 +21,10 @@ import ShareIcon from '@material-ui/icons/Share';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
 import { Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
-import { getCookie, copyToClipboard, validateDocumentSize } from '../utilities/helper';
-import pdfIcon from '../utilities/pdf.png';
+import { getCookie, copyToClipboard, validateDocumentSize } from '../../utilities/helper';
+import pdfIcon from '../../utilities/pdf.png';
+import NotSignedIn from '../error_page/not_signed_in';
+import NoPermission from '../error_page/no_permission';
 
 class Uploads extends Component {
   constructor(props) {
@@ -116,9 +118,13 @@ class Uploads extends Component {
     if (groupUuid) {
       this.props.getMyCoteriesDocument(groupUuid).then(() => {
         this.setState({loading: false})
+      }).catch((error) => {
+        this.setState({loading: false})
       })
     } else {
       this.props.getMyDocuments().then(() => {
+        this.setState({loading: false})
+      }).catch((error) => {
         this.setState({loading: false})
       })
     }
@@ -492,6 +498,26 @@ class Uploads extends Component {
         <div>
           <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
+        </div>
+      )
+    }
+
+    if (!this.props.user || !this.props.user.is_authenticated) {
+      return (
+        <div>
+          <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
+          <NotSignedIn history={this.props.history}/>
+        </div>
+      )
+    }
+
+    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+
+    if (this.props.match.params.groupUuid && !currentCoterie) {
+      return (
+        <div>
+          <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
+          <NoPermission />
         </div>
       )
     }

@@ -57,16 +57,11 @@ class Navbar extends Component {
         key={coterie.pk}
         extra={coterie.members.length + " members"}
         align="top"
-        onClick={() =>
-          Modal.alert('Switch to group ' + coterie.name + '?', '', [
-            { text: 'Cancel' },
-            { text: 'OK', style:{color:'#1BA39C'},
-              onPress: () => {
-              this.goToGroup(coterie.uuid);
-              this.onClose('coterieModal');
-            }},
-          ])
-        }
+        style={{backgroundColor: this.props.match.params.groupUuid === coterie.uuid ? '#edf9f6' : ''}}
+        onClick={() => {
+          this.goToGroup(coterie.uuid);
+          this.onClose('coterieModal');
+        }}
       >
         {coterie.name}
         <List.Item.Brief>{coterie.description}</List.Item.Brief>
@@ -90,12 +85,12 @@ class Navbar extends Component {
             paddingRight: 8,
           }}
           leftContent={
+            this.props.user.portrait_url &&
             <Avatar
               alt="avatar"
               style={{width: 28, height: 28}}
               src={this.props.user.portrait_url}
               onClick={(e) => {
-                console.log("User avatar clicked")
                 this.props.history.push('/profile')
               }}
             />
@@ -118,13 +113,21 @@ class Navbar extends Component {
                   <Avatar className={this.props.classes.avatar}
                     style={{backgroundColor: this.getRandomColor(this.props.match.params.groupUuid)}}>
                     <span style={{fontSize: '80%'}}>
-                        {currentCoterie.name.charAt(0)}
+                        {this.props.coteries[this.props.match.params.groupUuid] ? this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0) : ''}
                     </span>
                   </Avatar>}
               >
                 <PeopleOutlineIcon
                   style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
                   onClick={(e) => {
+                    if (!this.props.user || !this.props.user.is_authenticated) {
+                      return (
+                        Modal.alert('', 'You need to sign in to view and switch groups', [
+                          { text: 'Cancel', onPress: () => {} },
+                          { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
+                        ])
+                      )
+                    }
                     this.props.getMyCoteries();
                     this.showModal('coterieModal', e);
                   }}
@@ -134,6 +137,14 @@ class Navbar extends Component {
               <PeopleOutlineIcon
                 style={{color: "rgb(101, 119, 134)", height: 25, width: 25}}
                 onClick={(e) => {
+                  if (!this.props.user || !this.props.user.is_authenticated) {
+                    return (
+                      Modal.alert('', 'You need to sign in to view and switch groups', [
+                        { text: 'Cancel', onPress: () => {} },
+                        { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
+                      ])
+                    )
+                  }
                   this.props.getMyCoteries();
                   this.showModal('coterieModal', e);
                 }}
@@ -154,16 +165,11 @@ class Navbar extends Component {
                 className="popup-list"
               >
                 <List.Item
+                  style={{backgroundColor: this.props.match.params.groupUuid ? '' : '#edf9f6'}}
                   onClick={() => {
                     let currentTab = this.props.history.location.pathname.split('/').pop();
-                    Modal.alert('Switch to public?', 'This is where everyone is in.', [
-                      { text: 'Cancel' },
-                      { text: 'OK', style: {color: '#1BA39C'},
-                        onPress: () => {
-                        this.props.history.push(`/${currentTab}`);
-                        this.onClose('coterieModal');
-                      }},
-                    ])
+                    this.props.history.push(`/${currentTab}`);
+                    this.onClose('coterieModal');
                   }}
                 >
                   Public

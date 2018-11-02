@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Badge, List, WhiteSpace, Modal } from 'antd-mobile';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
+import NotSignedIn from './error_page/not_signed_in';
 import moment from 'moment';
 import Avatar from '@material-ui/core/Avatar';
 import MailIcon from '@material-ui/icons/Mail';
@@ -173,6 +174,15 @@ class Notifications extends Component {
       );
     }
 
+    if (!this.props.user || !this.props.user.is_authenticated) {
+      return (
+        <div>
+          <Navbar title="Notifications" history={this.props.history} match={this.props.match} />
+          <NotSignedIn history={this.props.history}/>
+        </div>
+      )
+    }
+
     if (_.isEmpty(this.props.notifications) && _.isEmpty(this.props.invitations)) {
       return (
         <div>
@@ -203,6 +213,7 @@ class Notifications extends Component {
 
 function mapStateToProps(state) {
   return {
+    user: state.user,
     notifications: state.notifications,
     invitations: state.invitations,
   };

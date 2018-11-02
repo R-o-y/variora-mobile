@@ -17,7 +17,7 @@ export default function (state = [], action) {
   switch (action.type) {
     case USER_GET:
       const user = action.payload.data;
-      return _.extend({}, state, user);
+      return _.extend({}, user);
 
     case DOCUMENT_GET_MY:
       const uploadedDocuments = action.payload.data.uploadedDocuments;

@@ -4,6 +4,8 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Navbar from './nav_bar';
+import NotSignedIn from './error_page/not_signed_in';
+import NoPermission from './error_page/no_permission';
 import moment from 'moment';
 import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import ShareIcon from '@material-ui/icons/Share';
@@ -171,6 +173,25 @@ class Readlists extends Component {
       );
     }
 
+    if (!this.props.user || !this.props.user.is_authenticated) {
+      return (
+        <div>
+          <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
+          <NotSignedIn history={this.props.history}/>
+        </div>
+      )
+    }
+
+    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+    if (this.props.match.params.groupUuid && !currentCoterie) {
+      return (
+        <div>
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
+          <NoPermission />
+        </div>
+      )
+    }
+
     return (
       <div>
         <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>
@@ -183,7 +204,8 @@ class Readlists extends Component {
 function mapStateToProps(state) {
   return {
     user: state.user,
-    readlists: state.readlists
+    readlists: state.readlists,
+    coteries: state.coteries,
   };
 }
 

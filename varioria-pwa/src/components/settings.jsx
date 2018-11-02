@@ -4,6 +4,8 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 import validator from 'email-validator';
 import Navbar from './nav_bar';
+import NotSignedIn from './error_page/not_signed_in';
+import NoPermission from './error_page/no_permission';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { List, WingBlank, WhiteSpace, Card, Modal, Toast } from 'antd-mobile';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
@@ -128,7 +130,7 @@ class Settings extends Component {
     return (
       <List.Item
         key={member.pk}
-        thumb={<img src={member.portrait_url} style={{borderRadius: '50%'}} />}
+        thumb={<img src={member.portrait_url} alt='ortrait' style={{borderRadius: '50%'}} />}
         align='middle'
         extra={
           isAdmin &&
@@ -157,7 +159,7 @@ class Settings extends Component {
     return (
       <List.Item
         key={member.pk}
-        thumb={<img src={member.portrait_url} style={{borderRadius: '50%'}} />}
+        thumb={<img src={member.portrait_url} alt='ortrait' style={{borderRadius: '50%'}} />}
       >
         {member.nickname}
       </List.Item>
@@ -324,7 +326,7 @@ class Settings extends Component {
   }
 
   render() {
-    if (_.isEmpty(this.props.user) || this.state.isFetching) {
+    if (this.state.isFetching) {
       return (
         <div>
           <Navbar title="Settings" history={this.props.history} match={this.props.match} />
@@ -333,9 +335,27 @@ class Settings extends Component {
       );
     }
 
+    if (!this.props.user || !this.props.user.is_authenticated) {
+      return (
+        <div>
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
+          <NotSignedIn history={this.props.history}/>
+        </div>
+      )
+    }
+
     const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
 
-    if (!currentCoterie) {
+    if (this.props.match.params.groupUuid && !currentCoterie) {
+      return (
+        <div>
+          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
+          <NoPermission />
+        </div>
+      )
+    }
+
+    if (!this.props.match.params.groupUuid) {
       return (
         <div>
           <Navbar title="Settings" history={this.props.history} match={this.props.match} />
@@ -343,7 +363,7 @@ class Settings extends Component {
         </div>
       )
     }
-    
+
     let isAdmin = this.props.user.administratedCoteries.includes(currentCoterie.uuid);
     return (
       <div>
