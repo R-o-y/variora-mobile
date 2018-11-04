@@ -17,11 +17,15 @@ export function getCookie(name) {
 }
 
 export function copyToClipboard(content) {
-  const temp = document.createElement('input')
+  const temp = document.createElement('span')
   temp.style.hidden = true
+  temp.innerHTML = content
   document.body.appendChild(temp)
-  temp.value = content
-  temp.select()
+  const range = document.createRange()
+  range.selectNodeContents(temp)
+  const select = window.getSelection()
+  select.removeAllRanges()
+  select.addRange(range)
   document.execCommand('copy')
   document.body.removeChild(temp)
 }

@@ -1,5 +1,6 @@
 import * as actions from '../../actions';
 
+import { Toast } from 'antd-mobile';
 import { copyToClipboard, getCookie } from '../../utilities/helper';
 import { faEllipsisV, faLink, faLocationArrow, faPencilAlt, faReply, faThumbsUp as faThumbsUped, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
@@ -209,7 +210,6 @@ class AnnotationThread extends React.Component {
     data.append('annotation_reply_id', comment.pk)
     var selectedAnnotation = this.props.selectedAnnotation;
     var annotations = this.props.annotations
-    console.log(comment.uuid)
     axios.post(window.location.pathname + '/', data).then(response => {
       for (let reply of annotations[selectedAnnotation.uuid].replies) {
         if (reply.uuid == comment.uuid) {
@@ -237,8 +237,8 @@ class AnnotationThread extends React.Component {
   shareComment = () => {
     let url = [window.location.protocol, '//', window.location.host, window.location.pathname].join('') + '?annotation=' + this.state.selectedComment.uuid;
     copyToClipboard(url);
-    /* TODO: Debug why not copying. Add toast to indicate copied to clipboard to util? or here. Change to share function in future?*/
-    console.log(url)
+    /* TODO: Add toast to indicate copied to clipboard to util? or here. Change to share function in future?*/
+    Toast.success("URL copied", 1)
     this.closeContextMenu();
   }
 
@@ -251,7 +251,6 @@ class AnnotationThread extends React.Component {
     data.append('operation', operation)
     data.append(idType, this.state.selectedComment.pk)
     data.append('document_id', this.props.pdfDocument.pk)
-    console.log(this.state.selectedComment)
     var selectedAnnotation = this.props.selectedAnnotation;
     var annotations = this.props.annotations
     var annotationsByPage = this.props.annotationsByPage
@@ -305,6 +304,7 @@ class AnnotationThread extends React.Component {
         {selectedAnnotation.replies.map(reply =>
           this.commentBlock(this.reduce_comment(reply))
         )}
+        {this.state.selectedComment &&
         <Menu
           className='menu'
           anchorEl={commentMenuElement}
@@ -316,7 +316,7 @@ class AnnotationThread extends React.Component {
             },
           }}
         >
-          { this.state.selectedComment && this.props.user.pk == this.state.selectedComment.authorPk && <MenuItem onClick={this.editComment}>
+          { this.props.user.pk == this.state.selectedComment.authorPk && <MenuItem onClick={this.editComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faPencilAlt} />
             </SmallButton><Typography>Edit</Typography>
@@ -326,12 +326,13 @@ class AnnotationThread extends React.Component {
               <FontAwesomeIcon icon={faLink} />
             </SmallButton><Typography>Share link</Typography>
           </MenuItem>
-          { this.state.selectedComment && this.props.user.pk == this.state.selectedComment.authorPk && <MenuItem onClick={this.deleteComment}>
+          { this.props.user.pk == this.state.selectedComment.authorPk && <MenuItem onClick={this.deleteComment}>
             <SmallButton color="primary">
               <FontAwesomeIcon icon={faTrashAlt} />
             </SmallButton><Typography>Delete</Typography>
           </MenuItem> }
         </Menu>
+        }
       </div>
     )
   }
