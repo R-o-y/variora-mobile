@@ -68,6 +68,14 @@
   padding-right: 10px;
 }
 
+.annotation-thread-navbar {
+  border-bottom: 1px solid #eee;
+}
+
+.annotation-thread-navbar > span {
+  padding: 6px 12px;
+}
+
 #post-annotation-btn {
   height: 24px;
   width: 24px;
