@@ -88,7 +88,6 @@ class DocumentViewer extends React.Component {
       newAnnotationContent: '',
       newAnnotationReplyContent: '',
       editTextContent: '',
-      time: Date.now(),
       // pageCanvasWidth: 660,
     }
 
@@ -130,9 +129,6 @@ class DocumentViewer extends React.Component {
     }
 
     this.handleScroll = () => {
-      var time = Date.now()
-      console.log(time - this.state.time)
-      this.setState({time: time})
       this.dynamicRenderOnScroll()
       const thisScroll = window.pageYOffset
       if (thisScroll - this.prevScroll > 8)  // scroll down
