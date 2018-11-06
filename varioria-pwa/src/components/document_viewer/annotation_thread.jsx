@@ -18,9 +18,7 @@ import Typography from '@material-ui/core/Typography';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import { faThumbsUp } from '@fortawesome/fontawesome-free-regular'
-import {
-  renderMathJax,
-} from './document_viewer_helper'
+import { renderMathJax } from './document_viewer_helper'
 import { withStyles } from '@material-ui/core/styles';
 
 const SmallChip = withStyles({
@@ -264,11 +262,10 @@ class AnnotationThread extends React.Component {
     this.closeContextMenu();
   }
 
-  componentDidMount() {
-    renderMathJax()
-  }
+  componentDidMount() {renderMathJax()}
 
   render() {
+    renderMathJax()
     const { commentMenuElement } = this.state;
     const open = Boolean(commentMenuElement);
     var selectedAnnotation = this.props.selectedAnnotation;
