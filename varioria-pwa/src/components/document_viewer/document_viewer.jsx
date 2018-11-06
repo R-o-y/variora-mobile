@@ -138,7 +138,7 @@ class DocumentViewer extends React.Component {
       this.prevScroll = thisScroll
     }
 
-    this.handleScroll = _.throttle(this.handleScroll, 500, { leading: true, trailing: false })
+    //this.handleScroll = _.throttle(this.handleScroll, 500, { leading: true, trailing: false })
 
     this.pushNewPageRenderingTask = (pageIndex) => {
       if (pageIndex >= 1 && pageIndex <= this.state.numPages)
@@ -373,7 +373,7 @@ class DocumentViewer extends React.Component {
     this.scrollToTargetAnnotationIfInUrl = () => {
       var annotation_uuid = getValFromUrlParam('annotation')
       if (annotation_uuid != null) {
-        annotation_uuid = uuidWithHyphen(annotation_uuid)
+        //annotation_uuid = uuidWithHyphen(annotation_uuid)
         if (this.annotationAreas[annotation_uuid] === undefined) return
         this.selectAnnotation(annotation_uuid)
         this.annotationAreas[annotation_uuid].scrollIntoView({block: "start", behavior: "smooth"})
@@ -639,7 +639,7 @@ class DocumentViewer extends React.Component {
               >
                 <KeyboardArrowLeft />
               </IconButton>
-              <IconButton component="span">
+              <IconButton component="span" onClick={e => this.props.history.push(window.location.pathname+'/annotations')}>
                 <FormatListBulletedRounded />
               </IconButton>
               <IconButton component="span"
