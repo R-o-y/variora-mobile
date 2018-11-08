@@ -6,6 +6,7 @@
 .annotation-drawer {
   box-shadow:  0px -2px 2px #eee !important;
   max-height: 60vh !important;
+  overscroll-behavior: contain; /*https://caniuse.com/#feat=css-overscroll-behavior*/
 }
 
 .comment-text {
