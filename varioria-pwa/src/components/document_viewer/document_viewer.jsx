@@ -625,6 +625,7 @@ class DocumentViewer extends React.Component {
           onClose={() => this.deselectAnnotation()}
           // ModalProps={{BackdropProps: {invisible: true}}}
           variant='persistent'
+          className='test'
         >
           <div>
             <Grid container justify='space-between' className='annotation-thread-navbar'>
