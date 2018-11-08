@@ -222,8 +222,8 @@ class DocumentViewer extends React.Component {
 
     this.styleDrawer = () => {
       if (this.annotationWrapper === undefined) return
-      if (this.annotationWrapper.parentElement.classList.contains('annotation-drawer')) return
-      this.annotationWrapper.parentElement.classList.add('annotation-drawer')
+      if (this.annotationWrapper.parentElement.parentElement.classList.contains('annotation-drawer')) return
+      this.annotationWrapper.parentElement.parentElement.classList.add('annotation-drawer')
     }
 
     this.selectAnnotation = (uuid) => {
@@ -624,6 +624,7 @@ class DocumentViewer extends React.Component {
           onClose={() => this.deselectAnnotation()}
           // ModalProps={{BackdropProps: {invisible: true}}}
           variant='persistent'
+          className='test'
         >
           <div>
             <Grid container justify='space-between' className='annotation-thread-navbar'>
