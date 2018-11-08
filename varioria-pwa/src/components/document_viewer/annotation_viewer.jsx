@@ -1,9 +1,17 @@
+import './document_viewer.css'
+
+import { NavBar, Icon } from 'antd-mobile';
+
+
+import { StickyContainer } from 'react-sticky';
+
 import * as actions from '../../actions';
 
-import { Toast } from 'antd-mobile';
 import { copyToClipboard, getCookie } from '../../utilities/helper';
 import { faEllipsisV, faLink, faLocationArrow, faPencilAlt, faReply, faThumbsUp as faThumbsUped, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
+import Toolbar from "@material-ui/core/Toolbar";
+import InputBase from "@material-ui/core/InputBase";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
@@ -22,6 +30,14 @@ import {
   renderMathJax,
 } from './document_viewer_helper'
 import { withStyles } from '@material-ui/core/styles';
+
+import {
+  constructGetAnnotationsQueryUrl,
+  constructGetDocumentQueryUrl,
+  range,
+  getNextAnnotation,
+  getPrevAnnotation,
+} from './document_viewer_helper'
 
 const SmallChip = withStyles({
   root: {
@@ -42,17 +58,30 @@ const SmallButton = withStyles({
 
 const MENU_ITEM_HEIGHT = 48;
 
-class AnnotationThread extends React.Component {
+class AnnotationViewer extends React.Component {
   constructor(props) {
     super(props);
     this.state.likeSet = new Set();
-    this.state.uuidToName = {[this.props.selectedAnnotation.uuid]: this.props.selectedAnnotation.annotator.nickname}
-    this.props.selectedAnnotation.replies.map(reply => {
-      this.state.uuidToName[reply.uuid] = reply.replier.nickname ? reply.replier.nickname : 'Anonymous'
+    this.getAnnotations()
+  }
+
+  getAnnotations = () => {
+    axios.get(constructGetAnnotationsQueryUrl(this.props.match.params.slug, this.props.isGroupDocument)).then(response => {
+      var data = response.data
+      var annotations = {}
+      var uuidToName = {}
+      for (var annotation of data) {
+        annotations[annotation.uuid] = annotation
+        uuidToName[annotation.uuid] = annotation.annotator.nickname ? annotation.annotator.nickname : 'Anonymous'
+        annotation.replies.map(reply => {
+          uuidToName[reply.uuid] = reply.replier.nickname ? reply.replier.nickname : 'Anonymous'
+        })
+      }
+      this.setState({ annotations: annotations, uuidToName: uuidToName})
     })
   }
 
-  reduce_comment(comment) {
+  reduce_comment(comment, originalParentUuid=null) {
     var nickname, portrait_url, prefix, timeago, content
     var isAnnotation = comment.annotator ? true : false
     var author = isAnnotation ? comment.annotator : comment.replier
@@ -80,7 +109,7 @@ class AnnotationThread extends React.Component {
       numReplies: comment.replies ? comment.replies.length : 0,
       isAnnotation: isAnnotation,
       authorPk: authorPk,
-      parentUuid: comment.reply_to_annotation_reply_uuid || this.props.selectedAnnotation.uuid,
+      parentUuid: comment.reply_to_annotation_reply_uuid || originalParentUuid,
       num_like: comment.num_like
     }
   }
@@ -115,15 +144,15 @@ class AnnotationThread extends React.Component {
               }
             </Grid>
             {/* BOTTOM ROW RIGHT SIDE --- Contains: Locate, Reply, Like, More options */}
-            <Grid container justify="flex-end" alignItems="flex-start" wrap="nowrap" className={isHead ? 'comment-head-buttons' : ''}>
+            <Grid container justify="flex-end" alignItems="flex-start" wrap="nowrap" className={isHead && "comment-head-buttons"}>
               {isHead && //Locate Arrow only exists for header
               <Grid item>
-                <SmallButton color="primary" onClick={() => {this.locateComment(this.props.annotationArea)}} >
+                <SmallButton color="primary" onClick={() => {this.locateComment(this.props.annotationArea)}} disabled >
                   <FontAwesomeIcon icon={faLocationArrow} />
                 </SmallButton>
               </Grid>}
               <Grid item>
-                <SmallButton color="primary" onClick={() => {isHead ? this.replyAnnotation(comment) : this.replyReply(comment)}} >
+                <SmallButton color="primary" onClick={() => {isHead ? this.replyAnnotation(comment) : this.replyReply(comment)}} disabled >
                   <FontAwesomeIcon icon={faReply} />
                 </SmallButton>
               </Grid>
@@ -135,7 +164,7 @@ class AnnotationThread extends React.Component {
                 </Grid>
               </Grid>
               <Grid item>
-                <SmallButton color="primary" onClick={event => this.openContextMenu(event, comment, isHead)}>
+                <SmallButton color="primary" onClick={event => this.openContextMenu(event, comment, isHead)} disabled >
                   <FontAwesomeIcon icon={faEllipsisV} />
                 </SmallButton>
               </Grid>
@@ -237,8 +266,7 @@ class AnnotationThread extends React.Component {
   shareComment = () => {
     let url = [window.location.protocol, '//', window.location.host, window.location.pathname].join('') + '?annotation=' + this.state.selectedComment.uuid;
     copyToClipboard(url);
-    /* TODO: Add toast to indicate copied to clipboard to util? or here. Change to share function in future?*/
-    Toast.success("URL copied", 1)
+    /* TODO: Debug why not copying. Add toast to indicate copied to clipboard to util? or here. Change to share function in future?*/
     this.closeContextMenu();
   }
 
@@ -295,44 +323,55 @@ class AnnotationThread extends React.Component {
   }
 
   render() {
-    const { commentMenuElement } = this.state;
-    const open = Boolean(commentMenuElement);
-    var selectedAnnotation = this.props.selectedAnnotation;
+    let placeholder = "Search is coming soon"
+    var content = [];
+    if (this.state.annotations) {
+      const annotations = []
+      for (var uuid in this.state.annotations) {
+        annotations.push(this.state.annotations[uuid])
+      }
+      annotations.map(annotation => {
+        content.push(this.commentBlock(this.reduce_comment(annotation), true))
+        annotation.replies.map(reply =>
+          content.push(this.commentBlock(this.reduce_comment(reply, annotation.uuid)))
+        )
+      })
+    } else {
+      content.push('loading')
+    }
     return (
       <div>
-        {this.commentBlock(this.reduce_comment(selectedAnnotation), true)}
-        {selectedAnnotation.replies.map(reply =>
-          this.commentBlock(this.reduce_comment(reply))
-        )}
-        {this.state.selectedComment &&
-        <Menu
-          className='menu'
-          anchorEl={commentMenuElement}
-          open={open}
-          onClose={this.closeContextMenu}
-          PaperProps={{
-            style: {
-              maxHeight: MENU_ITEM_HEIGHT * 4.5,
-            },
+        <NavBar
+          mode="light"
+          icon={<Icon type="left" onClick={() => this.props.history.goBack()}/>}
+          style={{
+            boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
+            zIndex: 10000000,
+            position: 'relative',
+            // borderBottom: '1px solid #c8c8c8',
+            // height: 38
           }}
         >
-          { this.props.user.pk == this.state.selectedComment.authorPk && <MenuItem onClick={this.editComment}>
-            <SmallButton color="primary">
-              <FontAwesomeIcon icon={faPencilAlt} />
-            </SmallButton><Typography>Edit</Typography>
-          </MenuItem> }
-          <MenuItem onClick={this.shareComment}>
-            <SmallButton color="primary">
-              <FontAwesomeIcon icon={faLink} />
-            </SmallButton><Typography>Share link</Typography>
-          </MenuItem>
-          { this.props.user.pk == this.state.selectedComment.authorPk && <MenuItem onClick={this.deleteComment}>
-            <SmallButton color="primary">
-              <FontAwesomeIcon icon={faTrashAlt} />
-            </SmallButton><Typography>Delete</Typography>
-          </MenuItem> }
-        </Menu>
-        }
+          <span className='document-title'>
+            <Toolbar>
+              <InputBase 
+                placeholder={placeholder}
+                autoFocus={true}
+                value={this.state.searchTerm || ''}
+                onChange={this.onChange}
+                fullWidth={true}
+                disabled
+              />
+            </Toolbar>
+          </span>
+        </NavBar>
+        <StickyContainer>
+
+        <div style={{ justifyContent: 'center', height: '100%', background: 'white'}}>
+          {content.map(e => e)}
+        </div>
+        </StickyContainer>
+
       </div>
     )
   }
@@ -346,4 +385,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, actions)(AnnotationThread);
+export default connect(mapStateToProps, actions)(AnnotationViewer);
