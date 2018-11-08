@@ -13,8 +13,9 @@ import CreateCoterieForm from './components/create_coterie_form';
 import CreateReadlistForm from './components/readlists/create_readlist_form';
 import EditReadlistForm from './components/readlists/edit_readlist_form';
 import DocumentViewer from './components/document_viewer/document_viewer';
-import Readlist from './components/readlists/readlist';
-import AddToReadlist from './components/readlists/add_to_readlist';
+import AnnotationListViewer from './components/document_viewer/annotation_viewer';
+import Readlist from './components/readlist';
+import AddToReadlist from './components/add_to_readlist';
 import Profile from './components/profile/profile'
 import Search from './components/search';
 
@@ -49,10 +50,10 @@ const store = createStore(
   )
 );
 
-const renderDocumentViewer = (match, location, history) => {
+const renderDocumentViewer = (match, location, history, isGroupDocument=false) => {
   return (
     <DocumentViewer
-      isGroupDocument={false}
+      isGroupDocument={isGroupDocument}
       match={match}
       location={location}
       history={history}
@@ -60,16 +61,17 @@ const renderDocumentViewer = (match, location, history) => {
 )
 }
 
-const renderGroupDocumentViewer = (match, location, history) => {
+const renderAnnotationListViewer = (match, location, history, isGroupDocument=false) => {
   return (
-    <DocumentViewer
-      isGroupDocument={true}
+    <AnnotationListViewer
+      isGroupDocument={isGroupDocument}
       match={match}
       location={location}
       history={history}
     />
-  )
+)
 }
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
@@ -79,8 +81,9 @@ ReactDOM.render(
       <AuthContainer>
         <BrowserRouter>
           <Switch>
+            <Route path="/documents/:slug/annotations" render={({match, location, history}) => renderAnnotationListViewer(match, location, history)} />
             <Route path="/documents/:slug" render={({match, location, history}) => renderDocumentViewer(match, location, history)} />
-            <Route path="/coteries/:coterieId/documents/:slug" render={({match, location, history}) => renderGroupDocumentViewer(match, location, history)} />
+            <Route path="/coteries/:coterieId/documents/:slug" render={({match, location, history}) => renderDocumentViewer(match, location, history, true)} />
             <Route path='/readlists/:slug' component={Readlist}/>
             <Route path='/coteries/:groupUuid/readlists/:slug' component={Readlist}/>
             <Route path="/search/:groupUuid" component={Search} />
