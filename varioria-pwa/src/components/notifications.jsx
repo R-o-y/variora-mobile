@@ -167,26 +167,19 @@ class Notifications extends Component {
   render() {
     if (this.state.loading) {
       return (
-        <div>
-          <Navbar title="Notifications" history={this.props.history} match={this.props.match}/>
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-        </div>
+        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
       );
     }
 
     if (!this.props.user || !this.props.user.is_authenticated) {
       return (
-        <div>
-          <Navbar title="Notifications" history={this.props.history} match={this.props.match} />
-          <NotSignedIn history={this.props.history}/>
-        </div>
+        <NotSignedIn history={this.props.history}/>
       )
     }
 
     if (_.isEmpty(this.props.notifications) && _.isEmpty(this.props.invitations)) {
       return (
         <div>
-          <Navbar title="Notifications" history={this.props.history} match={this.props.match}/>
           <List>
             <List.Item>
               <List.Item.Brief>
@@ -203,7 +196,6 @@ class Notifications extends Component {
 
     return (
       <div>
-        <Navbar title="Notifications" history={this.props.history} match={this.props.match}/>
         { invitations.length !== 0 && this.renderInvitationList(invitations) }
         { this.renderNotificationsList(notifications) }
       </div>

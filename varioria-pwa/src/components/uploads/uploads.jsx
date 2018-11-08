@@ -251,7 +251,7 @@ class Uploads extends Component {
           <Tabs
             tabs={[{ title: "Uploaded"}, { title: "Collected"}]}
             swipeable
-            renderTabBar={this.renderReactSticky}
+            _renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
               {this.renderUploadedList(_.orderBy(this.props.user.uploadedDocuments, (docSlug) => {return this.props.documents[docSlug].upload_time}, 'desc'))}

@@ -353,19 +353,13 @@ class Settings extends Component {
   render() {
     if (this.state.isFetching) {
       return (
-        <div>
-          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-        </div>
+        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
       );
     }
 
     if (!this.props.user || !this.props.user.is_authenticated) {
       return (
-        <div>
-          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
-          <NotSignedIn history={this.props.history}/>
-        </div>
+        <NotSignedIn history={this.props.history}/>
       )
     }
 
@@ -373,26 +367,19 @@ class Settings extends Component {
 
     if (this.props.match.params.groupUuid && !currentCoterie) {
       return (
-        <div>
-          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
-          <NoPermission />
-        </div>
+        <NoPermission />
       )
     }
 
     if (!this.props.match.params.groupUuid) {
       return (
-        <div>
-          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
-          <h2> You are in the public group. </h2>
-        </div>
+        <h2 style={{color: 'grey'}}> You are in the public group. </h2>
       )
     }
 
     let isAdmin = this.props.user.administratedCoteries.includes(currentCoterie.uuid);
     return (
       <div>
-        <Navbar title="Settings" history={this.props.history} match={this.props.match}/>
         {this.renderGroupInfo(currentCoterie)}
 
         <List>
