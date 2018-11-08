@@ -40,6 +40,19 @@ class Navbar extends Component {
     });
   }
 
+  getNavbarTitle(tab) {
+    let currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+    let currentTab = this.props.path ? this.props.path.split('/').pop() : '';
+
+    if (currentCoterie && currentTab === 'explore') {
+      return currentCoterie.name;
+    } else if (currentTab) {
+      return currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+    } else {
+      return currentTab
+    }
+  }
+
   getRandomColor(uuid){
     const colors = ['#1BA39C', '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c'];
     return colors[uuid.charCodeAt(0)%8];
@@ -75,14 +88,15 @@ class Navbar extends Component {
     const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
 
     return (
-      <div>
         <NavBar
           mode="light"
           style={{
             boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
             zIndex: 10000000,
-            position: 'relative',
+            position: 'fixed',
+            width: '98%',
             paddingRight: 8,
+            height: 50
           }}
           leftContent={
             this.props.user.portrait_url &&
@@ -215,9 +229,8 @@ class Navbar extends Component {
           ]
           }
         >
-          {this.props.title}
+          {this.getNavbarTitle(this.props.path)}
         </NavBar>
-      </div>
     );
   }
 }

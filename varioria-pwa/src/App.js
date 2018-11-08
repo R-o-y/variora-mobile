@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 import * as actions from './actions';
 import BottomTabBar from './components/bottom_tab_bar';
+import Navbar from './components/nav_bar';
 import Main from './components/main';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import logo from './logo.svg'
@@ -37,6 +38,12 @@ class App extends Component {
 
     return (
       <div className="App">
+        <Navbar
+          path={this.props.location.pathname}
+          history={this.props.history}
+          match={this.props.match}
+        />
+
         <BottomTabBar
           path={this.props.location.pathname}
           history={this.props.history}
