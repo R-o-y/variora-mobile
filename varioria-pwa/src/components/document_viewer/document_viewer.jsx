@@ -222,8 +222,8 @@ class DocumentViewer extends React.Component {
 
     this.styleDrawer = () => {
       if (this.annotationWrapper === undefined) return
-      if (this.annotationWrapper.parentElement.classList.contains('annotation-drawer')) return
-      this.annotationWrapper.parentElement.classList.add('annotation-drawer')
+      if (this.annotationWrapper.parentElement.parentElement.classList.contains('annotation-drawer')) return
+      this.annotationWrapper.parentElement.parentElement.classList.add('annotation-drawer')
     }
 
     this.selectAnnotation = (uuid) => {
@@ -405,7 +405,7 @@ class DocumentViewer extends React.Component {
   }
 
   componentWillUnmount() {
-    this.handleScroll.cancel()
+    //this.handleScroll.cancel()
     window.removeEventListener('scroll', this.handleScroll)
   }
 
