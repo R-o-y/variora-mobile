@@ -405,7 +405,7 @@ class DocumentViewer extends React.Component {
   }
 
   componentWillUnmount() {
-    // this.handleScroll.cancel()
+    //this.handleScroll.cancel()
     window.removeEventListener('scroll', this.handleScroll)
     this.changeToViewMode()  // enable scrolling
   }
