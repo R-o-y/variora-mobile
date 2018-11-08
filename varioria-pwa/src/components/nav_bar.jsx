@@ -40,6 +40,12 @@ class Navbar extends Component {
     });
   }
 
+  onToggle(key) {
+    this.setState({
+      [key]: !this.state[key]
+    });
+  }
+
   getNavbarTitle(tab) {
     let currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
     let currentTab = this.props.path ? this.props.path.split('/').pop() : '';
@@ -143,7 +149,7 @@ class Navbar extends Component {
                       )
                     }
                     this.props.getMyCoteries();
-                    this.showModal('coterieModal', e);
+                    this.onToggle('coterieModal');
                   }}
                 />
               </Badge>
@@ -160,7 +166,7 @@ class Navbar extends Component {
                     )
                   }
                   this.props.getMyCoteries();
-                  this.showModal('coterieModal', e);
+                  this.onToggle('coterieModal');
                 }}
               />
             }
@@ -170,7 +176,6 @@ class Navbar extends Component {
               visible={this.state.coterieModal}
               onClose={() => this.onClose('coterieModal')}
               animationType="slide-up"
-              style={{overflow: 'auto', maxHeight: '80vh'}}
             >
               <List
                 renderHeader={() =>
@@ -178,6 +183,8 @@ class Navbar extends Component {
                 }
                 className="popup-list"
               >
+              <List
+                style={{overflow: 'auto', maxHeight: '60vh'}}>
                 <List.Item
                   style={{backgroundColor: this.props.match.params.groupUuid ? '' : '#edf9f6'}}
                   onClick={() => {
@@ -213,6 +220,7 @@ class Navbar extends Component {
                     })}
                   </List>
                 }
+                </List>
                 <List.Item>
                   <Button
                     type="primary"
