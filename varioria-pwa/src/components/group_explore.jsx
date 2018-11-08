@@ -4,7 +4,6 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import Navbar from './nav_bar';
 import NotSignedIn from './error_page/not_signed_in';
 import NoPermission from './error_page/no_permission';
 import CircularProgress from '@material-ui/core/CircularProgress';
