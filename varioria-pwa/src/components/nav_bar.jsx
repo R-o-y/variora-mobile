@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import Badge from '@material-ui/core/Badge';
+import { getRandomColor } from '../utilities/helper';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -57,11 +58,6 @@ class Navbar extends Component {
     } else {
       return currentTab
     }
-  }
-
-  getRandomColor(uuid){
-    const colors = ['#1BA39C', '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c'];
-    return colors[uuid.charCodeAt(0)%8];
   }
 
   goToGroup(uuid) {
@@ -131,7 +127,7 @@ class Navbar extends Component {
                 classes={{ badge: this.props.classes.badge }}
                 badgeContent={
                   <Avatar className={this.props.classes.avatar}
-                    style={{backgroundColor: this.getRandomColor(this.props.match.params.groupUuid)}}>
+                    style={{backgroundColor: getRandomColor(this.props.match.params.groupUuid)}}>
                     <span style={{fontSize: '80%'}}>
                         {this.props.coteries[this.props.match.params.groupUuid] ? this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0) : ''}
                     </span>

@@ -7,11 +7,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import NotSignedIn from './error_page/not_signed_in';
 import moment from 'moment';
 import Avatar from '@material-ui/core/Avatar';
+import Chip from '@material-ui/core/Chip';
+import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import MailIcon from '@material-ui/icons/Mail';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
 import MailReadIcon from '@material-ui/icons/DraftsOutlined';
-import { getCookie } from '../utilities/helper';
+import { getCookie, getRandomColor } from '../utilities/helper';
 
 class Notifications extends Component {
   state = { loading: true }
@@ -34,6 +36,18 @@ class Notifications extends Component {
     return action;
   }
 
+  getCoterieName(uuid) {
+    //Clean uuid for now
+    if (uuid) {
+      uuid = uuid.replace(/-/g, "");
+      let coterieName = this.props.coteries[uuid].name
+      console.log(uuid);
+      if (coterieName.length > 14) return coterieName.slice(0, 14) + "...";
+      return coterieName
+    }
+    return "";
+  }
+
   formatNotificationTime(timestamp) {
     if (moment(timestamp).isSame(moment(), 'day')) {
       return moment(timestamp).format('H:mm');
@@ -44,6 +58,31 @@ class Notifications extends Component {
     else {
       return moment(timestamp).format('YYYY-M-d')
     }
+  }
+
+  renderCoterieChip(notification){
+    return (
+      <div>
+        <Chip
+          avatar={
+            <Avatar
+              style={{
+                color: 'white',
+                backgroundColor: 'transparent'
+              }}>
+              <PeopleOutlineIcon />
+            </Avatar>
+          }
+          label={this.getCoterieName(notification.data.coterie_uuid)}
+          style={{
+            opacity: 0.75,
+            color: 'white',
+            backgroundColor: notification.data.coterie_uuid ? getRandomColor(notification.data.coterie_uuid) : "primary"
+          }}
+        />
+        <br />
+      </div>
+    )
   }
 
   renderInvitationList(invitations) {
@@ -131,8 +170,9 @@ class Notifications extends Component {
               }
             </div>
           }
-          align="top"
+          align="middle"
           multipleLine
+          wrap
           style={{backgroundColor: notification.unread ? '#edf9f6' : ''}}
           onClick={() => {
             this.props.markNotificationAsRead(notification.mark_read_url, notification.slug)
@@ -142,8 +182,15 @@ class Notifications extends Component {
           }}
         >
           { notification.unread ?
-            <b>{notification.actor + " " + this.getActionDescription(notification.verb) }</b> :
-            notification.actor + " " + this.getActionDescription(notification.verb)
+            <div>
+              { notification.data.coterie_uuid && this.renderCoterieChip(notification) }
+              <b>{notification.actor + " " + this.getActionDescription(notification.verb)}</b>
+            </div>
+            :
+            <div>
+              { notification.data.coterie_uuid && this.renderCoterieChip(notification) }
+              {notification.actor + " " + this.getActionDescription(notification.verb)}
+            </div>
           }
           <List.Item.Brief>
             { notification.description }
@@ -207,6 +254,7 @@ function mapStateToProps(state) {
     user: state.user,
     notifications: state.notifications,
     invitations: state.invitations,
+    coteries: state.coteries,
   };
 }
 
