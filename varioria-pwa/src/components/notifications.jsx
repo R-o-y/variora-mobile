@@ -60,29 +60,6 @@ class Notifications extends Component {
     }
   }
 
-  renderCoterieChip(notification){
-    return (
-      <div>
-        <Chip
-          avatar={
-            <Avatar
-              style={{
-                color: 'white',
-                backgroundColor: 'transparent'
-              }}>
-              <PeopleOutlineIcon />
-            </Avatar>
-          }
-          label={this.getCoterieName(notification.data.coterie_uuid)}
-          style={{
-            opacity: 0.75,
-            color: 'white',
-            backgroundColor: notification.data.coterie_uuid ? getRandomColor(notification.data.coterie_uuid) : "primary"
-          }}
-        />
-        <br />
-      </div>
-    )
   }
 
   renderInvitationList(invitations) {
@@ -183,13 +160,27 @@ class Notifications extends Component {
         >
           { notification.unread ?
             <div>
-              { notification.data.coterie_uuid && this.renderCoterieChip(notification) }
               <b>{notification.actor + " " + this.getActionDescription(notification.verb)}</b>
+              { notification.data.coterie_uuid &&
+                <b>{" in "}
+                  <span
+                    style={{color: getRandomColor(notification.data.coterie_uuid)}}>
+                    {this.getCoterieName(notification.data.coterie_uuid)}
+                  </span>
+                </b>
+              }
             </div>
             :
             <div>
-              { notification.data.coterie_uuid && this.renderCoterieChip(notification) }
               {notification.actor + " " + this.getActionDescription(notification.verb)}
+              { notification.data.coterie_uuid &&
+                <span>{" in "}
+                  <span
+                    style={{color: getRandomColor(notification.data.coterie_uuid)}}>
+                    {this.getCoterieName(notification.data.coterie_uuid)}
+                  </span>
+                </span>
+              }
             </div>
           }
           <List.Item.Brief>
