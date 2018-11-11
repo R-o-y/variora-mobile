@@ -7,6 +7,8 @@ import {
   READLIST_GET_EXPLORE,
   NOTIFICATION_GET_COMBINED,
   NOTIFICATION_READ,
+  NOTIFICATION_READ_ALL_SUCCESS,
+  NOTIFICATION_READ_ALL_ERROR,
   COTERIE_GET_MY,
   COTERIE_GET_MY_DOCUMENTS,
   COTERIE_CREATE,
@@ -192,6 +194,23 @@ export function markNotificationAsRead(url, slug) {
     type: NOTIFICATION_READ,
     payload: request,
     slug
+  }
+}
+
+export function markAllNotificationsAsRead(data, unreadNotificationSlug) {
+  const url = '/notifications/api/mark-all-as-read';
+  return function(dispatch) {
+    axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then((response) => {
+      dispatch({type: NOTIFICATION_READ_ALL_SUCCESS, payload: {unreadNotificationSlug}})
+    })
+    .catch((error) => {
+      dispatch({type: NOTIFICATION_READ_ALL_ERROR})
+    })
   }
 }
 

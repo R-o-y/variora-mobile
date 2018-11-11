@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Badge, List, WhiteSpace, Modal } from 'antd-mobile';
+import { Badge, Button, List, WhiteSpace, Modal, Toast } from 'antd-mobile';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import NotSignedIn from './error_page/not_signed_in';
 import moment from 'moment';
@@ -60,6 +60,19 @@ class Notifications extends Component {
     }
   }
 
+  handleMarkAllAsRead() {
+    console.log(this.props.notifications);
+    const unreadNotification = _.filter(this.props.notifications, (item) => item.unread === true)
+    console.log(unreadNotification);
+    let unreadNotificationSlug = []
+    unreadNotification.map(notification => {
+      unreadNotificationSlug.push(notification.slug)
+    })
+    let data = new FormData();
+    data.append('notif_slugs_to_mark_as_read',  unreadNotificationSlug.join());
+    data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+    this.props.markAllNotificationsAsRead(data, unreadNotificationSlug);
   }
 
   renderInvitationList(invitations) {
@@ -192,8 +205,25 @@ class Notifications extends Component {
 
     return (
       <div>
-        <WhiteSpace />
-          <List>
+          <List
+            renderHeader={() =>
+              <Button type="ghost" inline size="small"
+                style={{ color: '#1BA39C' }}
+                onClick={() => {
+                  Modal.alert('', 'Mark all notifications as read?', [
+                    { text: 'Cancel' },
+                    { text: 'OK', style:{color:'#1BA39C'},
+                      onPress: () => {
+                        this.handleMarkAllAsRead();
+                    }},
+                  ])
+                }}
+              >
+                Mark All As Read
+              </Button>
+            }
+            style={{textAlign: 'right'}}
+          >
             {items}
           </List>
         <WhiteSpace />

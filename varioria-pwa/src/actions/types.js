@@ -20,6 +20,8 @@ export const READLIST_REMOVE_DOCUMENT_SUCCESS = 'readlist_remove_document_succes
 
 export const NOTIFICATION_GET_COMBINED = 'notification_get_combined';
 export const NOTIFICATION_READ = 'notification_read';
+export const NOTIFICATION_READ_ALL_SUCCESS = 'notification_read_all_success';
+export const NOTIFICATION_READ_ALL_ERROR = 'notification_read_all_error';
 
 export const SEARCHRESULT_GET = 'search_result_get';
 export const SEARCH_ERROR = 'search_error';
