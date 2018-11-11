@@ -1,30 +1,32 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
 import * as actions from '../../actions';
-import { connect } from 'react-redux';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Navbar from '../nav_bar';
-import moment from 'moment';
+
+import { Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
+import React, { Component } from 'react';
+import { Sticky, StickyContainer } from 'react-sticky';
+import { copyToClipboard, getCookie, validateDocumentSize } from '../../utilities/helper';
+
+import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import Avatar from '@material-ui/core/Avatar';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ConfirmationDialog from './confirmation_dialog';
+import CreateIcon from '@material-ui/icons/Create';
+import DeleteIcon from '@material-ui/icons/DeleteForever';
 import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import TextField from '@material-ui/core/TextField';
-import ConfirmationDialog from './confirmation_dialog';
-import AddIcon from '@material-ui/icons/AddBoxOutlined';
-import CreateIcon from '@material-ui/icons/Create';
-import ShareIcon from '@material-ui/icons/Share';
-import DeleteIcon from '@material-ui/icons/DeleteForever';
-import { Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
-import { StickyContainer, Sticky } from 'react-sticky';
-import { getCookie, copyToClipboard, validateDocumentSize } from '../../utilities/helper';
-import pdfIcon from '../../utilities/pdf.png';
-import NotSignedIn from '../error_page/not_signed_in';
+import Navbar from '../nav_bar';
 import NoPermission from '../error_page/no_permission';
+import NotSignedIn from '../error_page/not_signed_in';
+import ShareIcon from '@material-ui/icons/Share';
+import TextField from '@material-ui/core/TextField';
+import _ from 'lodash';
+import { connect } from 'react-redux';
+import moment from 'moment';
+import pdfIcon from '../../utilities/pdf.png';
 
 class Uploads extends Component {
   constructor(props) {
@@ -297,7 +299,7 @@ class Uploads extends Component {
           }
           className="popup-list"
         >
-          { 
+          {
             // ===== temporarily disable add to list if in group =====
             this.props.match.params.groupUuid ? null :
             // =======================================================
