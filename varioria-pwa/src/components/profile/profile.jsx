@@ -38,10 +38,10 @@ class Profile extends React.Component {
     this.signOff = () => {
       var data = new FormData()
       data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
-      axios.post('/api/signoff', data).then(response => {
+      this.props.signOff(data).then(response => {
         this.props.getUser();
-        this.props.history.goBack()
-      })
+        this.props.history.goBack();
+      }).catch(error => console.log(error))
     }
   }
 

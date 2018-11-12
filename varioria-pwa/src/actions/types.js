@@ -1,4 +1,5 @@
 export const USER_GET = 'user_get';
+export const USER_SIGN_OFF = 'user_sign_off';
 
 export const DOCUMENT_GET_MY = 'document_get_my';
 export const COTERIE_GET_MY_DOCUMENTS = 'document_get_my_documents';

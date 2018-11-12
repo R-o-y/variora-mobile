@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {
   USER_GET,
+  USER_SIGN_OFF,
   DOCUMENT_GET_MY,
   READLIST_GET_MY,
   DOCUMENT_GET_EXPLORE,
@@ -49,6 +50,17 @@ export function getUser() {
   const request = axios.get(url);
 
   return {type: USER_GET, payload: request};
+}
+
+export function signOff(data) {
+  const url = '/api/signoff';
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+
+  return {type: USER_SIGN_OFF, payload: request};
 }
 
 export function getMyDocuments() {

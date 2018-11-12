@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import {
+  USER_SIGN_OFF,
   NOTIFICATION_GET_COMBINED,
   NOTIFICATION_READ,
   NOTIFICATION_READ_ALL_SUCCESS,
@@ -8,6 +9,8 @@ import {
 
 export default function (state = [], action) {
   switch (action.type) {
+    case USER_SIGN_OFF:
+      return {};
     case NOTIFICATION_GET_COMBINED:
       const notifications = action.payload.data;
       return _.extend({}, state, _.keyBy(notifications, 'slug'))
