@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import {
+  USER_SIGN_OFF,
   COTERIE_GET_MY,
   COTERIE_CREATE,
   COTERIE_DELETE,
@@ -9,6 +10,8 @@ import {
 
 export default function (state = [], action) {
   switch (action.type) {
+    case USER_SIGN_OFF:
+      return {};
     case COTERIE_GET_MY:
       const joinedCoteries = action.payload.data.joinedCoteries;
       const administratedCoteries = action.payload.data.administratedCoteries;

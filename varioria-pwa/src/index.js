@@ -91,6 +91,7 @@ ReactDOM.render(
             <Route path="/edit-readlist-form/:slug" component={EditReadlistForm} />
             <Route path="/sign-in" component={Login} />
             <Route exact path="/"render={() => <Redirect to="/uploads" />} />
+            <Route path="/groups/:groupUuid?/" component={App} />
             <Route path="/" component={App} />
           </Switch>
         </BrowserRouter>

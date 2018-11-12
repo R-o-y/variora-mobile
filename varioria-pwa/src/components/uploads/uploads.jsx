@@ -250,8 +250,7 @@ class Uploads extends Component {
         <StickyContainer>
           <Tabs
             tabs={[{ title: "Uploaded"}, { title: "Collected"}]}
-            initalPage={'t2'}
-            swipeable={false}
+            swipeable
             _renderTabBar={this.renderReactSticky}
           >
             <div style={{ justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
@@ -297,7 +296,7 @@ class Uploads extends Component {
           }
           className="popup-list"
         >
-          { 
+          {
             // ===== temporarily disable add to list if in group =====
             this.props.match.params.groupUuid ? null :
             // =======================================================
@@ -505,19 +504,13 @@ class Uploads extends Component {
   render() {
     if (this.state.loading) {
       return (
-        <div>
-          <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-        </div>
+        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
       )
     }
 
     if (!this.props.user || !this.props.user.is_authenticated) {
       return (
-        <div>
-          <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
-          <NotSignedIn history={this.props.history}/>
-        </div>
+        <NotSignedIn history={this.props.history}/>
       )
     }
 
@@ -525,16 +518,12 @@ class Uploads extends Component {
 
     if (this.props.match.params.groupUuid && !currentCoterie) {
       return (
-        <div>
-          <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
-          <NoPermission />
-        </div>
+        <NoPermission />
       )
     }
 
     return (
       <div>
-        <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
         {this.renderStickyTab()}
         {this.renderUploadedActionModal()}
         {this.renderCollectedActionModal()}

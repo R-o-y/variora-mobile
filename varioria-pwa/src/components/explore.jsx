@@ -4,7 +4,6 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import Navbar from './nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TimeAgo from 'react-timeago';
 import Grid from '@material-ui/core/Grid';
@@ -22,7 +21,7 @@ class Explore extends Component {
     const fetchData = async () => {
       try {
         await this.props.getExploreDocuments();
-        await this.props.getExploreReadlists();    
+        await this.props.getExploreReadlists();
       } catch (error) {
         console.error(error);
         return;
@@ -155,7 +154,6 @@ class Explore extends Component {
     if (this.state.loading) {
       return (
         <div>
-          <Navbar title="Explore" history={this.props.history} match={this.props.match}/>
           <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
         </div>
       );
@@ -163,7 +161,6 @@ class Explore extends Component {
 
     return (
       <div>
-        <Navbar title="Explore" history={this.props.history} match={this.props.match}/>
         {this.renderStickyTab()}
       </div>
     );

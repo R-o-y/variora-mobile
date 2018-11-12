@@ -1,12 +1,15 @@
 import axios from 'axios';
 import {
   USER_GET,
+  USER_SIGN_OFF,
   DOCUMENT_GET_MY,
   READLIST_GET_MY,
   DOCUMENT_GET_EXPLORE,
   READLIST_GET_EXPLORE,
   NOTIFICATION_GET_COMBINED,
   NOTIFICATION_READ,
+  NOTIFICATION_READ_ALL_SUCCESS,
+  NOTIFICATION_READ_ALL_ERROR,
   COTERIE_GET_MY,
   COTERIE_GET_MY_DOCUMENTS,
   COTERIE_CREATE,
@@ -47,6 +50,17 @@ export function getUser() {
   const request = axios.get(url);
 
   return {type: USER_GET, payload: request};
+}
+
+export function signOff(data) {
+  const url = '/api/signoff';
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+
+  return {type: USER_SIGN_OFF, payload: request};
 }
 
 export function getMyDocuments() {
@@ -192,6 +206,23 @@ export function markNotificationAsRead(url, slug) {
     type: NOTIFICATION_READ,
     payload: request,
     slug
+  }
+}
+
+export function markAllNotificationsAsRead(data, unreadNotificationSlug) {
+  const url = '/notifications/api/mark-all-as-read';
+  return function(dispatch) {
+    axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then((response) => {
+      dispatch({type: NOTIFICATION_READ_ALL_SUCCESS, payload: {unreadNotificationSlug}})
+    })
+    .catch((error) => {
+      dispatch({type: NOTIFICATION_READ_ALL_ERROR})
+    })
   }
 }
 

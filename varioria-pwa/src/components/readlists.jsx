@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Navbar from './nav_bar';
 import NotSignedIn from './error_page/not_signed_in';
 import NoPermission from './error_page/no_permission';
 import moment from 'moment';
@@ -166,35 +165,25 @@ class Readlists extends Component {
   render() {
     if (this.state.loading) {
       return (
-        <div>
-          <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-        </div>
+        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
       );
     }
 
     if (!this.props.user || !this.props.user.is_authenticated) {
       return (
-        <div>
-          <Navbar title="Uploads" history={this.props.history} match={this.props.match} />
-          <NotSignedIn history={this.props.history}/>
-        </div>
+        <NotSignedIn history={this.props.history}/>
       )
     }
 
     const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
     if (this.props.match.params.groupUuid && !currentCoterie) {
       return (
-        <div>
-          <Navbar title="Settings" history={this.props.history} match={this.props.match} />
-          <NoPermission />
-        </div>
+        <NoPermission />
       )
     }
 
     return (
       <div>
-        <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>
         {this.renderStickyTab()}
       </div>
     );

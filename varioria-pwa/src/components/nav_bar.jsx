@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import Badge from '@material-ui/core/Badge';
+import { getRandomColor } from '../utilities/helper';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -40,9 +41,23 @@ class Navbar extends Component {
     });
   }
 
-  getRandomColor(uuid){
-    const colors = ['#1BA39C', '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c'];
-    return colors[uuid.charCodeAt(0)%8];
+  onToggle(key) {
+    this.setState({
+      [key]: !this.state[key]
+    });
+  }
+
+  getNavbarTitle(tab) {
+    let currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+    let currentTab = this.props.path ? this.props.path.split('/').pop() : '';
+
+    if (currentCoterie && currentTab === 'explore') {
+      return currentCoterie.name;
+    } else if (currentTab) {
+      return currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+    } else {
+      return currentTab
+    }
   }
 
   goToGroup(uuid) {
@@ -75,14 +90,15 @@ class Navbar extends Component {
     const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
 
     return (
-      <div>
         <NavBar
           mode="light"
           style={{
             boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
             zIndex: 10000000,
-            position: 'relative',
+            position: 'fixed',
+            width: '98%',
             paddingRight: 8,
+            height: 50
           }}
           leftContent={
             this.props.user.portrait_url &&
@@ -111,7 +127,7 @@ class Navbar extends Component {
                 classes={{ badge: this.props.classes.badge }}
                 badgeContent={
                   <Avatar className={this.props.classes.avatar}
-                    style={{backgroundColor: this.getRandomColor(this.props.match.params.groupUuid)}}>
+                    style={{backgroundColor: getRandomColor(this.props.match.params.groupUuid)}}>
                     <span style={{fontSize: '80%'}}>
                         {this.props.coteries[this.props.match.params.groupUuid] ? this.props.coteries[this.props.match.params.groupUuid]['name'].charAt(0) : ''}
                     </span>
@@ -129,7 +145,7 @@ class Navbar extends Component {
                       )
                     }
                     this.props.getMyCoteries();
-                    this.showModal('coterieModal', e);
+                    this.onToggle('coterieModal');
                   }}
                 />
               </Badge>
@@ -146,7 +162,7 @@ class Navbar extends Component {
                     )
                   }
                   this.props.getMyCoteries();
-                  this.showModal('coterieModal', e);
+                  this.onToggle('coterieModal');
                 }}
               />
             }
@@ -156,7 +172,6 @@ class Navbar extends Component {
               visible={this.state.coterieModal}
               onClose={() => this.onClose('coterieModal')}
               animationType="slide-up"
-              style={{overflow: 'auto', maxHeight: '80vh'}}
             >
               <List
                 renderHeader={() =>
@@ -164,6 +179,8 @@ class Navbar extends Component {
                 }
                 className="popup-list"
               >
+              <List
+                style={{overflow: 'auto', maxHeight: '60vh'}}>
                 <List.Item
                   style={{backgroundColor: this.props.match.params.groupUuid ? '' : '#edf9f6'}}
                   onClick={() => {
@@ -199,6 +216,7 @@ class Navbar extends Component {
                     })}
                   </List>
                 }
+                </List>
                 <List.Item>
                   <Button
                     type="primary"
@@ -215,9 +233,8 @@ class Navbar extends Component {
           ]
           }
         >
-          {this.props.title}
+          {this.getNavbarTitle(this.props.path)}
         </NavBar>
-      </div>
     );
   }
 }

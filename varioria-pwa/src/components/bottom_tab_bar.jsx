@@ -41,7 +41,7 @@ class BottomTabBar extends React.Component {
 
   render() {
     return (
-      <div style={{ position: 'fixed', height: '100%', width: '100%', top: 0 }}>
+      <div style={{ position: 'fixed', height: 'calc(100% - 50px)', width: '100%', top: 50 }}>
         <TabBar
           unselectedTintColor="#949494"
           tintColor="#1BA39C"

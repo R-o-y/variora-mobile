@@ -2,17 +2,19 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Badge, List, WhiteSpace, Modal } from 'antd-mobile';
+import { Badge, List, WhiteSpace, Modal, Toast } from 'antd-mobile';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Navbar from './nav_bar';
 import NotSignedIn from './error_page/not_signed_in';
 import moment from 'moment';
 import Avatar from '@material-ui/core/Avatar';
+import MButton from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
+import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import MailIcon from '@material-ui/icons/Mail';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
 import MailReadIcon from '@material-ui/icons/DraftsOutlined';
-import { getCookie } from '../utilities/helper';
+import { getCookie, getRandomColor } from '../utilities/helper';
 
 class Notifications extends Component {
   state = { loading: true }
@@ -35,6 +37,18 @@ class Notifications extends Component {
     return action;
   }
 
+  getCoterieName(uuid) {
+    //Clean uuid for now
+    if (uuid) {
+      uuid = uuid.replace(/-/g, "");
+      let coterieName = this.props.coteries[uuid].name
+      console.log(uuid);
+      if (coterieName.length > 14) return coterieName.slice(0, 14) + "...";
+      return coterieName
+    }
+    return "";
+  }
+
   formatNotificationTime(timestamp) {
     if (moment(timestamp).isSame(moment(), 'day')) {
       return moment(timestamp).format('H:mm');
@@ -45,6 +59,19 @@ class Notifications extends Component {
     else {
       return moment(timestamp).format('YYYY-M-d')
     }
+  }
+
+  handleMarkAllAsRead() {
+    const unreadNotification = _.filter(this.props.notifications, (item) => item.unread === true)
+    let unreadNotificationSlug = []
+    unreadNotification.map(notification => {
+      unreadNotificationSlug.push(notification.slug)
+    })
+    let data = new FormData();
+    data.append('notif_slugs_to_mark_as_read',  unreadNotificationSlug.join());
+    data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+    this.props.markAllNotificationsAsRead(data, unreadNotificationSlug);
   }
 
   renderInvitationList(invitations) {
@@ -98,13 +125,11 @@ class Notifications extends Component {
 
     return (
       <div>
-        <WhiteSpace />
-          <List renderHeader={() => 'Pending invitaions'}
-            style={{textAlign: 'left'}}
-          >
-            {items}
-          </List>
-        <WhiteSpace />
+        <List renderHeader={() => 'Pending invitaions'}
+          style={{textAlign: 'left'}}
+        >
+          {items}
+        </List>
       </div>
     )
   }
@@ -132,8 +157,9 @@ class Notifications extends Component {
               }
             </div>
           }
-          align="top"
+          align="middle"
           multipleLine
+          wrap
           style={{backgroundColor: notification.unread ? '#edf9f6' : ''}}
           onClick={() => {
             this.props.markNotificationAsRead(notification.mark_read_url, notification.slug)
@@ -143,8 +169,29 @@ class Notifications extends Component {
           }}
         >
           { notification.unread ?
-            <b>{notification.actor + " " + this.getActionDescription(notification.verb) }</b> :
-            notification.actor + " " + this.getActionDescription(notification.verb)
+            <div>
+              <b>{notification.actor + " " + this.getActionDescription(notification.verb)}</b>
+              { notification.data.coterie_uuid &&
+                <b>{" in "}
+                  <span
+                    style={{color: getRandomColor(notification.data.coterie_uuid)}}>
+                    {this.getCoterieName(notification.data.coterie_uuid)}
+                  </span>
+                </b>
+              }
+            </div>
+            :
+            <div>
+              {notification.actor + " " + this.getActionDescription(notification.verb)}
+              { notification.data.coterie_uuid &&
+                <span>{" in "}
+                  <span
+                    style={{color: getRandomColor(notification.data.coterie_uuid)}}>
+                    {this.getCoterieName(notification.data.coterie_uuid)}
+                  </span>
+                </span>
+              }
+            </div>
           }
           <List.Item.Brief>
             { notification.description }
@@ -155,8 +202,24 @@ class Notifications extends Component {
 
     return (
       <div>
-        <WhiteSpace />
-          <List>
+          <List
+            renderHeader={() =>
+              <MButton variant="outlined" color="primary" size="small"
+                onClick={() => {
+                  Modal.alert('Mark all notifications as read?', '', [
+                    { text: 'Cancel' },
+                    { text: 'OK', style:{color:'#1BA39C'},
+                      onPress: () => {
+                        this.handleMarkAllAsRead();
+                    }},
+                  ])
+                }}
+              >
+                <MailReadIcon style={{margin: '-10'}} />
+              </MButton>
+            }
+            style={{textAlign: 'center'}}
+          >
             {items}
           </List>
         <WhiteSpace />
@@ -167,26 +230,19 @@ class Notifications extends Component {
   render() {
     if (this.state.loading) {
       return (
-        <div>
-          <Navbar title="Notifications" history={this.props.history} match={this.props.match}/>
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-        </div>
+        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
       );
     }
 
     if (!this.props.user || !this.props.user.is_authenticated) {
       return (
-        <div>
-          <Navbar title="Notifications" history={this.props.history} match={this.props.match} />
-          <NotSignedIn history={this.props.history}/>
-        </div>
+        <NotSignedIn history={this.props.history}/>
       )
     }
 
     if (_.isEmpty(this.props.notifications) && _.isEmpty(this.props.invitations)) {
       return (
         <div>
-          <Navbar title="Notifications" history={this.props.history} match={this.props.match}/>
           <List>
             <List.Item>
               <List.Item.Brief>
@@ -203,7 +259,6 @@ class Notifications extends Component {
 
     return (
       <div>
-        <Navbar title="Notifications" history={this.props.history} match={this.props.match}/>
         { invitations.length !== 0 && this.renderInvitationList(invitations) }
         { this.renderNotificationsList(notifications) }
       </div>
@@ -216,6 +271,7 @@ function mapStateToProps(state) {
     user: state.user,
     notifications: state.notifications,
     invitations: state.invitations,
+    coteries: state.coteries,
   };
 }
 

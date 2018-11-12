@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import {
+  USER_SIGN_OFF,
   DOCUMENT_GET_MY,
   DOCUMENT_UPLOAD,
   DOCUMENT_RENAME,
@@ -10,6 +11,8 @@ import {
 
 export default function (state = [], action) {
   switch (action.type) {
+    case USER_SIGN_OFF:
+      return {};
     case DOCUMENT_GET_MY:
       const uploadedDocuments = action.payload.data.uploadedDocuments;
       const collectedDocuments = action.payload.data.collectedDocuments;

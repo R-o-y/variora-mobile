@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import {
   USER_GET,
+  USER_SIGN_OFF,
   DOCUMENT_GET_MY,
   DOCUMENT_UPLOAD,
   DOCUMENT_DELETE_SUCCESS,
@@ -18,6 +19,9 @@ export default function (state = [], action) {
     case USER_GET:
       const user = action.payload.data;
       return _.extend({}, user);
+
+    case USER_SIGN_OFF:
+      return {};
 
     case DOCUMENT_GET_MY:
       const uploadedDocuments = action.payload.data.uploadedDocuments;
