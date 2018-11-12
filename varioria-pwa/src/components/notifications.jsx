@@ -2,11 +2,12 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Badge, Button, List, WhiteSpace, Modal, Toast } from 'antd-mobile';
+import { Badge, List, WhiteSpace, Modal, Toast } from 'antd-mobile';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import NotSignedIn from './error_page/not_signed_in';
 import moment from 'moment';
 import Avatar from '@material-ui/core/Avatar';
+import MButton from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import MailIcon from '@material-ui/icons/Mail';
@@ -61,9 +62,7 @@ class Notifications extends Component {
   }
 
   handleMarkAllAsRead() {
-    console.log(this.props.notifications);
     const unreadNotification = _.filter(this.props.notifications, (item) => item.unread === true)
-    console.log(unreadNotification);
     let unreadNotificationSlug = []
     unreadNotification.map(notification => {
       unreadNotificationSlug.push(notification.slug)
@@ -126,13 +125,11 @@ class Notifications extends Component {
 
     return (
       <div>
-        <WhiteSpace />
-          <List renderHeader={() => 'Pending invitaions'}
-            style={{textAlign: 'left'}}
-          >
-            {items}
-          </List>
-        <WhiteSpace />
+        <List renderHeader={() => 'Pending invitaions'}
+          style={{textAlign: 'left'}}
+        >
+          {items}
+        </List>
       </div>
     )
   }
@@ -207,10 +204,9 @@ class Notifications extends Component {
       <div>
           <List
             renderHeader={() =>
-              <Button type="ghost" inline size="small"
-                style={{ color: '#1BA39C' }}
+              <MButton variant="outlined" color="primary" size="small"
                 onClick={() => {
-                  Modal.alert('', 'Mark all notifications as read?', [
+                  Modal.alert('Mark all notifications as read?', '', [
                     { text: 'Cancel' },
                     { text: 'OK', style:{color:'#1BA39C'},
                       onPress: () => {
@@ -219,10 +215,10 @@ class Notifications extends Component {
                   ])
                 }}
               >
-                Mark All As Read
-              </Button>
+                <MailReadIcon style={{margin: '-10'}} />
+              </MButton>
             }
-            style={{textAlign: 'right'}}
+            style={{textAlign: 'center'}}
           >
             {items}
           </List>
