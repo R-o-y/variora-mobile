@@ -407,6 +407,7 @@ class DocumentViewer extends React.Component {
   componentWillUnmount() {
     // this.handleScroll.cancel()
     window.removeEventListener('scroll', this.handleScroll)
+    this.changeToViewMode()  // enable scrolling
   }
 
   render() {
@@ -570,7 +571,7 @@ class DocumentViewer extends React.Component {
           mode="light"
           icon={<Icon type="left" onClick={() => {
             // handle case where user clicks on a document link that opens
-            // a new browser tab. in this case, history.goBack() will 
+            // a new browser tab. in this case, history.goBack() will
             // do nothing since there is no previous page.
             if (this.props.history && this.props.history.length < 2) {
               // TODO: if this is a group's document, go to the group's explore instead
