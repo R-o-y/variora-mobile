@@ -6,6 +6,9 @@ import {
   COTERIE_DELETE,
   COTERIE_UPDATE_SUCCESS,
   COTERIE_MEMBER_REMOVE,
+  COTERIE_JOIN_WITH_CODE,
+  COTERIE_APPLICATIONS_GET,
+  COTERIE_APPLICATION_ACCEPT,
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -29,10 +32,17 @@ export default function (state = [], action) {
       if (action.payload.description) updated_coterie.description = action.payload.description;
       return _.extend({}, state, {[action.payload.uuid]: updated_coterie});
     case COTERIE_MEMBER_REMOVE:
-    console.log(action);
       const member_removed_coterie = state[action.payload.uuid];
       member_removed_coterie.members = member_removed_coterie.members.filter(member => member.email_address !== action.payload.email);
       return _.extend({}, state, {[member_removed_coterie.uuid]: member_removed_coterie});
+    case COTERIE_JOIN_WITH_CODE:
+      const coterie_joined_with_code = action.payload.data;
+      return _.extend({}, state, {[coterie_joined_with_code.uuid]: coterie_joined_with_code});
+    case COTERIE_APPLICATION_ACCEPT:
+      let conterie_application_accepted = state[_.findKey(state, ['pk', action.application.coterie_pk])];
+      if (!_.find(conterie_application_accepted.members, ['pk', action.application.applicant.pk]))
+      conterie_application_accepted.members = conterie_application_accepted.members.concat(action.application.applicant);
+      return _.extend({}, state, {[conterie_application_accepted.uuid]: conterie_application_accepted});
     default:
       return state;
   }

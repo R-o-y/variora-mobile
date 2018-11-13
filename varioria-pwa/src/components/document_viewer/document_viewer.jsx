@@ -1,6 +1,5 @@
 import './document_viewer.css'
 
-import _ from 'lodash';
 import * as actions from '../../actions';
 
 import { ActivityIndicator, Icon, Modal, NavBar, TextareaItem } from 'antd-mobile';
@@ -149,8 +148,6 @@ class DocumentViewer extends React.Component {
         this.setState({showFloatButton: true})
       this.prevScroll = thisScroll
     }
-
-    //this.handleScroll = _.throttle(this.handleScroll, 500, { leading: true, trailing: false })
 
     this.pushNewPageRenderingTask = (pageIndex) => {
       if (pageIndex >= 1 && pageIndex <= this.state.numPages)
@@ -387,7 +384,7 @@ class DocumentViewer extends React.Component {
     this.scrollToTargetAnnotationIfInUrl = () => {
       var annotation_uuid = getValFromUrlParam('annotation')
       if (annotation_uuid != null) {
-        //annotation_uuid = uuidWithHyphen(annotation_uuid)
+        annotation_uuid = uuidWithHyphen(annotation_uuid)
         if (this.annotationAreas[annotation_uuid] === undefined) return
         this.selectAnnotation(annotation_uuid)
         this.annotationAreas[annotation_uuid].scrollIntoView({block: "start", behavior: "smooth"})
@@ -419,7 +416,6 @@ class DocumentViewer extends React.Component {
   }
 
   componentWillUnmount() {
-    //this.handleScroll.cancel()
     window.removeEventListener('scroll', this.handleScroll)
     this.changeToViewMode()  // enable scrolling
   }
@@ -643,15 +639,15 @@ class DocumentViewer extends React.Component {
           style={this.state.annotationOpen?{display: 'flex'}:{display: 'None'}}
         >
           <div>
-            <Grid container justify='space-between' className='annotation-thread-navbar'>
+            <Grid container justify='space-between'
+              // style={{borderBottom: 'solid #ddd 1px', marginBottom: 8}}
+            >
               <IconButton component="span"
                 disabled={getPrevAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage) === undefined}
                 onClick={e => {
-                  const toAnnotation = getPrevAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage)
-                  this.selectAnnotation(toAnnotation.uuid)
-                  var topOfElement = document.querySelector('#page-canvas-'+toAnnotation.page_index).parentNode.offsetTop +
-                                     this.annotationAreas[toAnnotation.uuid].offsetTop - 10
-                  window.scroll({ top: topOfElement, behavior: "smooth" });
+                  const prevAnnotation = getPrevAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage)
+                  this.selectAnnotation(prevAnnotation.uuid)
+                  this.annotationAreas[prevAnnotation.uuid].scrollIntoView({block: "start", behavior: "smooth"})
                 }}
               >
                 <KeyboardArrowLeft />

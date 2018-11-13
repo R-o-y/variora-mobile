@@ -21,6 +21,11 @@ import {
   COTERIE_DOCUMENT_UPLOAD,
   COTERIE_LEAVE,
   COTERIE_DELETE,
+  COTERIE_JOIN_WITH_CODE,
+  COTERIE_APPLY,
+  COTERIE_APPLICATIONS_GET,
+  COTERIE_APPLICATION_ACCEPT,
+  COTERIE_APPLICATION_DECLINE,
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
   SEARCH_ERROR,
@@ -529,4 +534,53 @@ export function declineInvitation(url, data, pk) {
   })
 
   return { type: INVITATION_DECLINE, payload: request, pk }
+}
+
+export function joinCoterieWithCode(data, pk) {
+  const url = `/coterie/api/coteries/${pk}/join_with_code`;
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  })
+
+  return { type: COTERIE_JOIN_WITH_CODE, payload: request }
+}
+
+export function applyCoterie(data) {
+  const url = '/coterie/api/apply';
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  })
+
+  return { type: COTERIE_APPLY, payload: request }
+}
+
+export function getCoterieApplication(pk) {
+  const url = `/coterie/api/applications?for=${pk}`;
+  const request = axios.get(url);
+
+  return { type: COTERIE_APPLICATIONS_GET, payload: request }
+}
+
+export function acceptApplication(url, data, application) {
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  })
+
+  return { type: COTERIE_APPLICATION_ACCEPT, payload: request, application }
+}
+
+export function declineApplication(url, data) {
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  })
+
+  return { type: COTERIE_APPLICATION_DECLINE, payload: request }
 }

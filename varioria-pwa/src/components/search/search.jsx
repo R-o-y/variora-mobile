@@ -4,21 +4,37 @@ import { NavBar, Icon, ActivityIndicator, List, WhiteSpace } from 'antd-mobile';
 import { connect } from 'react-redux';
 import Toolbar from "@material-ui/core/Toolbar";
 import InputBase from "@material-ui/core/InputBase";
-import * as actions from '../actions';
+import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
+import * as actions from '../../actions';
 import TimeAgo from 'react-timeago'
 import { StickyContainer } from 'react-sticky';
+import ApplyCoterieDialog from './applyCoterieDialog';
 
 class Search extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       loading: false,
-      searchTerm: ''
+      searchTerm: '',
+      applyCoterieDialog: false,
     }
   }
 
   componentDidMount() {
     this.props.getMyCoteries();
+  }
+
+  showModal(key, e) {
+    e.preventDefault();
+    this.setState({
+      [key]: true,
+    });
+  }
+
+  onClose(key) {
+    this.setState({
+      [key]: false,
+    });
   }
 
   onChange = (e) => {
@@ -116,6 +132,37 @@ class Search extends React.Component {
       })
       data = data.concat(users);
     }
+    if (results.coteries) {
+      const coterie = results.coteries.map(element => {
+        return ({
+          sortKey: element.name,
+          jsx: (
+            <List.Item
+              key={element.pk}
+              arrow="horizontal"
+              thumb={<PeopleOutlineIcon style={{color: 'grey'}}/>}
+              multipleLine
+              onClick={(e) => {
+                if (this.props.user.administratedCoteries.includes(element.uuid) ||
+                  this.props.user.joinedCoteries.includes(element.uuid)) {
+                    this.props.history.push(`/groups/${element.uuid}/explore`);
+                  }
+                else {
+                  this.setState({selectedCoterie: element})
+                  this.showModal('applyCoterieDialog', e);
+                }
+              }}
+            >
+              {element.name}
+              <List.Item.Brief>
+                {element.description}
+              </List.Item.Brief>
+            </List.Item>
+          )
+        })
+      })
+      data = data.concat(coterie);
+    }
 
     data = data
       .sort((a, b) => ('' + a.sortKey).localeCompare(b.sortKey))
@@ -151,7 +198,7 @@ class Search extends React.Component {
         >
           <span className='document-title'>
             <Toolbar>
-              <InputBase 
+              <InputBase
                 placeholder={placeholder}
                 autoFocus={true}
                 value={this.state.searchTerm || ''}
@@ -168,6 +215,12 @@ class Search extends React.Component {
           {this.renderSearchResultList(this.props.search)}
         </div>
         </StickyContainer>
+        <ApplyCoterieDialog
+          open={this.state.applyCoterieDialog}
+          onClose={() => this.onClose('applyCoterieDialog')}
+          coterie={this.state.selectedCoterie}
+          history={this.props.history}
+        />
         <WhiteSpace />
 
       </div>
@@ -178,7 +231,8 @@ class Search extends React.Component {
 function mapStateToProps(state) {
   return {
     search: state.search,
-    coteries: state.coteries
+    coteries: state.coteries,
+    user: state.user,
   };
 }
 

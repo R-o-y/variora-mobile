@@ -14,10 +14,10 @@ import CreateReadlistForm from './components/readlists/create_readlist_form';
 import EditReadlistForm from './components/readlists/edit_readlist_form';
 import DocumentViewer from './components/document_viewer/document_viewer';
 import AnnotationListViewer from './components/document_viewer/annotation_viewer';
-import Readlist from './components/readlist';
-import AddToReadlist from './components/add_to_readlist';
+import Readlist from './components/readlists/readlist';
+import AddToReadlist from './components/readlists/add_to_readlist';
 import Profile from './components/profile/profile'
-import Search from './components/search';
+import Search from './components/search/search';
 
 import Login from './components/login/login'
 import { Provider } from 'react-redux';
@@ -106,4 +106,4 @@ ReactDOM.render(
     </Provider>
   </MuiThemeProvider>
   , document.getElementById('root'));
-serviceWorker.unregister();
+serviceWorker.register({});
