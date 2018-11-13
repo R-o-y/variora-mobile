@@ -20,6 +20,8 @@ import {
   COTERIE_DOCUMENT_UPLOAD,
   COTERIE_LEAVE,
   COTERIE_DELETE,
+  COTERIE_JOIN_WITH_CODE,
+  COTERIE_APPLY,
   SEARCHTERM_UPDATE,
   SEARCHRESULT_GET,
   SEARCH_ERROR,
@@ -463,4 +465,26 @@ export function declineInvitation(url, data, pk) {
   })
 
   return { type: INVITATION_DECLINE, payload: request, pk }
+}
+
+export function joinCoterieWithCode(data, pk) {
+  const url = `/coterie/api/coteries/${pk}/join_with_code`;
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  })
+
+  return { type: COTERIE_JOIN_WITH_CODE, payload: request }
+}
+
+export function applyCoterie(data) {
+  const url = '/coterie/api/apply';
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  })
+
+  return { type: COTERIE_APPLY, payload: request }
 }

@@ -16,7 +16,7 @@ import DocumentViewer from './components/document_viewer/document_viewer';
 import Readlist from './components/readlist';
 import AddToReadlist from './components/add_to_readlist';
 import Profile from './components/profile/profile'
-import Search from './components/search';
+import Search from './components/search/search';
 
 import Login from './components/login/login'
 import { Provider } from 'react-redux';

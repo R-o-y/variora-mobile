@@ -6,6 +6,7 @@ import {
   COTERIE_DELETE,
   COTERIE_UPDATE_SUCCESS,
   COTERIE_MEMBER_REMOVE,
+  COTERIE_JOIN_WITH_CODE,
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -29,10 +30,12 @@ export default function (state = [], action) {
       if (action.payload.description) updated_coterie.description = action.payload.description;
       return _.extend({}, state, {[action.payload.uuid]: updated_coterie});
     case COTERIE_MEMBER_REMOVE:
-    console.log(action);
       const member_removed_coterie = state[action.payload.uuid];
       member_removed_coterie.members = member_removed_coterie.members.filter(member => member.email_address !== action.payload.email);
       return _.extend({}, state, {[member_removed_coterie.uuid]: member_removed_coterie});
+    case COTERIE_JOIN_WITH_CODE:
+      const coterie_joined_with_code = action.payload.data;
+      return _.extend({}, state, {[coterie_joined_with_code.uuid]: coterie_joined_with_code});
     default:
       return state;
   }

@@ -10,10 +10,12 @@ export default function (state = [], action) {
       const readlists = action.payload.data.resultReadlists;
       const documents = action.payload.data.resultDocuments;
       const users = action.payload.data.resultUsers;
+      const coteries = action.payload.data.resultCoteries;
       return _.extend({}, state, {
         readlists: readlists,
         documents: documents,
         users: users,
+        coteries: coteries,
       });
     case SEARCH_ERROR:
       return {};

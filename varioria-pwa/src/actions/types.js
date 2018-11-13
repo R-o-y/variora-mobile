@@ -36,6 +36,8 @@ export const COTERIE_MEMBER_REMOVE = 'coterie_member_delete';
 export const COTERIE_DOCUMENT_UPLOAD = 'coterie_document_upload';
 export const COTERIE_LEAVE = 'coterie_leave';
 export const COTERIE_DELETE = 'coterie_delete';
+export const COTERIE_JOIN_WITH_CODE = 'coterie_join_with_code';
+export const COTERIE_APPLY = 'coterie_apply';
 
 export const INVITATION_GET = 'invitation_get';
 export const INVITATION_ACCEPT = 'invitation_accept';

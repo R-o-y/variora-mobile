@@ -12,6 +12,7 @@ import {
   COTERIE_DOCUMENT_UPLOAD,
   COTERIE_LEAVE,
   COTERIE_DELETE,
+  COTERIE_JOIN_WITH_CODE,
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -70,6 +71,10 @@ export default function (state = [], action) {
     case COTERIE_DELETE:
       const administratedCoteriesAfterDelete = _.filter(state.administratedCoteries, (uuid) => {return uuid !== action.uuid});
       return _.extend({}, state, { administratedCoteries: administratedCoteriesAfterDelete});
+
+    case COTERIE_JOIN_WITH_CODE:
+      const coterie_joined_with_code = action.payload.data;
+      return _.extend({}, state, { joinedCoteries: state.joinedCoteries.concat(coterie_joined_with_code.uuid)});
 
     case READLIST_GET_MY:
       const createdReadlists = action.payload.data.created_readlists;
