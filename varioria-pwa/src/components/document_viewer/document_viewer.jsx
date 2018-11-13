@@ -7,15 +7,14 @@ import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {
   constructGetAnnotationsQueryUrl,
   constructGetDocumentQueryUrl,
+  range,
   getNextAnnotation,
   getPrevAnnotation,
-  range,
 } from './document_viewer_helper'
 import {
   faPaperPlane,
   faTimesCircle
 } from '@fortawesome/free-solid-svg-icons'
-import { getCookie, getValFromUrlParam, uuidWithHyphen } from '../../utilities/helper';
 
 import AddComment from '@material-ui/icons/AddComment';
 import AnnotationThread from './annotation_thread'
@@ -24,19 +23,19 @@ import DoneAll from '@material-ui/icons/DoneAll';
 import Drawer from '@material-ui/core/Drawer';
 import FloatButton from './float_button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import FormatListBulletedRounded from '@material-ui/icons/FormatListBulletedRounded';
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import FormatListBulletedRounded from '@material-ui/icons/FormatListBulletedRounded';
 import React from 'react'
 import { Rnd } from 'react-rnd'
 import Tappable from 'react-tappable';
 import TextField from '@material-ui/core/TextField';
-import _ from 'lodash';
 import axios from 'axios'
 import { connect } from 'react-redux';
+import { getCookie, getValFromUrlParam, uuidWithHyphen } from '../../utilities/helper';
 import { library } from '@fortawesome/fontawesome-svg-core'
+import IconButton from '@material-ui/core/IconButton';
 
 library.add(faPaperPlane, faTimesCircle)
 
@@ -137,8 +136,6 @@ class DocumentViewer extends React.Component {
         this.setState({showFloatButton: true})
       this.prevScroll = thisScroll
     }
-
-    //this.handleScroll = _.throttle(this.handleScroll, 500, { leading: true, trailing: false })
 
     this.pushNewPageRenderingTask = (pageIndex) => {
       if (pageIndex >= 1 && pageIndex <= this.state.numPages)
@@ -373,7 +370,7 @@ class DocumentViewer extends React.Component {
     this.scrollToTargetAnnotationIfInUrl = () => {
       var annotation_uuid = getValFromUrlParam('annotation')
       if (annotation_uuid != null) {
-        //annotation_uuid = uuidWithHyphen(annotation_uuid)
+        annotation_uuid = uuidWithHyphen(annotation_uuid)
         if (this.annotationAreas[annotation_uuid] === undefined) return
         this.selectAnnotation(annotation_uuid)
         this.annotationAreas[annotation_uuid].scrollIntoView({block: "start", behavior: "smooth"})
@@ -626,33 +623,33 @@ class DocumentViewer extends React.Component {
           variant='persistent'
         >
           <div>
-            <Grid container justify='space-between' className='annotation-thread-navbar'>
-              <IconButton component="span"
+            <div
+              // style={{borderBottom: 'solid #ddd 1px', marginBottom: 8}}
+            >
+              <IconButton component="span" style={{left: 8, padding: 6}}
                 disabled={getPrevAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage) === undefined}
                 onClick={e => {
-                  const toAnnotation = getPrevAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage)
-                  this.selectAnnotation(toAnnotation.uuid)
-                  var topOfElement = document.querySelector('#page-canvas-'+toAnnotation.page_index).parentNode.offsetTop + this.annotationAreas[toAnnotation.uuid].offsetTop - 10
-                  window.scroll({ top: topOfElement, behavior: "smooth" });
+                  const prevAnnotation = getPrevAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage)
+                  this.selectAnnotation(prevAnnotation.uuid)
+                  this.annotationAreas[prevAnnotation.uuid].scrollIntoView({block: "start", behavior: "smooth"})
                 }}
               >
                 <KeyboardArrowLeft />
               </IconButton>
-              <IconButton component="span" onClick={e => this.props.history.push(window.location.pathname+'/annotations')}>
+              <IconButton component="span" style={{position: 'absolute', right: '12vw', padding: 6}}>
                 <FormatListBulletedRounded />
               </IconButton>
-              <IconButton component="span"
+              <IconButton component="span" style={{position: 'absolute', right: 8, padding: 6}}
                 disabled={getNextAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage, this.state.numPages) === undefined}
                 onClick={e => {
-                  const toAnnotation = getNextAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage, this.state.numPages)
-                  this.selectAnnotation(toAnnotation.uuid)
-                  var topOfElement = document.querySelector('#page-canvas-'+toAnnotation.page_index).parentNode.offsetTop + this.annotationAreas[toAnnotation.uuid].offsetTop - 10
-                  window.scroll({ top: topOfElement, behavior: "smooth" });
+                  const nextAnnotation = getNextAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage, this.state.numPages)
+                  this.selectAnnotation(nextAnnotation.uuid)
+                  this.annotationAreas[nextAnnotation.uuid].scrollIntoView({block: "start", behavior: "smooth"})
                 }}
               >
                 <KeyboardArrowRight />
               </IconButton>
-            </Grid>
+            </div>
 
             <div ref={ele => this.annotationWrapper = ele}>
               {
