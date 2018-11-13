@@ -38,12 +38,9 @@ import { getCookie, getValFromUrlParam, uuidWithHyphen } from '../../utilities/h
 import { library } from '@fortawesome/fontawesome-svg-core'
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import DownloadIcon from '@material-ui/icons/CloudDownload';
 import { faInfoCircle, faStar as faStarred } from '@fortawesome/free-solid-svg-icons';
@@ -93,6 +90,7 @@ class DocumentViewer extends React.Component {
       annotationLinearLinkedListOpen: false,
       editCommentOpen: false,
       contextMenuOpen: false,
+      howToUseOpen: false,
       newAnnotationInputOpen: false,
       selectedAnnotation: undefined,
       mode: 'view',  // view or comment
@@ -839,7 +837,12 @@ class DocumentViewer extends React.Component {
         >
           <List>
             {/** HOW TO USE */}
-            <ListItem button>
+            <ListItem button onClick={() => {
+              this.setState({contextMenuOpen: false})
+              alert('Instructions',
+                    'Switch between read-view and annotate-view by tapping on the round button at the bottom right of the screen',
+                    [ { text: 'Ok', onPress: null }, ])
+            }}>
               <ListItemIcon><FontAwesomeIcon icon={faInfoCircle} className='context-menu-icon' /></ListItemIcon>
               <ListItemText primary={'How to use'} />
             </ListItem>
@@ -869,7 +872,7 @@ class DocumentViewer extends React.Component {
             <ListItem button onClick={() => {
               axios.get(this.state.document.download_url).then(response => {
                 console.log(response)
-                const url = window.URL.createObjectURL( new Blob([response.data], {type:'application/pdf'}) );
+                const url = window.URL.createObjectURL( new Blob([response.data], {type:'application/pdf'}) ); //ENCODING HAS SOME ISSUE?
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', this.state.document.title + '.pdf');
