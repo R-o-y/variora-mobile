@@ -66,17 +66,32 @@ class GroupExplore extends Component {
   }
 
   renderCoterieReadlists() {
-    // ======= TODO: Implement coterie readlists  ==========
+    const coterieReadlists = this.props.coteries[this.props.match.params.groupUuid].coteriereadlist_set;
+    const data = coterieReadlists.map(element => {
+      return (
+        <List.Item
+          key={element.slug}
+          extra={<TimeAgo date={element.create_time} />}
+          thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
+          multipleLine
+          onClick={() => {
+            // TODO: make link work
+            const groupUuid = this.props.match.params.groupUuid
+            const coterie = this.props.coteries[groupUuid]
+            const coterieId = coterie.pk
+            this.props.history.push(`/coteries/${coterieId}/readlists/${element.slug}`)
+          }}
+        >
+          {element.name}
+          <List.Item.Brief>{element.owner.nickname}</List.Item.Brief>
+        </List.Item>
+      )
+    }).reverse()
     return (
       <List>
-        <List.Item>
-          <div style={{color: 'grey', textAlign:'center' }}>
-            Group-based readlists still in development.
-          </div>
-        </List.Item>
+        {data}
       </List>
     )
-    // ======================================================
   }
 
   renderStickyTab() {

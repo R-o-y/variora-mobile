@@ -92,6 +92,7 @@ class Readlists extends Component {
             onClick={() => {
               const groupUuid = this.props.match.params.groupUuid
               if (groupUuid) {
+                // TODO: make link work
                 const coterie = this.props.coteries[groupUuid]
                 const coterieId = coterie.pk
                 this.props.history.push(`/coteries/${coterieId}/readlists/${slug}`)
