@@ -756,7 +756,6 @@ class DocumentViewer extends React.Component {
           variant='persistent'
           style={this.state.annotationLinearLinkedListOpen?{display: 'flex'}:{display: 'None'}}
         >
-          {/* <Grid container justify="space-between" alignItems="center"> */}
           <div style={{textAlign: 'center'}}>
             <Avatar
               alt="User Portrait"
@@ -788,7 +787,6 @@ class DocumentViewer extends React.Component {
               : <FontAwesomeIcon icon={['fas', 'paper-plane']} className='commit-comment-btn' onClick={this.postAnnotationReply} />
             }
           </div>
-          {/* </Grid> */}
         </Drawer>
 
         <Drawer
@@ -798,7 +796,6 @@ class DocumentViewer extends React.Component {
           variant='persistent'
           style={this.state.editCommentOpen?{display: 'flex'}:{display: 'None'}}
         >
-          {/* <Grid container justify="space-between" alignItems="center"> */}
           <div style={{textAlign: 'center'}}>
             <Avatar
               alt="User Portrait"
@@ -830,9 +827,9 @@ class DocumentViewer extends React.Component {
               : <FontAwesomeIcon icon={['fas', 'paper-plane']} className='commit-comment-btn' onClick={this.postEdit} />
             }
           </div>
-          {/* </Grid> */}
         </Drawer>
-
+        
+        {/** CONTEXT MENU */}
         <Drawer
           docked={false}
           anchor="bottom"
@@ -841,10 +838,12 @@ class DocumentViewer extends React.Component {
           style={this.state.contextMenuOpen?{display: 'flex'}:{display: 'None'}}
         >
           <List>
+            {/** HOW TO USE */}
             <ListItem button>
               <ListItemIcon><FontAwesomeIcon icon={faInfoCircle} className='context-menu-icon' /></ListItemIcon>
               <ListItemText primary={'How to use'} />
             </ListItem>
+            {/** COLLECT/UNCOLLECT */}
             <ListItem button onClick={() => {
               var operation = this.state.isCollected?'uncollect':'collect'
               var data = new FormData()
@@ -861,11 +860,24 @@ class DocumentViewer extends React.Component {
                                                    :<FontAwesomeIcon icon={faStar} className='context-menu-icon' />}</ListItemIcon>
               <ListItemText primary={'Star'} />
             </ListItem>
+            {/** ADD TO READLIST */}
             <ListItem button>
               <ListItemIcon><AddIcon className='context-menu-icon' /></ListItemIcon>
               <ListItemText primary={'Add to readlist'} />
             </ListItem>
-            <ListItem button>
+            {/** DOWNLOAD */}
+            <ListItem button onClick={() => {
+              axios.get(this.state.document.download_url).then(response => {
+                console.log(response)
+                const url = window.URL.createObjectURL( new Blob([response.data], {type:'application/pdf'}) );
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', this.state.document.title + '.pdf');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              })
+            }}>
               <ListItemIcon><DownloadIcon className='context-menu-icon' /></ListItemIcon>
               <ListItemText primary={'Download'} />
             </ListItem>
