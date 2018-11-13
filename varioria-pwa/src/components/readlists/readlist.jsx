@@ -50,8 +50,6 @@ class Readlist extends Component {
         return;
       }
       const collected = this.props.user.collectedReadlists.includes(this.props.readlists.readlist.slug);
-      console.log(this.props.user.collectedReadlists)
-      console.log(collected)
       const isOwner = this.props.user.pk == this.props.readlists.readlist.owner.pk;
       this.setState({
         collected,
