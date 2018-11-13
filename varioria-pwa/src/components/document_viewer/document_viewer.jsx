@@ -48,6 +48,7 @@ import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import DownloadIcon from '@material-ui/icons/CloudDownload';
 import { faInfoCircle, faStar as faStarred } from '@fortawesome/free-solid-svg-icons';
 import { faStar } from '@fortawesome/fontawesome-free-regular';
+import { Toast } from 'antd-mobile';
 
 library.add(faPaperPlane, faTimesCircle)
 
@@ -100,7 +101,8 @@ class DocumentViewer extends React.Component {
       newAnnotationContent: '',
       newAnnotationReplyContent: '',
       editTextContent: '',
-      // pageCanvasWidth: 660,
+      isCollected: false,
+      // pageCanvasWidth: 660,      
     }
 
     this.dynamicRenderOnScroll = () => {
@@ -398,7 +400,7 @@ class DocumentViewer extends React.Component {
   componentDidMount() {
     axios.get(constructGetDocumentQueryUrl(this.props.match.params.slug, this.props.isGroupDocument)).then(response => {
       this.setState({
-        document: response.data
+        document: response.data,
       })
       console.log(response.data)
       PDFJS.workerSrc = '/static/pdfjs/pdf.worker.js'
@@ -620,6 +622,7 @@ class DocumentViewer extends React.Component {
             // console.log(e.touches)
             // console.log(this.touchLength)
             // if (this.touchLength < TAP_TIME_THRESHOLD) {
+            this.setState({contextMenuOpen: false})
             if (this.state.mode === 'comment') return
             const target = e.target
             if (target.classList.contains('page-canvas'))
@@ -831,26 +834,39 @@ class DocumentViewer extends React.Component {
         </Drawer>
 
         <Drawer
+          docked={false}
           anchor="bottom"
-          open={this.state.contextMenuOpen}
+          open={this.state.contextMenuOpen && !this.state.editCommentOpen}
           variant='persistent'
           style={this.state.contextMenuOpen?{display: 'flex'}:{display: 'None'}}
         >
           <List>
             <ListItem button>
-              <ListItemIcon><FontAwesomeIcon icon={faInfoCircle} style={{width: '24px', height: '24px'}}/></ListItemIcon>
+              <ListItemIcon><FontAwesomeIcon icon={faInfoCircle} className='context-menu-icon' /></ListItemIcon>
               <ListItemText primary={'How to use'} />
             </ListItem>
-            <ListItem button>
-              <ListItemIcon><FontAwesomeIcon icon={faStar} style={{width: '24px', height: '24px'}}/></ListItemIcon>
+            <ListItem button onClick={() => {
+              var operation = this.state.isCollected?'uncollect':'collect'
+              var data = new FormData()
+              data.append('csrfmiddlewaretoken', getCookie('csrftoken'))
+              data.append('document_id', this.state.document.pk)
+              data.append('operation', operation)
+              axios.post(window.location.pathname + '/', data).then(response => {
+                if (response.status != 200) {return}
+                this.setState({isCollected: !this.state.isCollected})
+                Toast.success(operation+'ed', 1)
+                  })
+                }}>
+              <ListItemIcon>{this.state.isCollected?<FontAwesomeIcon icon={faStarred} className='context-menu-icon' />
+                                                   :<FontAwesomeIcon icon={faStar} className='context-menu-icon' />}</ListItemIcon>
               <ListItemText primary={'Star'} />
             </ListItem>
             <ListItem button>
-              <ListItemIcon><AddIcon style={{width: '24px', height: '24px'}}/></ListItemIcon>
+              <ListItemIcon><AddIcon className='context-menu-icon' /></ListItemIcon>
               <ListItemText primary={'Add to readlist'} />
             </ListItem>
             <ListItem button>
-              <ListItemIcon><DownloadIcon style={{width: '24px', height: '24px'}}/></ListItemIcon>
+              <ListItemIcon><DownloadIcon className='context-menu-icon' /></ListItemIcon>
               <ListItemText primary={'Download'} />
             </ListItem>
           </List>

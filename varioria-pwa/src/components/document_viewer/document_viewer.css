@@ -118,3 +118,12 @@
   margin-left: 24px;
   color: #108ee9;
 }
+
+.context-menu-icon {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.context-menu-icon > * {
+  color: rgb(27, 163, 156);
+}
