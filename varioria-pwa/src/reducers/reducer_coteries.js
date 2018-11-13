@@ -7,6 +7,8 @@ import {
   COTERIE_UPDATE_SUCCESS,
   COTERIE_MEMBER_REMOVE,
   COTERIE_JOIN_WITH_CODE,
+  COTERIE_APPLICATIONS_GET,
+  COTERIE_APPLICATION_ACCEPT,
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -36,6 +38,11 @@ export default function (state = [], action) {
     case COTERIE_JOIN_WITH_CODE:
       const coterie_joined_with_code = action.payload.data;
       return _.extend({}, state, {[coterie_joined_with_code.uuid]: coterie_joined_with_code});
+    case COTERIE_APPLICATION_ACCEPT:
+      let conterie_application_accepted = state[_.findKey(state, ['pk', action.application.coterie_pk])];
+      if (!_.find(conterie_application_accepted.members, ['pk', action.application.applicant.pk]))
+      conterie_application_accepted.members = conterie_application_accepted.members.concat(action.application.applicant);
+      return _.extend({}, state, {[conterie_application_accepted.uuid]: conterie_application_accepted});
     default:
       return state;
   }

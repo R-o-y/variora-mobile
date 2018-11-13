@@ -137,6 +137,7 @@ class Notifications extends Component {
   renderNotificationsList(notifications) {
     const items = notifications.map((notification) => {
       let isAnnotationRelated = ['reply to annotation', 'post annotation', 'reply to annotation reply'].includes(notification.verb);
+      let isApplicationToJoinGroup = ['apply join group'].includes(notification.verb);
       return (
         <List.Item
           key={notification.slug}
@@ -165,6 +166,9 @@ class Notifications extends Component {
             this.props.markNotificationAsRead(notification.mark_read_url, notification.slug)
             if (isAnnotationRelated && notification.data) {
               this.props.history.push(notification.data.redirect_url)
+            }
+            if (isApplicationToJoinGroup && notification.data) {
+              this.props.history.push(notification.data.redirect_url.split('/').slice(0, -1).concat('settings').join('/'));
             }
           }}
         >

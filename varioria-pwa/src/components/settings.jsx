@@ -11,9 +11,11 @@ import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import ApplicationIcon from '@material-ui/icons/HowToVote';
 import ExitIcon from '@material-ui/icons/ExitToApp';
 import KeyIcon from '@material-ui/icons/VpnKey';
 import ClearIcon from '@material-ui/icons/Clear';
+import DoneIcon from '@material-ui/icons/Done';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -33,8 +35,10 @@ class Settings extends Component {
       isFetching: true,
       memberModal: false,
       adminModal: false,
+      applicationModal: false,
       inviteDialog: false,
-      editDialog: false
+      editDialog: false,
+      applications: []
     }
   }
 
@@ -42,6 +46,31 @@ class Settings extends Component {
     this.props.getMyCoteries().then(() => {
       this.setState({isFetching: false})
     })
+
+    if (this.props.user.is_authenticated && this.props.match.params.groupUuid) {
+      this.fetchApplications();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.user.is_authenticated && this.props.match.params.groupUuid && this.props.match.params.groupUuid !== prevProps.match.params.groupUuid) {
+      this.fetchApplications();
+    }
+  }
+
+  fetchApplications() {
+    return this.props.getCoterieApplication(this.props.coteries[this.props.match.params.groupUuid].pk).then(response => {
+      this.setState({applications: response.payload.data})
+    })
+    .catch(error => {
+      this.setState({applications: []})
+      console.log(error);
+    })
+  }
+
+  removeApplicationCallback(applicationPk) {
+    let updatedApplications = this.state.applications.filter(function(application) {return application.pk !== applicationPk} )
+    this.setState({ applications: updatedApplications });
   }
 
   showModal(key, e) {
@@ -178,6 +207,39 @@ class Settings extends Component {
     )
   }
 
+  renderApplication(application) {
+    let applicant = application.applicant;
+    return (
+      <List.Item
+        key={application.pk}
+        thumb={<img src={applicant.portrait_url} alt='ortrait' style={{borderRadius: '50%'}} />}
+        align='middle'
+        extra={
+          <div style={{  display: 'flex', justifyContent: 'center', flexDirection: 'row', float:'right'}}>
+            <DoneIcon style={{marginRight: 20, color: '1BA39C'}}
+              onClick={() => {
+                let data = new FormData();
+                data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                this.props.acceptApplication(application.accept_url, data, application);
+                this.removeApplicationCallback(application.pk);
+              }}
+            />
+            <ClearIcon style={{color: 'red'}}
+              onClick={() => {
+                let data = new FormData();
+                data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                this.props.declineApplication(application.reject_url, data);
+                this.removeApplicationCallback(application.pk);
+              }} />
+          </div>
+        }
+      >
+        {applicant.nickname}
+        <List.Item.Brief>{application.application_message}</List.Item.Brief>
+      </List.Item>
+    )
+  }
+
   renderAdmin(member) {
     return (
       <List.Item
@@ -228,6 +290,29 @@ class Settings extends Component {
         >
           {currentCoterie.members.map((member) => {
             return this.renderMember(member, currentCoterie);
+          })}
+        </List>
+      </Modal>
+    )
+  }
+
+  renderApplicationModal() {
+    return (
+      <Modal
+        popup
+        visible={this.state.applicationModal}
+        onClose={() => this.onClose('applicationModal')}
+        animationType="slide-up"
+        style={{overflow: 'auto', maxHeight: '80vh'}}
+      >
+        <List
+          renderHeader={() =>
+            <b style={{color: "#1BA39C"}}>Applications</b>
+          }
+          className="popup-list"
+        >
+          {this.state.applications.map((application) => {
+            return this.renderApplication(application);
           })}
         </List>
       </Modal>
@@ -400,6 +485,16 @@ class Settings extends Component {
           </List.Item>
           { isAdmin &&
             <List.Item
+             thumb={<ApplicationIcon style={{color: '#1BA39C'}} />}
+             extra={this.state.applications.length}
+             arrow="horizontal"
+             onClick={(e) => {this.showModal('applicationModal', e)}}
+            >
+              Applications
+            </List.Item>
+          }
+          { isAdmin &&
+            <List.Item
              thumb={<PersonAddIcon style={{color: '#1BA39C'}} />}
              onClick={(e) => {this.showModal('inviteDialog', e)}}
             >
@@ -456,6 +551,7 @@ class Settings extends Component {
 
         {this.renderAdminModal(currentCoterie)}
         {this.renderMemberModal(currentCoterie)}
+        {this.renderApplicationModal()}
         {this.renderInviteDialog()}
         {this.renderEditDialog(currentCoterie)}
 
