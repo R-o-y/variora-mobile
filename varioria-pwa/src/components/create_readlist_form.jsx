@@ -19,7 +19,13 @@ class CreateReadlistForm extends Component {
     data.append('description', readlist_description);
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
-    this.props.createReadlist(data);
+    const groupUuid = this.props.match.params.groupUuid
+    if (groupUuid) {
+      const coterie = this.props.coteries[groupUuid]
+      this.props.coterieCreateReadlist(data, coterie.pk);
+    } else {
+      this.props.createReadlist(data);
+    }
     this.props.history.goBack();
   }
 
@@ -60,6 +66,7 @@ class CreateReadlistForm extends Component {
 
 function mapStateToProps(state) {
   return {
+    coteries: state.coteries
   };
 }
 

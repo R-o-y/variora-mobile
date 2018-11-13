@@ -28,9 +28,9 @@ class Readlists extends Component {
   componentDidMount() {
     let groupUuid = this.props.match.params.groupUuid;
     if (groupUuid) {
-      // this.props.getMyCoteriesReadlists(groupUuid).then(() => {
+      this.props.getMyCoteriesReadlists(groupUuid).then(() => {
         this.setState({loading: false})
-      // })
+      })
     } else {
       this.props.getMyReadlists().then(() => {
         this.setState({loading: false})
@@ -51,18 +51,17 @@ class Readlists extends Component {
   }
 
   renderAddReadlist() {
-    // ================ TODO: TEMP CODE UNTIL GROUP-BASED READLISTS ========================
-    let groupUuid = this.props.match.params.groupUuid;
-    if (groupUuid) {
-      return (
-        <div></div>
-      )
-    }
-    // =====================================================================================
     return (
       <List.Item
         thumb={<AddIcon style={{color:'grey'}} />}
-        onClick={() => {this.props.history.push("/create-readlist-form")}}
+        onClick={() => {
+          const groupUuid = this.props.match.params.groupUuid
+          if (groupUuid) {
+            this.props.history.push("/create-readlist-form/" + groupUuid)
+          } else {
+            this.props.history.push("/create-readlist-form")
+          }
+        }}
       >
         <div style={{color:'grey'}}>New readlist</div>
         <List.Item.Brief>Click to create...</List.Item.Brief>
@@ -71,21 +70,6 @@ class Readlists extends Component {
   }
 
   renderReadlist(list, isCreated) {
-    // ================ TODO: TEMP CODE UNTIL GROUP-BASED READLISTS ========================
-    let groupUuid = this.props.match.params.groupUuid;
-    if (groupUuid) {
-      return (
-        <List>
-          <List.Item>
-            <div style={{color: 'grey', textAlign:'center' }}>
-              Group-based readlists still in development.
-            </div>
-          </List.Item>
-        </List>
-      )
-    }
-    // =====================================================================================
-
     if (!list.length) {
       return (
         <List>
@@ -105,7 +89,15 @@ class Readlists extends Component {
             thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
             multipleLine
             arrow="horizontal"
-            onClick={() => {this.props.history.push(`readlists/${slug}`)}}
+            onClick={() => {
+              const groupUuid = this.props.match.params.groupUuid
+              if (groupUuid) {
+                const coterie = this.props.coteries[groupUuid]
+                const coterieId = coterie.pk
+                this.props.history.push(`/coteries/${coterieId}/readlists/${slug}`)
+              } else
+                this.props.history.push(`/readlists/${slug}`)
+            }}
           >
             {element.name}
             <List.Item.Brief>{moment(element.create_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>

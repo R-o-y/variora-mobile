@@ -87,6 +87,7 @@ ReactDOM.render(
             <Route path="/profile" component={Profile} />
             <Route path="/add-to-readlists" component={AddToReadlist} />
             <Route path="/create-coterie-form" component={CreateCoterieForm} />
+            <Route path="/create-readlist-form/:groupUuid" component={CreateReadlistForm} />
             <Route path="/create-readlist-form" component={CreateReadlistForm} />
             <Route path="/edit-readlist-form/:slug" component={EditReadlistForm} />
             <Route path="/sign-in" component={Login} />

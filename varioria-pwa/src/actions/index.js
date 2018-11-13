@@ -12,6 +12,7 @@ import {
   NOTIFICATION_READ_ALL_ERROR,
   COTERIE_GET_MY,
   COTERIE_GET_MY_DOCUMENTS,
+  COTERIE_GET_MY_READLISTS,
   COTERIE_CREATE,
   COTERIE_UPDATE,
   COTERIE_UPDATE_SUCCESS,
@@ -236,15 +237,13 @@ export function getMyCoteries() {
 export function getMyCoteriesDocument(uuid) {
   const url = `/coteries/api/coteries/${uuid}/members/me/uploaded-documents`;
   const request = axios.get(url);
-
   return {type: COTERIE_GET_MY_DOCUMENTS, payload: request};
 }
 
 export function getMyCoteriesReadlists(uuid) {
-  // const url = `/coteries/api/coteries/${uuid}/members/me/uploaded-documents`;
-  // const request = axios.get(url);
-
-  // return {type: COTERIE_GET_MY_DOCUMENTS, payload: request};
+  const url = `/coteries/api/coteries/${uuid}/members/me/coteriereadlists`;
+  const request = axios.get(url);
+  return {type: COTERIE_GET_MY_READLISTS, payload: request};
 }
 
 export function createReadlist(data) {
@@ -254,6 +253,17 @@ export function createReadlist(data) {
     url,
     data
   });
+  return {type: READLIST_CREATE, payload: request};
+}
+
+export function coterieCreateReadlist(data, pk) {
+  const url = `/coteries/api/${pk}/coteriereadlists/create`;
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+  // TODO see if need to change type
   return {type: READLIST_CREATE, payload: request};
 }
 
