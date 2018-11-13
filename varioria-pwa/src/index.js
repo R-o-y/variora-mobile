@@ -99,4 +99,4 @@ ReactDOM.render(
     </Provider>
   </MuiThemeProvider>
   , document.getElementById('root'));
-serviceWorker.unregister();
+serviceWorker.register({});
