@@ -144,6 +144,7 @@ class AnnotationViewer extends React.Component {
               }
             </Grid>
             {/* BOTTOM ROW RIGHT SIDE --- Contains: Locate, Reply, Like, More options */}
+            {/**
             <Grid container justify="flex-end" alignItems="flex-start" wrap="nowrap" className={isHead && "comment-head-buttons"}>
               {isHead && //Locate Arrow only exists for header
               <Grid item>
@@ -169,6 +170,7 @@ class AnnotationViewer extends React.Component {
                 </SmallButton>
               </Grid>
             </Grid>
+            */}
           </Grid>
         </Grid>
       </div>
