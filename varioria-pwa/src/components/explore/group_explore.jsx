@@ -76,9 +76,7 @@ class GroupExplore extends Component {
           multipleLine
           onClick={() => {
             const groupUuid = this.props.match.params.groupUuid
-            const coterie = this.props.coteries[groupUuid]
-            const coterieId = coterie.pk
-            this.props.history.push(`/coteries/${coterieId}/readlists/${element.slug}`)
+            this.props.history.push(`/coteries/${groupUuid}/readlists/${element.slug}`)
           }}
         >
           {element.name}

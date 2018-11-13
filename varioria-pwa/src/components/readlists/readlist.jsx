@@ -31,13 +31,15 @@ class Readlist extends Component {
 
   componentDidMount() {
     const { slug } = this.props.match.params;
-    const coterieId = this.props.match.params.coterieId;
+    const groupUuid = this.props.match.params.groupUuid;
     const fetchData = async () => {
       try {
-        if (coterieId) {
+        if (groupUuid) {
+          await this.props.getMyCoteries();
+          const coterieId = this.props.coteries[groupUuid].pk;
           await this.props.getCoterieReadlist(slug, coterieId);
           await this.props.getUser();
-          await this.props.getMyReadlists();
+          await this.props.getMyCoteriesReadlists(groupUuid);
         } else {
           await this.props.getReadlist(slug);
           await this.props.getUser();
@@ -48,6 +50,8 @@ class Readlist extends Component {
         return;
       }
       const collected = this.props.user.collectedReadlists.includes(this.props.readlists.readlist.slug);
+      console.log(this.props.user.collectedReadlists)
+      console.log(collected)
       const isOwner = this.props.user.pk == this.props.readlists.readlist.owner.pk;
       this.setState({
         collected,
@@ -60,7 +64,7 @@ class Readlist extends Component {
 
   onCollectIconClick = () => {
     const readlist = this.props.readlists.readlist;
-    const coterieId = this.props.match.params.coterieId;
+    const groupUuid = this.props.match.params.groupUuid;
     if (this.state.isOwner) {
       Toast.fail('You are the owner of this readlist')
       return
@@ -68,7 +72,8 @@ class Readlist extends Component {
     let data = new FormData();
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
     if (this.state.collected) {
-      if (coterieId) {
+      if (groupUuid) {
+        const coterieId = this.props.coteries[groupUuid].pk
         this.props.uncollectCoterieReadlist(data, readlist.slug, coterieId).then(() => {
           this.setState({collected: false})
         });  
@@ -78,7 +83,8 @@ class Readlist extends Component {
         });  
       }
     } else {
-      if (coterieId) {
+      if (groupUuid) {
+        const coterieId = this.props.coteries[groupUuid].pk
         this.props.collectCoterieReadlist(data, readlist.slug, coterieId).then(() => {
           this.setState({collected: true})
         });  
@@ -105,8 +111,9 @@ class Readlist extends Component {
           thumb={<img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />}
           multipleLine
           onClick={() => {
-            const coterieId = this.props.match.params.coterieId
-            if (coterieId) {
+            const groupUuid = this.props.match.params.groupUuid
+            if (groupUuid) {
+              const coterieId = this.props.coteries[groupUuid].pk
               this.props.history.push(`/coteries/${coterieId}/documents/${element.slug}`)
             } else {
               this.props.history.push(`/documents/${element.slug}`)
@@ -140,8 +147,9 @@ class Readlist extends Component {
               isOwner ? (
                 <IconButton>
                   <EditIcon onClick={() => {
-                    const coterieId = this.props.match.params.coterieId;
-                    if (coterieId) {
+                    const groupUuid = this.props.match.params.groupUuid;
+                    if (groupUuid) {
+                      const coterieId = this.props.coteries[groupUuid].pk
                       this.props.history.push("/edit-readlist-form/" + coterieId + "/" + this.props.readlists.readlist.slug)
                     } else {
                       this.props.history.push("/edit-readlist-form/" + this.props.readlists.readlist.slug)
@@ -221,7 +229,8 @@ class Readlist extends Component {
 function mapStateToProps(state) {
   return {
     readlists: state.readlists,
-    user: state.user
+    user: state.user,
+    coteries: state.coteries
   };
 }
 

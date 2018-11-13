@@ -92,9 +92,7 @@ class Readlists extends Component {
             onClick={() => {
               const groupUuid = this.props.match.params.groupUuid
               if (groupUuid) {
-                const coterie = this.props.coteries[groupUuid]
-                const coterieId = coterie.pk
-                this.props.history.push(`/coteries/${coterieId}/readlists/${slug}`)
+                this.props.history.push(`/coteries/${groupUuid}/readlists/${slug}`)
               } else
                 this.props.history.push(`/readlists/${slug}`)
             }}

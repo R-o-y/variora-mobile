@@ -82,7 +82,7 @@ ReactDOM.render(
             <Route path="/documents/:slug" render={({match, location, history}) => renderDocumentViewer(match, location, history)} />
             <Route path="/coteries/:coterieId/documents/:slug" render={({match, location, history}) => renderGroupDocumentViewer(match, location, history)} />
             <Route path='/readlists/:slug' component={Readlist}/>
-            <Route path='/coteries/:coterieId/readlists/:slug' component={Readlist}/>
+            <Route path='/coteries/:groupUuid/readlists/:slug' component={Readlist}/>
             <Route path="/search/:groupUuid" component={Search} />
             <Route path="/search" component={Search} />
             <Route path="/profile" component={Profile} />
