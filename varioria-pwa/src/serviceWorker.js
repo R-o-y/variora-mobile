@@ -20,7 +20,7 @@ const isLocalhost = Boolean(
 
 
 export function register(config) {
-  if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator && !isLocalhost) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location);
     if (publicUrl.origin !== window.location.origin) {
