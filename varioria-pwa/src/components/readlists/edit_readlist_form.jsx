@@ -35,6 +35,7 @@ class EditReadlistForm extends Component {
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
     if (coterieId) {
+      // TODO: directly use urls when backend support
       const renameUrl = "/coterie/api/" + coterieId + "/coteriereadlists/" + this.props.readlists.readlist.slug + "/rename"
       const changeDescUrl = "/coterie/api/" + coterieId + "/coteriereadlists/" + this.props.readlists.readlist.slug + "/change_desc"
       this.props.editReadlist(renameUrl, data)
