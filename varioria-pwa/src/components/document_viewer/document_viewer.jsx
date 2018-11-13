@@ -864,10 +864,11 @@ class DocumentViewer extends React.Component {
               <ListItemText primary={'Star'} />
             </ListItem>
             {/** ADD TO READLIST */}
+            {/**
             <ListItem button>
               <ListItemIcon><AddIcon className='context-menu-icon' /></ListItemIcon>
               <ListItemText primary={'Add to readlist'} />
-            </ListItem>
+            </ListItem>  */}
             {/** DOWNLOAD */}
             <ListItem button onClick={() => {
               axios.get(this.state.document.download_url).then(response => {
