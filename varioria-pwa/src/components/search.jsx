@@ -44,8 +44,11 @@ class Search extends React.Component {
     const groupUuid = this.props.match.params.groupUuid;
     let data = [];
     let documentsPath = `/documents/`
+    let readlistsPath = `/readlists/`
     if (groupUuid) {
-      documentsPath = `/group-documents/`
+      const coterieId = this.props.coteries[groupUuid].pk
+      documentsPath = `/coteries/${coterieId}/documents/`
+      readlistsPath = `/coteries/${groupUuid}/readlists/`
     }
     if (results.documents) {
       const documents = results.documents.map(element => {
@@ -79,7 +82,7 @@ class Search extends React.Component {
               arrow="horizontal"
               thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
               multipleLine
-              onClick={() => {this.props.history.push(`readlists/${element.slug}`)}}
+              onClick={() => {this.props.history.push(readlistsPath +`${element.slug}`)}}
             >
               {element.name}
               <List.Item.Brief>
