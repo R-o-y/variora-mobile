@@ -640,21 +640,25 @@ class DocumentViewer extends React.Component {
               >
                 <KeyboardArrowLeft />
               </IconButton>
-              <IconButton component="span" onClick={e => this.props.history.push(window.location.pathname+'/annotations')}>
-                <FormatListBulletedRounded />
-              </IconButton>
-              <IconButton component="span"
-                disabled={getNextAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage, this.state.numPages) === undefined}
-                onClick={e => {
-                  const toAnnotation = getNextAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage, this.state.numPages)
-                  this.selectAnnotation(toAnnotation.uuid)
-                  var topOfElement = document.querySelector('#page-canvas-'+toAnnotation.page_index).parentNode.offsetTop +
-                                     this.annotationAreas[toAnnotation.uuid].offsetTop - 10
-                  window.scroll({ top: topOfElement, behavior: "smooth" });
-                }}
-              >
-                <KeyboardArrowRight />
-              </IconButton>
+              <Grid>
+                <Grid container justify='flex-end'>
+                  <IconButton component="span" onClick={e => this.props.history.push(window.location.pathname+'/annotations')}>
+                    <FormatListBulletedRounded />
+                  </IconButton>
+                  <IconButton component="span"
+                    disabled={getNextAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage, this.state.numPages) === undefined}
+                    onClick={e => {
+                      const toAnnotation = getNextAnnotation(this.state.selectedAnnotation, this.state.annotationsByPage, this.state.numPages)
+                      this.selectAnnotation(toAnnotation.uuid)
+                      var topOfElement = document.querySelector('#page-canvas-'+toAnnotation.page_index).parentNode.offsetTop +
+                                        this.annotationAreas[toAnnotation.uuid].offsetTop - 10
+                      window.scroll({ top: topOfElement, behavior: "smooth" });
+                    }}
+                  >
+                    <KeyboardArrowRight />
+                  </IconButton>
+                </Grid>
+              </Grid>
             </Grid>
 
             <div ref={ele => this.annotationWrapper = ele}>
