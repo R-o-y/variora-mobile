@@ -105,8 +105,12 @@ class Readlist extends Component {
           thumb={<img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />}
           multipleLine
           onClick={() => {
-            // TODO: different documents url for grp
-            this.props.history.push(`/documents/${element.slug}`)
+            const coterieId = this.props.match.params.coterieId
+            if (coterieId) {
+              this.props.history.push(`/coteries/${coterieId}/documents/${element.slug}`)
+            } else {
+              this.props.history.push(`/documents/${element.slug}`)
+            }
           }}
         >
           {element.title}

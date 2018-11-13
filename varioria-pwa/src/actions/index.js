@@ -163,7 +163,6 @@ export function getCoterieReadlist(slug, coterieId) {
   console.log(url)
   const request = axios.get(url);
 
-  // todo: see if need to change type
   return {type: READLIST_GET, payload: request};
 }
 
@@ -273,7 +272,6 @@ export function coterieCreateReadlist(data, pk) {
     url,
     data
   });
-  // TODO see if need to change type
   return {type: READLIST_CREATE, payload: request};
 }
 
@@ -367,6 +365,24 @@ export function uncollectReadlistSuccess(slug) {
 export function documentChangeReadlists(pk, data) {
   const url = '/file_viewer/api/documents/' + pk + '/changereadlists'
   console.log("making req to " + url + " with data")
+  console.log(data)
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(removeFromReadlistSuccess());
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
+export function coterieDocumentChangeReadlists(pk, data) {
+  const url = '/coteries/api/coteriedocuments/' + pk + '/changereadlists'
   console.log(data)
   return function(dispatch) {
     return axios({

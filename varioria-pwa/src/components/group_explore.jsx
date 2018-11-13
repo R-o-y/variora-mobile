@@ -75,7 +75,6 @@ class GroupExplore extends Component {
           thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
           multipleLine
           onClick={() => {
-            // TODO: make link work
             const groupUuid = this.props.match.params.groupUuid
             const coterie = this.props.coteries[groupUuid]
             const coterieId = coterie.pk
