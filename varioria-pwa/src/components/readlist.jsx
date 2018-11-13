@@ -1,24 +1,26 @@
-import React, { Component } from 'react';
 import * as actions from '../actions';
-import { connect } from 'react-redux';
-import Navbar from './nav_bar';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { WhiteSpace, List, NavBar, Icon, Toast } from 'antd-mobile';
-import moment from 'moment';
+
+import { Icon, List, NavBar, Toast, WhiteSpace } from 'antd-mobile';
+import React, { Component } from 'react';
+import { copyToClipboard, getCookie } from '../utilities/helper';
+
+import Avatar from '@material-ui/core/Avatar';
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
-import IconButton from '@material-ui/core/IconButton';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import EditIcon from '@material-ui/icons/Edit';
 import Favorite from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
+import IconButton from '@material-ui/core/IconButton';
+import Navbar from './nav_bar';
 import ShareIcon from '@material-ui/icons/Share';
-import Avatar from '@material-ui/core/Avatar';
-import CardHeader from '@material-ui/core/CardHeader';
-import EditIcon from '@material-ui/icons/Edit';
 import TimeAgo from 'react-timeago'
-
-import { getCookie, copyToClipboard } from '../utilities/helper';
+import Typography from '@material-ui/core/Typography';
+import { connect } from 'react-redux';
+import moment from 'moment';
+import pdfIcon from '../utilities/pdf.png';
 
 class Readlist extends Component {
 
@@ -86,7 +88,7 @@ class Readlist extends Component {
         <List.Item
           key={element.slug}
           arrow="horizontal"
-          thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
+          thumb={<img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />}
           multipleLine
           onClick={() => {this.props.history.push(`/documents/${element.slug}`)}}
         >
