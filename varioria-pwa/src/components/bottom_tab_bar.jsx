@@ -39,9 +39,22 @@ class BottomTabBar extends React.Component {
     }
   }
 
+  getVisibleHeightString() {
+    // This function is especially for adapting the iPhoneX view
+    if (window.navigator.standalone === true) return 'calc(100% - 50px - env(safe-area-inset-bottom))';
+    else return 'calc(100% - 50px)';
+  }
+
   render() {
     return (
-      <div style={{ position: 'fixed', height: 'calc(100% - 50px)', width: '100%', top: 50 }}>
+      <div style={{
+        position: 'fixed',
+        height: this.getVisibleHeightString(),
+        width: 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right)',
+        top: 50,
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)',
+      }}>
         <TabBar
           unselectedTintColor="#949494"
           tintColor="#1BA39C"
