@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import NotSignedIn from './error_page/not_signed_in';
-import NoPermission from './error_page/no_permission';
+import NotSignedIn from '../error_page/not_signed_in';
+import NoPermission from '../error_page/no_permission';
 import moment from 'moment';
 import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import ShareIcon from '@material-ui/icons/Share';
@@ -12,7 +12,7 @@ import DeleteIcon from '@material-ui/icons/DeleteForever';
 
 import { Tabs, WhiteSpace, List, Modal, Toast, Icon } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
-import { getCookie, copyToClipboard } from '../utilities/helper';
+import { getCookie, copyToClipboard } from '../../utilities/helper';
 
 class Readlists extends Component {
   constructor(props) {

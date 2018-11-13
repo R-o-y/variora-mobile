@@ -2,12 +2,12 @@ import _ from 'lodash';
 import React from 'react'
 import { NavBar, Icon, ActivityIndicator, List, WhiteSpace, Button } from 'antd-mobile';
 import { connect } from 'react-redux';
-import Navbar from './nav_bar';
+import Navbar from '../nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 import { StickyContainer } from 'react-sticky';
 import Checkbox from '@material-ui/core/Checkbox';
-import { getCookie } from '../utilities/helper';
+import { getCookie } from '../../utilities/helper';
 
 class AddToReadlist extends React.Component {
   constructor(props) {

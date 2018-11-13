@@ -10,11 +10,11 @@ import { applyMiddleware, compose, createStore } from 'redux';
 import App from './App';
 import AuthContainer from './components/auth_container';
 import CreateCoterieForm from './components/create_coterie_form';
-import CreateReadlistForm from './components/create_readlist_form';
-import EditReadlistForm from './components/edit_readlist_form';
+import CreateReadlistForm from './components/readlists/create_readlist_form';
+import EditReadlistForm from './components/readlists/edit_readlist_form';
 import DocumentViewer from './components/document_viewer/document_viewer';
-import Readlist from './components/readlist';
-import AddToReadlist from './components/add_to_readlist';
+import Readlist from './components/readlists/readlist';
+import AddToReadlist from './components/readlists/add_to_readlist';
 import Profile from './components/profile/profile'
 import Search from './components/search';
 

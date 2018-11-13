@@ -1,8 +1,8 @@
-import * as actions from '../actions';
+import * as actions from '../../actions';
 
 import { Icon, List, NavBar, Toast, WhiteSpace } from 'antd-mobile';
 import React, { Component } from 'react';
-import { copyToClipboard, getCookie } from '../utilities/helper';
+import { copyToClipboard, getCookie } from '../../utilities/helper';
 
 import Avatar from '@material-ui/core/Avatar';
 import Card from '@material-ui/core/Card';
@@ -14,13 +14,13 @@ import EditIcon from '@material-ui/icons/Edit';
 import Favorite from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import IconButton from '@material-ui/core/IconButton';
-import Navbar from './nav_bar';
+import Navbar from '../nav_bar';
 import ShareIcon from '@material-ui/icons/Share';
 import TimeAgo from 'react-timeago'
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import pdfIcon from '../utilities/pdf.png';
+import pdfIcon from '../../utilities/pdf.png';
 
 class Readlist extends Component {
 

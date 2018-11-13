@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 import { connect } from 'react-redux';
 import { Button, Icon, InputItem, List, NavBar, TextareaItem, WhiteSpace } from 'antd-mobile';
-import { getCookie } from '../utilities/helper';
+import { getCookie } from '../../utilities/helper';
 
 class CreateReadlistForm extends Component {
 
