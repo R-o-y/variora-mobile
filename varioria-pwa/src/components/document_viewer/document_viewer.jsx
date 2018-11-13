@@ -37,6 +37,17 @@ import { connect } from 'react-redux';
 import { getCookie, getValFromUrlParam, uuidWithHyphen } from '../../utilities/helper';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
+import AddIcon from '@material-ui/icons/AddBoxOutlined';
+import DownloadIcon from '@material-ui/icons/CloudDownload';
+import { faInfoCircle, faStar as faStarred } from '@fortawesome/free-solid-svg-icons';
+import { faStar } from '@fortawesome/fontawesome-free-regular';
 
 library.add(faPaperPlane, faTimesCircle)
 
@@ -80,6 +91,7 @@ class DocumentViewer extends React.Component {
       annotationOpen: false,
       annotationLinearLinkedListOpen: false,
       editCommentOpen: false,
+      contextMenuOpen: false,
       newAnnotationInputOpen: false,
       selectedAnnotation: undefined,
       mode: 'view',  // view or comment
@@ -237,7 +249,7 @@ class DocumentViewer extends React.Component {
 
       if (!this.state.annotationOpen) {
         this.styleDrawer()
-        this.setState({ annotationOpen: true, annotationLinearLinkedListOpen: false, editCommentOpen: false });
+        this.setState({ annotationOpen: true, annotationLinearLinkedListOpen: false, editCommentOpen: false, contextMenuOpen: false, });
       }
     }
 
@@ -245,7 +257,7 @@ class DocumentViewer extends React.Component {
       if (this.state.selectedAnnotation !== undefined)
         this.annotationAreas[this.state.selectedAnnotation.uuid].classList.remove('highlighted-annotation-area')
       this.setState({ annotationOpen: false });
-      this.setState({ selectedAnnotation: undefined })
+      this.setState({ selectedAnnotation: undefined, annotationLinearLinkedListOpen: false, editCommentOpen: false, contextMenuOpen: false, })
     }
 
     this.lockScroll = (e) => {
@@ -303,7 +315,7 @@ class DocumentViewer extends React.Component {
     }
 
     this.cancelCurrentAnnotation = () => {
-      this.setState({creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false})
+      this.setState({creatingAnnotationAtPageIndex: undefined, newAnnotationInputOpen: false, contextMenuOpen: false, })
     }
 
     this.postAnnotationReply = () => {
@@ -322,12 +334,12 @@ class DocumentViewer extends React.Component {
         this.setState({
           annotations: annotations,
           newAnnotationReplyContent: '',
-          annotationOpen: true, annotationLinearLinkedListOpen: false,
+          annotationOpen: true, newAnnotationInputOpen: false, annotationLinearLinkedListOpen: false, contextMenuOpen: false,
         })
       }).catch(err => {
         alert('', 'You need to login to post', [
           { text: 'Cancel', onPress: () => {
-            this.setState({newAnnotationReplyContent: '', annotationOpen: true, annotationLinearLinkedListOpen: false})
+            this.setState({newAnnotationReplyContent: '', annotationOpen: true, newAnnotationInputOpen: false, annotationLinearLinkedListOpen: false, contextMenuOpen: false, })
           } },
           { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
         ])
@@ -335,7 +347,7 @@ class DocumentViewer extends React.Component {
     }
 
     this.cancelCurrentAnnotationReply = () => {
-      this.setState({annotationOpen: true, annotationLinearLinkedListOpen: false,})
+      this.setState({annotationOpen: true, annotationLinearLinkedListOpen: false, contextMenuOpen: false,})
     }
 
     this.postEdit = () => {
@@ -360,14 +372,16 @@ class DocumentViewer extends React.Component {
         }
         this.setState({
           annotationOpen: true,
+          newAnnotationInputOpen: false, 
           editCommentOpen: false,
+          contextMenuOpen: false,
           annotations: annotations,
         })
       })
     }
 
     this.cancelEdit = () => {
-      this.setState({annotationOpen: true, editCommentOpen: false,})
+      this.setState({annotationOpen: true, newAnnotationInputOpen: false, editCommentOpen: false, contextMenuOpen: false,})
     }
 
     this.scrollToTargetAnnotationIfInUrl = () => {
@@ -583,7 +597,7 @@ class DocumentViewer extends React.Component {
             }
           }}/>}
           rightContent={[
-            <Icon key="1" type="ellipsis" />,
+            <Icon key="1" type="ellipsis" onClick={() => this.setState({contextMenuOpen: true})}/>,
           ]}
           style={{
             boxShadow: '0px 1px 3px rgba(28, 28, 28, .1)',
@@ -814,6 +828,32 @@ class DocumentViewer extends React.Component {
             }
           </div>
           {/* </Grid> */}
+        </Drawer>
+
+        <Drawer
+          anchor="bottom"
+          open={this.state.contextMenuOpen}
+          variant='persistent'
+          style={this.state.contextMenuOpen?{display: 'flex'}:{display: 'None'}}
+        >
+          <List>
+            <ListItem button>
+              <ListItemIcon><FontAwesomeIcon icon={faInfoCircle} style={{width: '24px', height: '24px'}}/></ListItemIcon>
+              <ListItemText primary={'How to use'} />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon><FontAwesomeIcon icon={faStar} style={{width: '24px', height: '24px'}}/></ListItemIcon>
+              <ListItemText primary={'Star'} />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon><AddIcon style={{width: '24px', height: '24px'}}/></ListItemIcon>
+              <ListItemText primary={'Add to readlist'} />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon><DownloadIcon style={{width: '24px', height: '24px'}}/></ListItemIcon>
+              <ListItemText primary={'Download'} />
+            </ListItem>
+          </List>
         </Drawer>
 
         { this.state.mode === 'view'
