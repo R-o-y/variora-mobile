@@ -204,19 +204,18 @@ class Notifications extends Component {
       <div>
           <List
             renderHeader={() =>
-              <MButton variant="outlined" color="primary" size="small"
-                onClick={() => {
-                  Modal.alert('Mark all notifications as read?', '', [
-                    { text: 'Cancel' },
-                    { text: 'OK', style:{color:'#1BA39C'},
-                      onPress: () => {
-                        this.handleMarkAllAsRead();
-                    }},
-                  ])
-                }}
-              >
-                <MailReadIcon style={{margin: '-10'}} />
-              </MButton>
+
+                <MailReadIcon
+                  onClick={() => {
+                    Modal.alert('Mark all notifications as read?', '', [
+                      { text: 'Cancel' },
+                      { text: 'OK', style:{color:'#1BA39C'},
+                        onPress: () => {
+                          this.handleMarkAllAsRead();
+                      }},
+                    ])
+                  }}
+                />
             }
             style={{textAlign: 'center'}}
           >
