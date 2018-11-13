@@ -82,6 +82,7 @@ ReactDOM.render(
             <Route path="/documents/:slug" render={({match, location, history}) => renderDocumentViewer(match, location, history)} />
             <Route path="/coteries/:coterieId/documents/:slug" render={({match, location, history}) => renderGroupDocumentViewer(match, location, history)} />
             <Route path='/readlists/:slug' component={Readlist}/>
+            <Route path='/coteries/:coterieId/readlists/:slug' component={Readlist}/>
             <Route path="/search/:groupUuid" component={Search} />
             <Route path="/search" component={Search} />
             <Route path="/profile" component={Profile} />
@@ -89,6 +90,7 @@ ReactDOM.render(
             <Route path="/create-coterie-form" component={CreateCoterieForm} />
             <Route path="/create-readlist-form/:groupUuid" component={CreateReadlistForm} />
             <Route path="/create-readlist-form" component={CreateReadlistForm} />
+            <Route path="/edit-readlist-form/:coterieId/:slug" component={EditReadlistForm} />
             <Route path="/edit-readlist-form/:slug" component={EditReadlistForm} />
             <Route path="/sign-in" component={Login} />
             <Route exact path="/"render={() => <Redirect to="/uploads" />} />

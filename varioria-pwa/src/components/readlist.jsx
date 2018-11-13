@@ -31,18 +31,24 @@ class Readlist extends Component {
 
   componentDidMount() {
     const { slug } = this.props.match.params;
+    const coterieId = this.props.match.params.coterieId;
     const fetchData = async () => {
       try {
-        await this.props.getReadlist(slug);
-        await this.props.getUser();
-        await this.props.getMyReadlists();
+        if (coterieId) {
+          await this.props.getCoterieReadlist(slug, coterieId);
+          await this.props.getUser();
+          await this.props.getMyReadlists();
+        } else {
+          await this.props.getReadlist(slug);
+          await this.props.getUser();
+          await this.props.getMyReadlists();
+        }    
       } catch (error) {
         console.error(error);
         return;
       }
       const collected = this.props.user.collectedReadlists.includes(this.props.readlists.readlist.slug);
       const isOwner = this.props.user.pk == this.props.readlists.readlist.owner.pk;
-      console.log(this.props.user);
       this.setState({
         collected,
         isOwner,
@@ -54,6 +60,7 @@ class Readlist extends Component {
 
   onCollectIconClick = () => {
     const readlist = this.props.readlists.readlist;
+    const coterieId = this.props.match.params.coterieId;
     if (this.state.isOwner) {
       Toast.fail('You are the owner of this readlist')
       return
@@ -61,19 +68,26 @@ class Readlist extends Component {
     let data = new FormData();
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
     if (this.state.collected) {
-      console.log("uncollectin")
-      this.props.uncollectReadlist(data, readlist.slug).then(() => {
-        this.setState({collected: false})
-        console.log("uncollected")
-      });
+      if (coterieId) {
+        this.props.uncollectCoterieReadlist(data, readlist.slug, coterieId).then(() => {
+          this.setState({collected: false})
+        });  
+      } else {
+        this.props.uncollectReadlist(data, readlist.slug).then(() => {
+          this.setState({collected: false})
+        });  
+      }
     } else {
-      console.log("collectin")
-      this.props.collectReadlist(data, readlist.slug).then(() => {
-        this.setState({collected: true})
-        console.log("collected")
-      });
+      if (coterieId) {
+        this.props.collectCoterieReadlist(data, readlist.slug, coterieId).then(() => {
+          this.setState({collected: true})
+        });  
+      } else {
+        this.props.collectReadlist(data, readlist.slug).then(() => {
+          this.setState({collected: true})
+        });  
+      }
     }
-    // this.props.uncollectDocument(currDocument.uncollectUrl, data, currDocument.slug);
   }
 
   onShareIconClick() {
@@ -90,7 +104,10 @@ class Readlist extends Component {
           arrow="horizontal"
           thumb={<img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />}
           multipleLine
-          onClick={() => {this.props.history.push(`/documents/${element.slug}`)}}
+          onClick={() => {
+            // TODO: different documents url for grp
+            this.props.history.push(`/documents/${element.slug}`)
+          }}
         >
           {element.title}
           <List.Item.Brief>{moment(element.upload_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>
@@ -118,7 +135,14 @@ class Readlist extends Component {
             action={
               isOwner ? (
                 <IconButton>
-                  <EditIcon onClick={() => {this.props.history.push("/edit-readlist-form/" + this.props.readlists.readlist.slug)}} />
+                  <EditIcon onClick={() => {
+                    const coterieId = this.props.match.params.coterieId;
+                    if (coterieId) {
+                      this.props.history.push("/edit-readlist-form/" + coterieId + "/" + this.props.readlists.readlist.slug)
+                    } else {
+                      this.props.history.push("/edit-readlist-form/" + this.props.readlists.readlist.slug)
+                    }
+                  }} />
                 </IconButton>
               ) : (
                 <div></div>
