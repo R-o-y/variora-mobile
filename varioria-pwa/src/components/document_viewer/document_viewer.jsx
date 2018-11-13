@@ -625,6 +625,7 @@ class DocumentViewer extends React.Component {
           onClose={() => this.deselectAnnotation()}
           // ModalProps={{BackdropProps: {invisible: true}}}
           variant='persistent'
+          style={this.state.annotationOpen?{display: 'flex'}:{display: 'None'}}
         >
           <div>
             <Grid container justify='space-between' className='annotation-thread-navbar'>
@@ -682,6 +683,7 @@ class DocumentViewer extends React.Component {
         <Drawer
           anchor="bottom" variant='persistent'
           open={this.state.newAnnotationInputOpen}
+          style={this.state.newAnnotationInputOpen?{display: 'flex'}:{display: 'None'}}
         >
           <div style={{textAlign: 'center'}}>
             {/* <TextareaItem
@@ -735,6 +737,7 @@ class DocumentViewer extends React.Component {
           open={this.state.annotationLinearLinkedListOpen}
           onClose={() => this.reopenAnnotationThread()}
           variant='persistent'
+          style={this.state.annotationLinearLinkedListOpen?{display: 'flex'}:{display: 'None'}}
         >
           {/* <Grid container justify="space-between" alignItems="center"> */}
           <div style={{textAlign: 'center'}}>
@@ -776,6 +779,7 @@ class DocumentViewer extends React.Component {
           open={this.state.editCommentOpen}
           onClose={() => this.reopenAnnotationThread()}
           variant='persistent'
+          style={this.state.editCommentOpen?{display: 'flex'}:{display: 'None'}}
         >
           {/* <Grid container justify="space-between" alignItems="center"> */}
           <div style={{textAlign: 'center'}}>
