@@ -3,6 +3,7 @@ export const USER_SIGN_OFF = 'user_sign_off';
 
 export const DOCUMENT_GET_MY = 'document_get_my';
 export const COTERIE_GET_MY_DOCUMENTS = 'document_get_my_documents';
+export const COTERIE_GET_MY_READLISTS = 'coterie_get_my_readlists';
 export const DOCUMENT_GET_EXPLORE = 'document_get_explore';
 export const DOCUMENT_UPLOAD = 'document_upload';
 export const DOCUMENT_RENAME = 'document_rename';

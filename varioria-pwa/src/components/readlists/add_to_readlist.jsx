@@ -2,12 +2,12 @@ import _ from 'lodash';
 import React from 'react'
 import { NavBar, Icon, ActivityIndicator, List, WhiteSpace, Button } from 'antd-mobile';
 import { connect } from 'react-redux';
-import Navbar from './nav_bar';
+import Navbar from '../nav_bar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 import { StickyContainer } from 'react-sticky';
 import Checkbox from '@material-ui/core/Checkbox';
-import { getCookie } from '../utilities/helper';
+import { getCookie } from '../../utilities/helper';
 
 class AddToReadlist extends React.Component {
   constructor(props) {
@@ -20,10 +20,14 @@ class AddToReadlist extends React.Component {
   }
 
   componentDidMount() {
-    let groupUuid = this.props.match.params.groupUuid;
+    const groupUuid = this.props.match.params.groupUuid
+    const currDocumentSlug = this.props.match.params.slug
     const fetchData = async () => {
       try {
         if (groupUuid) {
+          await this.props.getMyCoteriesDocument(groupUuid);
+          await this.props.getMyCoteriesReadlists(groupUuid);
+          await this.props.getMyCoteries();
         } else {
           await this.props.getMyDocuments();
           await this.props.getMyReadlists();
@@ -32,7 +36,7 @@ class AddToReadlist extends React.Component {
         console.error(error);
         return;
       }
-      const currDocument = this.props.documents[window.location.href.split('/').pop()]
+      const currDocument = this.props.documents[currDocumentSlug]
       const currDocumentUuid = currDocument.uuid.replace(/-/g, '');
       let readlists = this.props.user.createdReadlists.map(slug => {
         let element = this.props.readlists[slug];
@@ -49,7 +53,6 @@ class AddToReadlist extends React.Component {
   }
 
   handleChange = (index) => () => {
-    console.log(this.state);
     const {readlists} = this.state;
     readlists[index].checked = !readlists[index].checked;
     readlists[index].checked ? readlists[index].count++ : readlists[index].count--;
@@ -59,6 +62,7 @@ class AddToReadlist extends React.Component {
   }
 
   handleSubmit = () => {
+    const groupUuid = this.props.match.params.groupUuid
     const {currDocument, readlists} = this.state;
     const addReadlists = readlists.filter((element) => {return element.checked}).map((element) => {return element.uuid});
     const removeReadlists = readlists.filter((element) => {return !element.checked}).map((element) => {return element.uuid});
@@ -70,7 +74,13 @@ class AddToReadlist extends React.Component {
     for (let i = 0; i < removeReadlists.length; i++) {
       data.append('remove_readlists[]', removeReadlists[i]);
     }
-    this.props.documentChangeReadlists(currDocument.pk, data);
+    if (groupUuid) {
+      const coterieId = this.props.coteries[groupUuid].pk
+      data.append('coterie_id', coterieId);
+      this.props.coterieDocumentChangeReadlists(currDocument.pk, data);
+    } else {
+      this.props.documentChangeReadlists(currDocument.pk, data);
+    }
     this.props.history.goBack();
   }
 
@@ -159,7 +169,8 @@ function mapStateToProps(state) {
   return {
     readlists: state.readlists,
     documents: state.documents,
-    user: state.user
+    user: state.user,
+    coteries: state.coteries
   };
 }
 

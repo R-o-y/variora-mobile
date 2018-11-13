@@ -10,11 +10,11 @@ import { applyMiddleware, compose, createStore } from 'redux';
 import App from './App';
 import AuthContainer from './components/auth_container';
 import CreateCoterieForm from './components/create_coterie_form';
-import CreateReadlistForm from './components/create_readlist_form';
-import EditReadlistForm from './components/edit_readlist_form';
+import CreateReadlistForm from './components/readlists/create_readlist_form';
+import EditReadlistForm from './components/readlists/edit_readlist_form';
 import DocumentViewer from './components/document_viewer/document_viewer';
-import Readlist from './components/readlist';
-import AddToReadlist from './components/add_to_readlist';
+import Readlist from './components/readlists/readlist';
+import AddToReadlist from './components/readlists/add_to_readlist';
 import Profile from './components/profile/profile'
 import Search from './components/search';
 
@@ -82,12 +82,16 @@ ReactDOM.render(
             <Route path="/documents/:slug" render={({match, location, history}) => renderDocumentViewer(match, location, history)} />
             <Route path="/coteries/:coterieId/documents/:slug" render={({match, location, history}) => renderGroupDocumentViewer(match, location, history)} />
             <Route path='/readlists/:slug' component={Readlist}/>
+            <Route path='/coteries/:coterieId/readlists/:slug' component={Readlist}/>
             <Route path="/search/:groupUuid" component={Search} />
             <Route path="/search" component={Search} />
             <Route path="/profile" component={Profile} />
-            <Route path="/add-to-readlists" component={AddToReadlist} />
+            <Route path="/add-to-readlists/:groupUuid/:slug" component={AddToReadlist} />
+            <Route path="/add-to-readlists/:slug" component={AddToReadlist} />
             <Route path="/create-coterie-form" component={CreateCoterieForm} />
+            <Route path="/create-readlist-form/:groupUuid" component={CreateReadlistForm} />
             <Route path="/create-readlist-form" component={CreateReadlistForm} />
+            <Route path="/edit-readlist-form/:coterieId/:slug" component={EditReadlistForm} />
             <Route path="/edit-readlist-form/:slug" component={EditReadlistForm} />
             <Route path="/sign-in" component={Login} />
             <Route exact path="/"render={() => <Redirect to="/uploads" />} />

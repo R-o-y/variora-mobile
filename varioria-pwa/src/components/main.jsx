@@ -1,9 +1,9 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import Explore from './explore';
-import GroupExplore from './group_explore';
+import Explore from './explore/explore';
+import GroupExplore from './explore/group_explore';
 import Uploads from './uploads/uploads';
-import Readlists from './readlists';
+import Readlists from './readlists/readlists';
 import Notifications from './notifications';
 import Settings from './settings';
 

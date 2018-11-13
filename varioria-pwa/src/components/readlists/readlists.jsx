@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import NotSignedIn from './error_page/not_signed_in';
-import NoPermission from './error_page/no_permission';
+import NotSignedIn from '../error_page/not_signed_in';
+import NoPermission from '../error_page/no_permission';
 import moment from 'moment';
 import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import ShareIcon from '@material-ui/icons/Share';
@@ -12,7 +12,7 @@ import DeleteIcon from '@material-ui/icons/DeleteForever';
 
 import { Tabs, WhiteSpace, List, Modal, Toast, Icon } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
-import { getCookie, copyToClipboard } from '../utilities/helper';
+import { getCookie, copyToClipboard } from '../../utilities/helper';
 
 class Readlists extends Component {
   constructor(props) {
@@ -28,9 +28,9 @@ class Readlists extends Component {
   componentDidMount() {
     let groupUuid = this.props.match.params.groupUuid;
     if (groupUuid) {
-      // this.props.getMyCoteriesReadlists(groupUuid).then(() => {
+      this.props.getMyCoteriesReadlists(groupUuid).then(() => {
         this.setState({loading: false})
-      // })
+      })
     } else {
       this.props.getMyReadlists().then(() => {
         this.setState({loading: false})
@@ -51,18 +51,17 @@ class Readlists extends Component {
   }
 
   renderAddReadlist() {
-    // ================ TODO: TEMP CODE UNTIL GROUP-BASED READLISTS ========================
-    let groupUuid = this.props.match.params.groupUuid;
-    if (groupUuid) {
-      return (
-        <div></div>
-      )
-    }
-    // =====================================================================================
     return (
       <List.Item
         thumb={<AddIcon style={{color:'grey'}} />}
-        onClick={() => {this.props.history.push("/create-readlist-form")}}
+        onClick={() => {
+          const groupUuid = this.props.match.params.groupUuid
+          if (groupUuid) {
+            this.props.history.push("/create-readlist-form/" + groupUuid)
+          } else {
+            this.props.history.push("/create-readlist-form")
+          }
+        }}
       >
         <div style={{color:'grey'}}>New readlist</div>
         <List.Item.Brief>Click to create...</List.Item.Brief>
@@ -71,21 +70,6 @@ class Readlists extends Component {
   }
 
   renderReadlist(list, isCreated) {
-    // ================ TODO: TEMP CODE UNTIL GROUP-BASED READLISTS ========================
-    let groupUuid = this.props.match.params.groupUuid;
-    if (groupUuid) {
-      return (
-        <List>
-          <List.Item>
-            <div style={{color: 'grey', textAlign:'center' }}>
-              Group-based readlists still in development.
-            </div>
-          </List.Item>
-        </List>
-      )
-    }
-    // =====================================================================================
-
     if (!list.length) {
       return (
         <List>
@@ -105,7 +89,15 @@ class Readlists extends Component {
             thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
             multipleLine
             arrow="horizontal"
-            onClick={() => {this.props.history.push(`readlists/${slug}`)}}
+            onClick={() => {
+              const groupUuid = this.props.match.params.groupUuid
+              if (groupUuid) {
+                const coterie = this.props.coteries[groupUuid]
+                const coterieId = coterie.pk
+                this.props.history.push(`/coteries/${coterieId}/readlists/${slug}`)
+              } else
+                this.props.history.push(`/readlists/${slug}`)
+            }}
           >
             {element.name}
             <List.Item.Brief>{moment(element.create_time).format("MMMM Do YYYY, h:mm a")}</List.Item.Brief>

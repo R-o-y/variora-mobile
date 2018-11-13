@@ -12,6 +12,7 @@ import {
   NOTIFICATION_READ_ALL_ERROR,
   COTERIE_GET_MY,
   COTERIE_GET_MY_DOCUMENTS,
+  COTERIE_GET_MY_READLISTS,
   COTERIE_CREATE,
   COTERIE_UPDATE,
   COTERIE_UPDATE_SUCCESS,
@@ -157,6 +158,14 @@ export function getReadlist(slug) {
   return {type: READLIST_GET, payload: request};
 }
 
+export function getCoterieReadlist(slug, coterieId) {
+  const url = '/coterie/api/' + coterieId + '/coteriereadlists/' + slug;
+  const request = axios.get(url);
+
+  return {type: READLIST_GET, payload: request};
+}
+
+
 export function deleteReadlist(url, data, slug) {
   return function(dispatch) {
     return axios({
@@ -236,19 +245,27 @@ export function getMyCoteries() {
 export function getMyCoteriesDocument(uuid) {
   const url = `/coteries/api/coteries/${uuid}/members/me/uploaded-documents`;
   const request = axios.get(url);
-
   return {type: COTERIE_GET_MY_DOCUMENTS, payload: request};
 }
 
 export function getMyCoteriesReadlists(uuid) {
-  // const url = `/coteries/api/coteries/${uuid}/members/me/uploaded-documents`;
-  // const request = axios.get(url);
-
-  // return {type: COTERIE_GET_MY_DOCUMENTS, payload: request};
+  const url = `/coteries/api/coteries/${uuid}/members/me/coteriereadlists`;
+  const request = axios.get(url);
+  return {type: COTERIE_GET_MY_READLISTS, payload: request};
 }
 
 export function createReadlist(data) {
   const url = '/file_viewer/api/readlists/create';
+  const request = axios({
+    method: 'post',
+    url,
+    data
+  });
+  return {type: READLIST_CREATE, payload: request};
+}
+
+export function coterieCreateReadlist(data, pk) {
+  const url = `/coteries/api/${pk}/coteriereadlists/create`;
   const request = axios({
     method: 'post',
     url,
@@ -269,6 +286,23 @@ export function editReadlist(url, data) {
 
 export function collectReadlist(data, slug) {
   const url = "/file_viewer/api/readlists/" + slug + "/collect";
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(collectReadlistSuccess(slug));
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
+export function collectCoterieReadlist(data, slug, coterieId) {
+  const url = "/coterie/api/" + coterieId + "/coteriereadlists/" + slug + "/collect";
   return function(dispatch) {
     return axios({
       method: 'post',
@@ -305,6 +339,23 @@ export function uncollectReadlist(data, slug) {
   }
 }
 
+export function uncollectCoterieReadlist(data, slug, coterieId) {
+  const url = "/coterie/api/" + coterieId + "/coteriereadlists/" + slug + "/uncollect";
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(uncollectReadlistSuccess(slug));
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
 export function uncollectReadlistSuccess(slug) {
   return {type: READLIST_UNCOLLECT_SUCCESS, payload: slug}
 }
@@ -312,8 +363,23 @@ export function uncollectReadlistSuccess(slug) {
 
 export function documentChangeReadlists(pk, data) {
   const url = '/file_viewer/api/documents/' + pk + '/changereadlists'
-  console.log("making req to " + url + " with data")
-  console.log(data)
+  return function(dispatch) {
+    return axios({
+      method: 'post',
+      url,
+      data
+    })
+    .then(() => {
+      dispatch(removeFromReadlistSuccess());
+      return;
+    }).catch(error => {
+      throw(error);
+    })
+  }
+}
+
+export function coterieDocumentChangeReadlists(pk, data) {
+  const url = '/coteries/api/coteriedocuments/' + pk + '/changereadlists'
   return function(dispatch) {
     return axios({
       method: 'post',

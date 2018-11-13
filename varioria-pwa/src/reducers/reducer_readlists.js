@@ -2,7 +2,7 @@ import _ from 'lodash';
 import {
   READLIST_GET_MY,
   READLIST_GET,
-  READLIST_REMOVE_DOCUMENT_SUCCESS
+  COTERIE_GET_MY_READLISTS
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -18,7 +18,13 @@ export default function (state = [], action) {
       return _.extend(
         _.extend({}, state, _.keyBy(createdReadlists, 'slug')),
         _.keyBy(collectedReadlists, 'slug'));
+    case COTERIE_GET_MY_READLISTS:
+      const coterieCreatedReadlists = action.payload.data.created_readlists;
+      const coterieCollectedReadlists = action.payload.data.collected_readlists;
+      return _.extend(
+        _.extend({}, state, _.keyBy(coterieCreatedReadlists, 'slug')),
+        _.keyBy(coterieCollectedReadlists, 'slug'));
     default:
-      return state;
+    return state;
   }
 }

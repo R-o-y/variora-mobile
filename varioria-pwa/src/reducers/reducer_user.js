@@ -9,6 +9,7 @@ import {
   READLIST_GET_MY,
   COTERIE_GET_MY,
   COTERIE_GET_MY_DOCUMENTS,
+  COTERIE_GET_MY_READLISTS,
   COTERIE_DOCUMENT_UPLOAD,
   COTERIE_LEAVE,
   COTERIE_DELETE,
@@ -77,6 +78,14 @@ export default function (state = [], action) {
       return _.extend({}, state,
         { createdReadlists: _.map(createdReadlists, 'slug'),
           collectedReadlists: _.map(collectedReadlists, 'slug')
+        });
+
+    case COTERIE_GET_MY_READLISTS:
+      const coterieCreatedReadlists = action.payload.data.created_readlists;
+      const coterieCollectedReadlists = action.payload.data.collected_readlists;
+      return _.extend({}, state,
+        { createdReadlists: _.map(coterieCreatedReadlists, 'slug'),
+          collectedReadlists: _.map(coterieCollectedReadlists, 'slug'),
         });
 
     default:

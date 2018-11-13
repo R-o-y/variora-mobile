@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 import { connect } from 'react-redux';
 import { Button, Icon, InputItem, List, NavBar, TextareaItem, WhiteSpace } from 'antd-mobile';
-import { getCookie } from '../utilities/helper';
+import { getCookie } from '../../utilities/helper';
 
 class CreateReadlistForm extends Component {
 
@@ -19,7 +19,13 @@ class CreateReadlistForm extends Component {
     data.append('description', readlist_description);
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
-    this.props.createReadlist(data);
+    const groupUuid = this.props.match.params.groupUuid
+    if (groupUuid) {
+      const coterie = this.props.coteries[groupUuid]
+      this.props.coterieCreateReadlist(data, coterie.pk);
+    } else {
+      this.props.createReadlist(data);
+    }
     this.props.history.goBack();
   }
 
@@ -60,6 +66,7 @@ class CreateReadlistForm extends Component {
 
 function mapStateToProps(state) {
   return {
+    coteries: state.coteries
   };
 }
 

@@ -1,8 +1,8 @@
-import './theme.css'
+import '../theme.css'
 
 import _ from 'lodash';
 import React, { Component } from 'react';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TimeAgo from 'react-timeago';

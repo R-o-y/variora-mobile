@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 import { connect } from 'react-redux';
 import { Button, Icon, InputItem, List, NavBar, TextareaItem, WhiteSpace, Modal } from 'antd-mobile';
-import { getCookie } from '../utilities/helper';
-import Avatar from '@material-ui/core/Avatar';
+import { getCookie } from '../../utilities/helper';
 
 class EditReadlistForm extends Component {
 
@@ -14,22 +13,39 @@ class EditReadlistForm extends Component {
 
   componentDidMount() {
     const { slug } = this.props.match.params
-    this.props.getReadlist(slug).then(() => {
-      this.setState({readlist_name: this.props.readlists.readlist.name, readlist_description: this.props.readlists.readlist.description})
-    });
+    const coterieId = this.props.match.params.coterieId
+    if (coterieId) {
+      this.props.getCoterieReadlist(slug, coterieId).then(() => {
+        this.setState({readlist_name: this.props.readlists.readlist.name, readlist_description: this.props.readlists.readlist.description})
+      });  
+    } else {
+      this.props.getReadlist(slug).then(() => {
+        this.setState({readlist_name: this.props.readlists.readlist.name, readlist_description: this.props.readlists.readlist.description})
+      });  
+    }
   }
 
   handleSubmit() {
     let { readlist_name, readlist_description } = this.state;
+    const coterieId = this.props.match.params.coterieId
 
     let data = new FormData();
     data.append('new_name', readlist_name);
     data.append('new_desc', readlist_description);
     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
-    this.props.editReadlist(this.props.readlists.readlist.rename_url, data)
+    if (coterieId) {
+      // TODO: directly use urls when backend support
+      const renameUrl = "/coterie/api/" + coterieId + "/coteriereadlists/" + this.props.readlists.readlist.slug + "/rename"
+      const changeDescUrl = "/coterie/api/" + coterieId + "/coteriereadlists/" + this.props.readlists.readlist.slug + "/change_desc"
+      this.props.editReadlist(renameUrl, data)
+      .then(() => {this.props.editReadlist(changeDescUrl, data)})
+      .then(() => {this.props.history.goBack()})
+    } else {
+      this.props.editReadlist(this.props.readlists.readlist.rename_url, data)
       .then(() => {this.props.editReadlist(this.props.readlists.readlist.change_desc_url, data)})
       .then(() => {this.props.history.goBack()})
+    }
   }
 
   handleDelete() {
@@ -38,10 +54,20 @@ class EditReadlistForm extends Component {
       { text: 'Cancel' },
       { text: 'Delete', style:{color:'#FF0000'},
         onPress: () => {
+          const coterieId = this.props.match.params.coterieId
           let data = new FormData();
           data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-          this.props.deleteReadlist(readlist.delete_url, data, readlist.slug);
-          this.props.history.push('/readlists')
+          if (coterieId) {
+            const deleteUrl = "/coterie/api/" + coterieId + "/coteriereadlists/" + this.props.readlists.readlist.slug + "/delete"
+            this.props.deleteReadlist(deleteUrl, data, readlist.slug);
+            // ideally we want to route directly back to group readlist page,
+            // but we don't have groupUuid here... for now we just go back twice.
+            this.props.history.goBack()
+            this.props.history.goBack()
+          } else {
+            this.props.deleteReadlist(readlist.delete_url, data, readlist.slug);
+            this.props.history.push('/readlists')
+          }
       }},
     ])
   }
