@@ -2,7 +2,6 @@ const VERSION = "0.0.1";
 const CACHE_NAME = `VA-${VERSION}`;
 const cacheAssets = [
   `/`,
-  `/src/*`,
 ]
 
 self.addEventListener('install', event => {
@@ -40,11 +39,13 @@ self.addEventListener('fetch', event => {
     fetch(event.request)
       .then(response => {
         const responseClone = response.clone()
-        caches
-          .open(CACHE_NAME)
-          .then(cache => {
-            cache.put(event.request.url, responseClone)
-          })
+
+        if (event.request.url.includes('/static/') || event.request.url.includes('/api/'))
+          caches
+            .open(CACHE_NAME)
+            .then(cache => {
+              cache.put(event.request.url, responseClone)
+            })
         return response
       })
       .catch(() => {
