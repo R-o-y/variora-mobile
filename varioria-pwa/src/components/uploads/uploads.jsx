@@ -310,19 +310,24 @@ class Uploads extends Component {
               Add To Readlist
             </List.Item>
           }
-          {
-            this.props.match.params.groupUuid ? null :
             <List.Item
               onClick={() => {
+                let url;
                 const location = window.location;
-                const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
+                const groupUuid = this.props.match.params.groupUuid
+                if (groupUuid) {
+                  const coterie = this.props.coteries[groupUuid];
+                  const coterieId = coterie.pk;
+                  url = [location.protocol, '//', location.host, '/coteries/', coterieId, '/documents/', currDocument.slug].join('');
+                } else {
+                  url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
+                }
                 copyToClipboard(url);
                 Toast.success('Copied to clipboard!', 1);}}
             >
               <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
               Share
             </List.Item>
-          }
           <List.Item
             onClick={() => {
               Modal.alert('Uncollect ' + currDocument.title + '?', '', [
@@ -372,19 +377,24 @@ class Uploads extends Component {
             Add To Readlist
           </List.Item>
         }
-          {
-            this.props.match.params.groupUuid ? null :
-            <List.Item
-              onClick={() => {
-                const location = window.location;
-                const url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
-                copyToClipboard(url);
-                Toast.success('Copied to clipboard!', 1);}}
-            >
-              <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
-              Share
-            </List.Item>
-          }
+          <List.Item
+            onClick={() => {
+              let url;
+              const location = window.location;
+              const groupUuid = this.props.match.params.groupUuid
+              if (groupUuid) {
+                const coterie = this.props.coteries[groupUuid];
+                const coterieId = coterie.pk;
+                url = [location.protocol, '//', location.host, '/coteries/', coterieId, '/documents/', currDocument.slug].join('');
+              } else {
+                url = [location.protocol, '//', location.host, '/documents/', currDocument.slug].join('');
+              }
+              copyToClipboard(url);
+              Toast.success('Copied to clipboard!', 1);}}
+          >
+            <ShareIcon style={{height: 18, color:'#1BA39C',marginRight: 20}}/>
+            Share
+          </List.Item>
           <List.Item
             onClick={() => {this.renderRenameModal(currDocument)}}
           >
