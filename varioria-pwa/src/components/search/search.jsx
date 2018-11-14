@@ -179,6 +179,7 @@ class Search extends React.Component {
     let groupUuid = this.props.match.params.groupUuid;
     if (groupUuid && this.props.coteries[this.props.match.params.groupUuid]) {
       placeholder = "Search within " + this.props.coteries[this.props.match.params.groupUuid]['name'];
+      if (placeholder.length > 25) placeholder = placeholder.slice(0, 25) + '...';
     }
     return (
       <div>

@@ -52,6 +52,13 @@
   text-align: center;
 }
 
+.navbar-title {
+  width: 50vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
 .popup-list .am-list-header {
   padding-top: 10px;
   padding-bottom: 10px;

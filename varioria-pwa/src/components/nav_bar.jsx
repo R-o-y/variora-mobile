@@ -233,7 +233,7 @@ class Navbar extends Component {
           ]
           }
         >
-          {this.getNavbarTitle(this.props.path)}
+          <span className='navbar-title'>{this.getNavbarTitle(this.props.path)}</span>
         </NavBar>
     );
   }
