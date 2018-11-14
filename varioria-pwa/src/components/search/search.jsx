@@ -59,10 +59,6 @@ class Search extends React.Component {
     }
     const groupUuid = this.props.match.params.groupUuid;
     let data = [];
-    let documentsPath = `/documents/`
-    if (groupUuid) {
-      documentsPath = `/group-documents/`
-    }
     if (results.documents) {
       const documents = results.documents.map(element => {
         return ({
@@ -73,7 +69,7 @@ class Search extends React.Component {
               arrow="horizontal"
               thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
               multipleLine
-              onClick={() => {this.props.history.push(documentsPath + `${element.slug}`)}}
+              onClick={() => {this.props.history.push(element.viewer_url)}}
             >
               {element.title}
               <List.Item.Brief>
