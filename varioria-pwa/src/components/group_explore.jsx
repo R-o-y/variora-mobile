@@ -15,6 +15,7 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 
 import { Tabs, WhiteSpace, List } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
+import pdfIcon from '../utilities/pdf.png';
 
 class GroupExplore extends Component {
   state = { loading: true }
@@ -44,7 +45,7 @@ class GroupExplore extends Component {
         <List.Item
           key={element.slug}
           extra={<TimeAgo date={element.upload_time} />}
-          thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
+          thumb={<img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />}
           multipleLine
           onClick={() => {
             const groupUuid = this.props.match.params.groupUuid
