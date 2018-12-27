@@ -125,6 +125,18 @@ class Navbar extends Component {
               <Badge
                 color="primary"
                 classes={{ badge: this.props.classes.badge }}
+                onClick={(e) => {
+                  if (!this.props.user || !this.props.user.is_authenticated) {
+                    return (
+                      Modal.alert('', 'You need to sign in to view and switch groups', [
+                        { text: 'Cancel', onPress: () => {} },
+                        { text: 'Go login', onPress: () => this.props.history.push('/sign-in') },
+                      ])
+                    )
+                  }
+                  this.props.getMyCoteries();
+                  this.onToggle('coterieModal');
+                }}
                 badgeContent={
                   <Avatar className={this.props.classes.avatar}
                     style={{backgroundColor: getRandomColor(this.props.match.params.groupUuid)}}>
