@@ -1,14 +1,17 @@
-import _ from 'lodash';
-import React from 'react'
-import { NavBar, Icon, ActivityIndicator, List, WhiteSpace } from 'antd-mobile';
-import { connect } from 'react-redux';
-import Toolbar from "@material-ui/core/Toolbar";
+import * as actions from '../../actions';
+
+import { ActivityIndicator, Icon, List, NavBar, WhiteSpace } from 'antd-mobile';
+
+import ApplyCoterieDialog from './applyCoterieDialog';
 import InputBase from "@material-ui/core/InputBase";
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
-import * as actions from '../../actions';
-import TimeAgo from 'react-timeago'
+import React from 'react'
 import { StickyContainer } from 'react-sticky';
-import ApplyCoterieDialog from './applyCoterieDialog';
+import TimeAgo from 'react-timeago'
+import Toolbar from "@material-ui/core/Toolbar";
+import _ from 'lodash';
+import { connect } from 'react-redux';
+import pdfIcon from '../../utilities/pdf.png';
 
 class Search extends React.Component {
   constructor(props) {
@@ -67,7 +70,7 @@ class Search extends React.Component {
             <List.Item
               key={element.slug}
               arrow="horizontal"
-              thumb="https://cdn1.iconfinder.com/data/icons/file-types-23/48/PDF-128.png"
+              thumb={<img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />}
               multipleLine
               onClick={() => {this.props.history.push(element.viewer_url)}}
             >
@@ -89,7 +92,7 @@ class Search extends React.Component {
             <List.Item
               key={element.slug}
               arrow="horizontal"
-              thumb="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678072-folder-document-512.png"
+              thumb={<img src={pdfIcon} alt='pdf-icon' style={{height: 28, width: 24}} />}
               multipleLine
               onClick={() => {this.props.history.push(`readlists/${element.slug}`)}}
             >
@@ -111,7 +114,7 @@ class Search extends React.Component {
             <List.Item
               key={element.pk}
               arrow="horizontal"
-              thumb={element.portrait_url}
+              thumb={<img src={element.portrait_url} alt='user-avatar' style={{width: 24, height: 24, borderRadius: 2}} />}
               multipleLine
               onClick={() => {console.log("user with pk " + element.pk + " clicked")}}
             >
