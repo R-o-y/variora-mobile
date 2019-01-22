@@ -2,8 +2,7 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import * as actions from '../actions';
 import { connect } from 'react-redux';
-import { Badge, List, WhiteSpace, Modal, Toast } from 'antd-mobile';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { ActivityIndicator, Badge, List, WhiteSpace, Modal, Toast } from 'antd-mobile';
 import NotSignedIn from './error_page/not_signed_in';
 import moment from 'moment';
 import Avatar from '@material-ui/core/Avatar';
@@ -231,11 +230,8 @@ class Notifications extends Component {
   }
 
   render() {
-    if (this.state.loading) {
-      return (
-        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-      );
-    }
+    if (this.state.loading)
+      return <ActivityIndicator toast animating={this.state.loading} />
 
     if (!this.props.user || !this.props.user.is_authenticated) {
       return (

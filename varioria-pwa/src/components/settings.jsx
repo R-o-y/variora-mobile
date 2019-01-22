@@ -5,8 +5,7 @@ import { connect } from 'react-redux';
 import validator from 'email-validator';
 import NotSignedIn from './error_page/not_signed_in';
 import NoPermission from './error_page/no_permission';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { List, WingBlank, WhiteSpace, Card, Modal, Toast } from 'antd-mobile';
+import { ActivityIndicator, List, WingBlank, WhiteSpace, Card, Modal, Toast } from 'antd-mobile';
 import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import PeopleIcon from '@material-ui/icons/People';
@@ -435,25 +434,16 @@ class Settings extends Component {
   }
 
   render() {
-    if (this.state.isFetching) {
-      return (
-        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-      );
-    }
+    if (this.state.isFetching)
+      return <ActivityIndicator toast animating={this.state.isFetching} />
 
-    if (!this.props.user || !this.props.user.is_authenticated) {
-      return (
-        <NotSignedIn history={this.props.history}/>
-      )
-    }
+    if (!this.props.user || !this.props.user.is_authenticated)
+      return <NotSignedIn history={this.props.history}/>
 
-    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid];
+    const currentCoterie = this.props.coteries[this.props.match.params.groupUuid]
 
-    if (this.props.match.params.groupUuid && !currentCoterie) {
-      return (
-        <NoPermission />
-      )
-    }
+    if (this.props.match.params.groupUuid && !currentCoterie)
+      return <NoPermission />
 
     if (!this.props.match.params.groupUuid) {
       return (
@@ -468,35 +458,35 @@ class Settings extends Component {
 
         <List>
           <List.Item
-           thumb={<KeyIcon style={{color: 'orange'}} />}
-           extra={currentCoterie.administrators.length}
-           arrow="horizontal"
-           onClick={(e) => {this.showModal('adminModal', e)}}
+            thumb={<KeyIcon style={{color: 'orange'}} />}
+            extra={currentCoterie.administrators.length}
+            arrow="horizontal"
+            onClick={(e) => {this.showModal('adminModal', e)}}
           >
             Administrators
           </List.Item>
           <List.Item
-           thumb={<PeopleIcon style={{color: '42A5F5'}} />}
-           extra={currentCoterie.members.length}
-           arrow="horizontal"
-           onClick={(e) => {this.showModal('memberModal', e)}}
+            thumb={<PeopleIcon style={{color: '42A5F5'}} />}
+            extra={currentCoterie.members.length}
+            arrow="horizontal"
+            onClick={(e) => {this.showModal('memberModal', e)}}
           >
             Members
           </List.Item>
           { isAdmin &&
             <List.Item
-             thumb={<ApplicationIcon style={{color: '#1BA39C'}} />}
-             extra={this.state.applications.length}
-             arrow="horizontal"
-             onClick={(e) => {this.showModal('applicationModal', e)}}
+              thumb={<ApplicationIcon style={{color: '#1BA39C'}} />}
+              extra={this.state.applications.length}
+              arrow="horizontal"
+              onClick={(e) => {this.showModal('applicationModal', e)}}
             >
               Applications
             </List.Item>
           }
           { isAdmin &&
             <List.Item
-             thumb={<PersonAddIcon style={{color: '#1BA39C'}} />}
-             onClick={(e) => {this.showModal('inviteDialog', e)}}
+              thumb={<PersonAddIcon style={{color: '#1BA39C'}} />}
+              onClick={(e) => {this.showModal('inviteDialog', e)}}
             >
               Add someone
             </List.Item>
@@ -507,21 +497,21 @@ class Settings extends Component {
         { !isAdmin &&
           <List>
             <List.Item
-             thumb={<ExitIcon style={{color: '#FF0000'}} />}
-             onClick={() => {
-               Modal.alert('Leave ' + currentCoterie.name + '?',
-               'Are you sure to exit this group? This cannot be undone',
-               [
-                 { text: 'Cancel' },
-                 { text: 'Leave', style:{color:'#FF0000'},
-                   onPress: () => {
-                     let data = new FormData();
-                     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-                     this.props.leaveCoterie(data, currentCoterie.pk, currentCoterie.uuid);
-                     this.props.history.push('/explore');
-                 }},
-               ])
-             }}>
+              thumb={<ExitIcon style={{color: '#FF0000'}} />}
+              onClick={() => {
+                Modal.alert('Leave ' + currentCoterie.name + '?',
+                'Are you sure to exit this group? This cannot be undone',
+                [
+                  { text: 'Cancel' },
+                  { text: 'Leave', style:{color:'#FF0000'},
+                    onPress: () => {
+                      let data = new FormData();
+                      data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                      this.props.leaveCoterie(data, currentCoterie.pk, currentCoterie.uuid);
+                      this.props.history.push('/explore');
+                  }},
+                ])
+              }}>
               Leave group
             </List.Item>
           </List>
@@ -529,21 +519,21 @@ class Settings extends Component {
         { isAdmin &&
           <List>
             <List.Item
-             thumb={<ExitIcon style={{color: '#FF0000'}} />}
-             onClick={() => {
-               Modal.alert('Delete ' + currentCoterie.name + '?',
-               'Are you sure? Deleting the group can affect all existing members. This cannot be undone',
-               [
-                 { text: 'Cancel' },
-                 { text: 'Leave', style:{color: '#FF0000'},
-                   onPress: () => {
-                     let data = new FormData();
-                     data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
-                     this.props.deleteCoterie(data, currentCoterie.pk, currentCoterie.uuid);
-                     this.props.history.push('/explore');
-                 }},
-               ])
-             }}>
+              thumb={<ExitIcon style={{color: '#FF0000'}} />}
+              onClick={() => {
+                Modal.alert('Delete ' + currentCoterie.name + '?',
+                'Are you sure? Deleting the group can affect all existing members. This cannot be undone',
+                [
+                  { text: 'Cancel' },
+                  { text: 'Leave', style:{color: '#FF0000'},
+                    onPress: () => {
+                      let data = new FormData();
+                      data.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                      this.props.deleteCoterie(data, currentCoterie.pk, currentCoterie.uuid);
+                      this.props.history.push('/explore');
+                  }},
+                ])
+              }}>
               Delete group
             </List.Item>
           </List>

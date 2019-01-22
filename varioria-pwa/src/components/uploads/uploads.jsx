@@ -1,6 +1,6 @@
 import * as actions from '../../actions';
 
-import { Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
+import { ActivityIndicator, Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
 import React, { Component } from 'react';
 import { Sticky, StickyContainer } from 'react-sticky';
 import { copyToClipboard, getCookie, validateDocumentSize } from '../../utilities/helper';
@@ -8,7 +8,6 @@ import { copyToClipboard, getCookie, validateDocumentSize } from '../../utilitie
 import AddIcon from '@material-ui/icons/AddBoxOutlined';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import ConfirmationDialog from './confirmation_dialog';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
@@ -514,11 +513,8 @@ class Uploads extends Component {
   }
 
   render() {
-    if (this.state.loading) {
-      return (
-        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-      )
-    }
+    if (this.state.loading)
+      return <ActivityIndicator toast animating={this.state.loading} />
 
     if (!this.props.user || !this.props.user.is_authenticated) {
       return (

@@ -1,6 +1,6 @@
 import * as actions from '../actions';
 
-import { Icon, List, NavBar, Toast, WhiteSpace } from 'antd-mobile';
+import { ActivityIndicator, Icon, List, NavBar, Toast, WhiteSpace } from 'antd-mobile';
 import React, { Component } from 'react';
 import { copyToClipboard, getCookie } from '../utilities/helper';
 
@@ -9,7 +9,7 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
-import CircularProgress from '@material-ui/core/CircularProgress';
+// import CircularProgress from '@material-ui/core/CircularProgress';
 import EditIcon from '@material-ui/icons/Edit';
 import Favorite from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -161,7 +161,8 @@ class Readlist extends Component {
       return (
         <div>
           <Navbar title="Readlists" history={this.props.history} match={this.props.match}/>
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
+          <ActivityIndicator toast animating={this.state.loading} />
+          {/* <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} /> */}
         </div>
       )
     }

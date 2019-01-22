@@ -1,20 +1,20 @@
 import './theme.css'
 
-import _ from 'lodash';
-import React, { Component } from 'react';
 import * as actions from '../actions';
-import { connect } from 'react-redux';
-import NotSignedIn from './error_page/not_signed_in';
-import NoPermission from './error_page/no_permission';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import TimeAgo from 'react-timeago';
+
+import { ActivityIndicator, List, Tabs, WhiteSpace } from 'antd-mobile';
+import React, { Component } from 'react';
+import { Sticky, StickyContainer } from 'react-sticky';
+
 import Grid from '@material-ui/core/Grid';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
-
-import { Tabs, WhiteSpace, List } from 'antd-mobile';
-import { StickyContainer, Sticky } from 'react-sticky';
+import NoPermission from './error_page/no_permission';
+import NotSignedIn from './error_page/not_signed_in';
+import TimeAgo from 'react-timeago';
+import _ from 'lodash';
+import { connect } from 'react-redux';
 import pdfIcon from '../utilities/pdf.png';
 
 class GroupExplore extends Component {
@@ -105,11 +105,8 @@ class GroupExplore extends Component {
   }
 
   render() {
-    if (this.state.loading) {
-      return (
-        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-      );
-    }
+    if (this.state.loading)
+      return <ActivityIndicator toast animating={this.state.loading} />
 
     if (!this.props.user || !this.props.user.is_authenticated) {
       return (

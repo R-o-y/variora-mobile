@@ -1,18 +1,18 @@
 import './theme.css'
 
-import _ from 'lodash';
-import React, { Component } from 'react';
 import * as actions from '../actions';
-import { connect } from 'react-redux';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import TimeAgo from 'react-timeago';
+
+import { ActivityIndicator, List, Tabs, WhiteSpace } from 'antd-mobile';
+import React, { Component } from 'react';
+import { Sticky, StickyContainer } from 'react-sticky';
+
 import Grid from '@material-ui/core/Grid';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
-
-import { Tabs, WhiteSpace, List } from 'antd-mobile';
-import { StickyContainer, Sticky } from 'react-sticky';
+import TimeAgo from 'react-timeago';
+import _ from 'lodash';
+import { connect } from 'react-redux';
 
 class Explore extends Component {
   state = { loading: true }
@@ -151,13 +151,8 @@ class Explore extends Component {
   }
 
   render() {
-    if (this.state.loading) {
-      return (
-        <div>
-          <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-        </div>
-      );
-    }
+    if (this.state.loading)
+      return <ActivityIndicator toast animating={this.state.loading} />
 
     return (
       <div>

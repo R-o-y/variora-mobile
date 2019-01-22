@@ -1,18 +1,18 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
 import * as actions from '../actions';
-import { connect } from 'react-redux';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import NotSignedIn from './error_page/not_signed_in';
-import NoPermission from './error_page/no_permission';
-import moment from 'moment';
-import AddIcon from '@material-ui/icons/AddBoxOutlined';
-import ShareIcon from '@material-ui/icons/Share';
-import DeleteIcon from '@material-ui/icons/DeleteForever';
 
-import { Tabs, WhiteSpace, List, Modal, Toast, Icon } from 'antd-mobile';
-import { StickyContainer, Sticky } from 'react-sticky';
-import { getCookie, copyToClipboard } from '../utilities/helper';
+import { ActivityIndicator, Icon, List, Modal, Tabs, Toast, WhiteSpace } from 'antd-mobile';
+import React, { Component } from 'react';
+import { Sticky, StickyContainer } from 'react-sticky';
+import { copyToClipboard, getCookie } from '../utilities/helper';
+
+import AddIcon from '@material-ui/icons/AddBoxOutlined';
+import DeleteIcon from '@material-ui/icons/DeleteForever';
+import NoPermission from './error_page/no_permission';
+import NotSignedIn from './error_page/not_signed_in';
+import ShareIcon from '@material-ui/icons/Share';
+import _ from 'lodash';
+import { connect } from 'react-redux';
+import moment from 'moment';
 
 class Readlists extends Component {
   constructor(props) {
@@ -163,11 +163,8 @@ class Readlists extends Component {
   }
 
   render() {
-    if (this.state.loading) {
-      return (
-        <CircularProgress style={{color:"#1BA39C",  marginTop: "38vh"}} size='10vw' thickness={5} />
-      );
-    }
+    if (this.state.loading)
+      return <ActivityIndicator toast animating={this.state.loading} />
 
     if (!this.props.user || !this.props.user.is_authenticated) {
       return (

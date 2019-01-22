@@ -31,7 +31,7 @@ class App extends Component {
     if (_.isEmpty(this.props.user) || this.state.loading) {
       return (
         <Grid container justify="center" alignItems="center" wrap="nowrap" style={{height: '95vh'}}>
-            <CircularProgress style={{color:"#1BA39C"}} size='10vw' thickness={5} />
+          <CircularProgress style={{color:"#1BA39C"}} size='10vw' thickness={5} />
         </Grid>
       )
     }
