@@ -1,13 +1,16 @@
-import _ from 'lodash';
-import React from 'react';
-import { connect } from 'react-redux';
-import { TabBar, Badge } from 'antd-mobile';
+import './bottom_tab_bar.css';
+
+import { Badge, TabBar } from 'antd-mobile';
+
 import ExploreIcon from '@material-ui/icons/Explore';
-import UploadIcon from '@material-ui/icons/CloudUpload';
-import ReadlistIcon from '@material-ui/icons/ViewList';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import React from 'react';
+import ReadlistIcon from '@material-ui/icons/ViewList';
 import SettingsIcon from '@material-ui/icons/Settings';
+import UploadIcon from '@material-ui/icons/CloudUpload';
+import _ from 'lodash';
+import { connect } from 'react-redux';
 
 class BottomTabBar extends React.Component {
   constructor(props) {

@@ -1,11 +1,12 @@
-import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
+
 import Explore from './explore';
 import GroupExplore from './group_explore';
-import Uploads from './uploads/uploads';
-import Readlists from './readlists';
 import Notifications from './notifications';
+import React from 'react';
+import Readlists from './readlists';
 import Settings from './settings';
+import Uploads from './uploads/uploads';
 
 const Main = () => (
   <main>

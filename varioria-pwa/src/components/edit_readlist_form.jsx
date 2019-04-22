@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
 import * as actions from '../actions';
-import { connect } from 'react-redux';
-import { Button, Icon, InputItem, List, NavBar, TextareaItem, WhiteSpace, Modal } from 'antd-mobile';
-import { getCookie } from '../utilities/helper';
+
+import { Button, Icon, InputItem, List, Modal, NavBar, TextareaItem, WhiteSpace } from 'antd-mobile';
+import React, { Component } from 'react';
+
 import Avatar from '@material-ui/core/Avatar';
+import { connect } from 'react-redux';
+import { getCookie } from '../utilities/helper';
 
 class EditReadlistForm extends Component {
 
