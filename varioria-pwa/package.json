@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "babel-loader": "^8.0.4",
     "moment": "^2.22.2",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
@@ -39,7 +38,7 @@
     "antd-mobile": "^2.2.5",
     "axios": "^0.18.0",
     "babel-core": "^6.26.3",
-    "babel-loader": "^8.0.4",
+    "babel-loader": "8.0.4",
     "babel-plugin-import": "^1.8.0",
     "css-loader": "^1.0.0",
     "d3-time-format": "^2.1.3",
